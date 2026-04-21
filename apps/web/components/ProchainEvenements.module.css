@@ -1,0 +1,180 @@
+.section {
+  background: var(--color-navy);
+  padding: 5rem 2rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.sectionHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+  gap: 1rem;
+}
+
+.titleWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-display, serif);
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.underline {
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: var(--color-gold);
+  border-radius: 2px;
+}
+
+.seeAll {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-gold);
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.seeAll:hover {
+  opacity: 0.75;
+}
+
+/* List */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Card */
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  align-items: center;
+  gap: 1.75rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.card:hover {
+  background: rgba(255, 255, 255, 0.09);
+  transform: translateX(4px);
+}
+
+/* Date badge */
+.dateBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-gold);
+  border-radius: 10px;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.dateJour {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-white);
+  line-height: 1;
+}
+
+.dateMois {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+}
+
+/* Body */
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--color-gold);
+  text-transform: uppercase;
+}
+
+.cardTitle {
+  font-family: var(--font-display, serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-white);
+  line-height: 1.3;
+}
+
+.lieu {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.cardDesc {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin-top: 0.2rem;
+}
+
+/* CTA */
+.cta {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-gold);
+  white-space: nowrap;
+  border: 1px solid var(--color-gold);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.cta:hover {
+  background: var(--color-gold);
+  color: var(--color-white);
+}
+
+/* ─── Responsive ─────────────────────────────────── */
+@media (max-width: 768px) {
+  .section {
+    padding: 3.5rem 1.25rem;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card {
+    grid-template-columns: 56px 1fr;
+    grid-template-rows: auto auto;
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .cta {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+}

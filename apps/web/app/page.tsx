@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Hero from "@/components/Hero";
 import AlaUne from "@/components/AlaUne";
+import ProchainEvenements from "@/components/ProchainEvenements";
 import NosMissions from "@/components/NosMissions";
 
 export const metadata: Metadata = {
@@ -14,6 +15,7 @@ export default function AccueilPage() {
     <main>
       <Hero />
       <AlaUne />
+      <ProchainEvenements />
       <NosMissions />
     </main>
   );
