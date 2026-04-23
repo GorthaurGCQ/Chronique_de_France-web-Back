@@ -135,7 +135,11 @@ export const authUser = pgTable("auth_user", {
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
-  image: varchar("image", { length: 512}),
+  image: varchar("image", { length: 512 }),
+  role: varchar("role", { length: 50 }).default("user"),
+  banned: boolean("banned").default(false),
+  banReason: varchar("ban_reason", { length: 512 }),
+  banExpires: timestamp("ban_expires"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

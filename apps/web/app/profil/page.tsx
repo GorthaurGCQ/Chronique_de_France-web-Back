@@ -85,6 +85,16 @@ export default function ProfilPage() {
                 )}
               </span>
             </div>
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Rôle</span>
+              <span className={styles.infoValue}>
+                {session.user.role === "admin" ? (
+                  <span className={styles.badgeAdmin}>Administrateur</span>
+                ) : (
+                  <span className={styles.badgeUser}>Membre</span>
+                )}
+              </span>
+            </div>
           </div>
         </div>
 

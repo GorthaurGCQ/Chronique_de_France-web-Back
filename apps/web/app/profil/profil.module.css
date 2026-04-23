@@ -96,6 +96,24 @@
   font-weight: 600;
 }
 
+.badgeAdmin {
+  background: #ede9fe;
+  color: #5b21b6;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badgeUser {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
 /* Actions */
 .actions {
   display: flex;
