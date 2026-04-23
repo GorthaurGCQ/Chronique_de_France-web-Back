@@ -3,7 +3,7 @@
 import { desc, count } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { verifyJWT, requireRole, handleAuthError } from "@/lib/auth";
+import { verifyJWT, requireRole, handleAuthError } from "@/lib/jwt";
 import { paginationSchema } from "@/lib/validation";
 
 export async function GET(req: Request) {

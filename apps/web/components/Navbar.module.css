@@ -145,6 +145,65 @@
   display: none;
 }
 
+/* Menu utilisateur connecté */
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userMenuLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--color-navy);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.userMenuLink:hover {
+  color: var(--color-gold, #b8960c);
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-navy, #1a2744);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.userName {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btnSignOut {
+  background: none;
+  border: 1px solid var(--color-navy, #1a2744);
+  color: var(--color-navy, #1a2744);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.btnSignOut:hover {
+  background: var(--color-navy, #1a2744);
+  color: #fff;
+}
+
 /* Hamburger */
 .hamburger {
   display: none;
@@ -235,6 +294,21 @@
   }
 
   .btnConnexion {
+    text-align: center;
+  }
+
+  .userMenu {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .userMenuLink {
+    justify-content: center;
+  }
+
+  .btnSignOut {
+    width: 100%;
     text-align: center;
   }
 }

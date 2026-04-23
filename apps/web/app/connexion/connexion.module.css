@@ -402,6 +402,17 @@
   color: rgba(255,255,255,0.8);
 }
 
+/* ── Message d'erreur ────────────────────────────────────────────────── */
+.errorMsg {
+  background: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  color: #fca5a5;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  margin-bottom: 4px;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .form {

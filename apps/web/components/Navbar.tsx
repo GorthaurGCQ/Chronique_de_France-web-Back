@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useSession, signOut } from "@/lib/auth-client";
 import styles from "./Navbar.module.css";
 
 const navLinks = [
@@ -15,6 +16,8 @@ const navLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
@@ -36,6 +39,14 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  async function handleSignOut() {
+    await signOut();
+    router.push("/");
+    router.refresh();
+  }
+
+  const userInitial = session?.user?.name?.charAt(0).toUpperCase() ?? "?";
 
   return (
     <header className={`${styles.header} ${visible ? styles.headerVisible : styles.headerHidden}`}>
@@ -66,7 +77,7 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
-          {/* Recherche + Connexion (dans le menu mobile) */}
+          {/* Actions (dans le menu mobile) */}
           <li className={styles.mobileActions}>
             <div className={styles.searchWrapper}>
               <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -80,9 +91,21 @@ export default function Navbar() {
                 aria-label="Rechercher"
               />
             </div>
-            <Link href="/connexion" className={styles.btnConnexion}>
-              Connexion
-            </Link>
+            {session ? (
+              <div className={styles.userMenu}>
+                <Link href="/profil" className={styles.userMenuLink} onClick={() => setIsOpen(false)}>
+                  <span className={styles.avatar}>{userInitial}</span>
+                  <span>{session.user.name}</span>
+                </Link>
+                <button className={styles.btnSignOut} onClick={handleSignOut}>
+                  Se déconnecter
+                </button>
+              </div>
+            ) : (
+              <Link href="/connexion" className={styles.btnConnexion} onClick={() => setIsOpen(false)}>
+                Connexion
+              </Link>
+            )}
           </li>
         </ul>
 
@@ -100,9 +123,21 @@ export default function Navbar() {
               aria-label="Rechercher"
             />
           </div>
-          <Link href="/connexion" className={styles.btnConnexion}>
-            Connexion
-          </Link>
+          {session ? (
+            <div className={styles.userMenu}>
+              <Link href="/profil" className={styles.userMenuLink}>
+                <span className={styles.avatar}>{userInitial}</span>
+                <span className={styles.userName}>{session.user.name}</span>
+              </Link>
+              <button className={styles.btnSignOut} onClick={handleSignOut}>
+                Se déconnecter
+              </button>
+            </div>
+          ) : (
+            <Link href="/connexion" className={styles.btnConnexion}>
+              Connexion
+            </Link>
+          )}
         </div>
 
         {/* Hamburger */}

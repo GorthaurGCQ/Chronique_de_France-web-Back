@@ -5,7 +5,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { verifyJWT, requireRole, handleAuthError } from "@/lib/auth";
+import { verifyJWT, requireRole, handleAuthError } from "@/lib/jwt";
 import { parseBody, updateUserSchema } from "@/lib/validation";
 
 type RouteParams = { params: Promise<{ id: string }> };

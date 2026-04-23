@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { signJWT } from "@/lib/auth";
+import { signJWT } from "@/lib/jwt";
 import { parseBody, loginSchema } from "@/lib/validation";
 
 export async function POST(req: Request) {

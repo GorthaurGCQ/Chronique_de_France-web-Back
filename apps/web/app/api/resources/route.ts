@@ -5,7 +5,7 @@ import { eq, and, or, ilike, desc, count, SQL } from "drizzle-orm";
 import { db } from "@/db";
 import { resources, users } from "@/db/schema";
 import type { ResourceType } from "@/db/schema";
-import { verifyJWT, requireRole, handleAuthError } from "@/lib/auth";
+import { verifyJWT, requireRole, handleAuthError } from "@/lib/jwt";
 import { parseBody, createResourceSchema, resourceQuerySchema } from "@/lib/validation";
 
 // ---------------------------------------------------------------------------

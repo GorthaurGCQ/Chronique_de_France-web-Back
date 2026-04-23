@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { signJWT } from "@/lib/auth";
+import { signJWT } from "@/lib/jwt";
 import { parseBody, registerSchema } from "@/lib/validation";
 
 export async function POST(req: Request) {
@@ -57,9 +57,10 @@ export async function POST(req: Request) {
       { success: true, data: { user, token }, message: "Compte créé avec succès." },
       { status: 201 },
     );
-  } catch {
+  } catch (err) {
+    console.error("[register] erreur:", err);
     return Response.json(
-      { success: false, message: "Erreur interne du serveur." },
+      { success: false, message: "Erreur interne du serveur.", error: String(err) },
       { status: 500 },
     );
   }

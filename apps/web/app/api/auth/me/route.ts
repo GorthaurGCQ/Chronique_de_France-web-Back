@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { verifyJWT, handleAuthError } from "@/lib/auth";
+import { verifyJWT, handleAuthError } from "@/lib/jwt";
 
 export async function GET(req: Request) {
   try {

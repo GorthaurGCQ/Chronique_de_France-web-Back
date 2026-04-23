@@ -7,6 +7,7 @@ import {
   varchar,
   text,
   timestamp,
+  boolean,
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
@@ -124,6 +125,60 @@ export const eventsRelations = relations(events, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+// ---------------------------------------------------------------------------
+// Tables Better Auth (gestion sessions, comptes OAuth, vérifications)
+// ---------------------------------------------------------------------------
+
+export const authUser = pgTable("auth_user", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  image: varchar("image", { length: 512}),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const authSession = pgTable("auth_session", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: varchar("token", { length: 512 }).notNull().unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  ipAddress: varchar("ip_address", { length: 64 }),
+  userAgent: text("user_agent"),
+  userId: varchar("user_id", { length: 36 })
+    .notNull()
+    .references(() => authUser.id, { onDelete: "cascade" }),
+});
+
+export const authAccount = pgTable("auth_account", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  accountId: varchar("account_id", { length: 255 }).notNull(),
+  providerId: varchar("provider_id", { length: 64 }).notNull(),
+  userId: varchar("user_id", { length: 36 })
+    .notNull()
+    .references(() => authUser.id, { onDelete: "cascade" }),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: varchar("scope", { length: 512 }),
+  password: text("password"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const authVerification = pgTable("auth_verification", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  identifier: varchar("identifier", { length: 255 }).notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
 // ---------------------------------------------------------------------------
 // Types inférés depuis les tables

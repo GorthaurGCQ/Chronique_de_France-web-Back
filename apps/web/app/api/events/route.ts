@@ -4,7 +4,7 @@
 import { eq, or, ilike, and, asc, count, SQL } from "drizzle-orm";
 import { db } from "@/db";
 import { events, users } from "@/db/schema";
-import { verifyJWT, requireRole, handleAuthError } from "@/lib/auth";
+import { verifyJWT, requireRole, handleAuthError } from "@/lib/jwt";
 import { parseBody, createEventSchema, eventQuerySchema } from "@/lib/validation";
 
 // ---------------------------------------------------------------------------

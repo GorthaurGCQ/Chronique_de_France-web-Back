@@ -1,15 +1,88 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { signIn, signUp } from "@/lib/auth-client";
 import styles from "./connexion.module.css";
 
 type Tab = "connexion" | "inscription";
 
 export default function ConnexionPage() {
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>("connexion");
   const [showPassword, setShowPassword] = useState(false);
+
+  // ── États formulaire connexion ──────────────────────────
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
+
+  // ── États formulaire inscription ────────────────────────
+  const [registerPrenom, setRegisterPrenom] = useState("");
+  const [registerNom, setRegisterNom] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [registerConfirm, setRegisterConfirm] = useState("");
+  const [registerError, setRegisterError] = useState("");
+  const [registerLoading, setRegisterLoading] = useState(false);
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoginError("");
+    setLoginLoading(true);
+    try {
+      const res = await signIn.email({
+        email: loginEmail,
+        password: loginPassword,
+        callbackURL: "/",
+      });
+      if (res.error) {
+        setLoginError(res.error.message ?? "Identifiants incorrects.");
+      } else {
+        router.push("/");
+      }
+    } catch {
+      setLoginError("Une erreur est survenue. Réessayez.");
+    } finally {
+      setLoginLoading(false);
+    }
+  }
+
+  async function handleRegister(e: React.FormEvent) {
+    e.preventDefault();
+    setRegisterError("");
+
+    if (registerPassword !== registerConfirm) {
+      setRegisterError("Les mots de passe ne correspondent pas.");
+      return;
+    }
+    if (registerPassword.length < 8) {
+      setRegisterError("Le mot de passe doit contenir au moins 8 caractères.");
+      return;
+    }
+
+    setRegisterLoading(true);
+    try {
+      const res = await signUp.email({
+        email: registerEmail,
+        password: registerPassword,
+        name: `${registerPrenom} ${registerNom}`.trim(),
+        callbackURL: "/",
+      });
+      if (res.error) {
+        setRegisterError(res.error.message ?? "Erreur lors de la création du compte.");
+      } else {
+        router.push("/");
+      }
+    } catch {
+      setRegisterError("Une erreur est survenue. Réessayez.");
+    } finally {
+      setRegisterLoading(false);
+    }
+  }
 
   return (
     <main className={styles.main}>
@@ -64,7 +137,9 @@ export default function ConnexionPage() {
 
           {/* ── FORMULAIRE CONNEXION ─────────────────────────── */}
           {tab === "connexion" && (
-            <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+            <form className={styles.form} onSubmit={handleLogin}>
+              {loginError && <p className={styles.errorMsg}>{loginError}</p>}
+
               <div className={styles.field}>
                 <label className={styles.label} htmlFor="email-login">
                   Adresse e-mail
@@ -76,6 +151,8 @@ export default function ConnexionPage() {
                   placeholder="votre@email.fr"
                   className={styles.input}
                   required
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
                 />
               </div>
 
@@ -96,6 +173,8 @@ export default function ConnexionPage() {
                     placeholder="••••••••"
                     className={styles.input}
                     required
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
                   />
                   <button
                     type="button"
@@ -117,8 +196,8 @@ export default function ConnexionPage() {
                 <span className={styles.checkboxLabel}>Se souvenir de moi</span>
               </label>
 
-              <button type="submit" className={styles.btnPrimary}>
-                Se connecter
+              <button type="submit" className={styles.btnPrimary} disabled={loginLoading}>
+                {loginLoading ? "Connexion…" : "Se connecter"}
               </button>
 
               <div className={styles.divider}>
@@ -154,7 +233,9 @@ export default function ConnexionPage() {
 
           {/* ── FORMULAIRE INSCRIPTION ───────────────────────── */}
           {tab === "inscription" && (
-            <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+            <form className={styles.form} onSubmit={handleRegister}>
+              {registerError && <p className={styles.errorMsg}>{registerError}</p>}
+
               <div className={styles.fieldRow}>
                 <div className={styles.field}>
                   <label className={styles.label} htmlFor="prenom">Prénom</label>
@@ -165,6 +246,8 @@ export default function ConnexionPage() {
                     placeholder="Jean"
                     className={styles.input}
                     required
+                    value={registerPrenom}
+                    onChange={(e) => setRegisterPrenom(e.target.value)}
                   />
                 </div>
                 <div className={styles.field}>
@@ -176,6 +259,8 @@ export default function ConnexionPage() {
                     placeholder="Dupont"
                     className={styles.input}
                     required
+                    value={registerNom}
+                    onChange={(e) => setRegisterNom(e.target.value)}
                   />
                 </div>
               </div>
@@ -191,6 +276,8 @@ export default function ConnexionPage() {
                   placeholder="votre@email.fr"
                   className={styles.input}
                   required
+                  value={registerEmail}
+                  onChange={(e) => setRegisterEmail(e.target.value)}
                 />
               </div>
 
@@ -207,6 +294,8 @@ export default function ConnexionPage() {
                     className={styles.input}
                     required
                     minLength={8}
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
                   />
                   <button
                     type="button"
@@ -234,6 +323,8 @@ export default function ConnexionPage() {
                   placeholder="••••••••"
                   className={styles.input}
                   required
+                  value={registerConfirm}
+                  onChange={(e) => setRegisterConfirm(e.target.value)}
                 />
               </div>
 
@@ -247,8 +338,8 @@ export default function ConnexionPage() {
                 </span>
               </label>
 
-              <button type="submit" className={styles.btnPrimary}>
-                Créer mon compte
+              <button type="submit" className={styles.btnPrimary} disabled={registerLoading}>
+                {registerLoading ? "Création…" : "Créer mon compte"}
               </button>
 
               <p className={styles.switchText}>
