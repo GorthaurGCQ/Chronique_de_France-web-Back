@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./connexion.module.css";
 
 type Tab = "connexion" | "inscription";
@@ -22,10 +23,15 @@ export default function ConnexionPage() {
         {/* Logo + accroche */}
         <div className={styles.brand}>
           <Link href="/" className={styles.logoLink}>
-            <svg width="28" height="28" viewBox="0 0 20 20" aria-hidden="true">
-              <polygon points="10,1 19,10 10,19 1,10" fill="#b8933a" />
-            </svg>
-            <span className={styles.logoText}>CHRONIQUES DE FRANCE</span>
+            <Image
+              src="/CDF_L.png"
+              alt="Chronique de France"
+              height={52}
+              width={180}
+              style={{ width: "auto", height: "52px", objectFit: "contain" }}
+              priority
+            />
+            <span className={styles.logoText}>Chronique de France</span>
           </Link>
           <p className={styles.tagline}>
             {tab === "connexion"

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import styles from "./Navbar.module.css";
 
@@ -15,22 +16,41 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY < 10) {
+        setVisible(true);
+      } else if (currentY > lastScrollY.current) {
+        setVisible(false);
+        setIsOpen(false);
+      } else {
+        setVisible(true);
+      }
+      lastScrollY.current = currentY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${visible ? styles.headerVisible : styles.headerHidden}`}>
       <nav className={styles.nav}>
         {/* Logo */}
         <Link href="/" className={styles.logo}>
-          <svg
-            className={styles.logoIcon}
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            aria-hidden="true"
-          >
-            <polygon points="10,1 19,10 10,19 1,10" fill="#b8933a" />
-          </svg>
-          <span>CHRONIQUES DE FRANCE</span>
+          <Image
+            src="/CDF_L.png"
+            alt="Chronique de France"
+            height={44}
+            width={160}
+            style={{ width: "auto", height: "44px", objectFit: "contain" }}
+            priority
+          />
+          <span className={styles.logoText}>Chronique de France</span>
         </Link>
 
         {/* Liens centre (desktop) */}

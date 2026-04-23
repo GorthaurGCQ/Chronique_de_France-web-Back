@@ -4,6 +4,15 @@
   z-index: 100;
   background: var(--color-white);
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.headerVisible {
+  transform: translateY(0);
+}
+
+.headerHidden {
+  transform: translateY(-100%);
 }
 
 .nav {
@@ -21,19 +30,29 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-display, serif);
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--color-navy);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  white-space: nowrap;
   flex-shrink: 0;
+  margin-right: auto;
+  transition: opacity 0.2s;
 }
 
-.logoIcon {
-  flex-shrink: 0;
+.logo:hover {
+  opacity: 0.85;
+}
+
+.logoText {
+  font-family: var(--font-display, serif);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.logo img {
+  height: 44px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
 }
 
 /* Nav links */
@@ -165,6 +184,15 @@
 
 /* ─── Responsive ─────────────────────────────────── */
 @media (max-width: 768px) {
+  .logo img {
+    height: 36px;
+    max-width: 130px;
+  }
+
+  .logoText {
+    display: none;
+  }
+
   .hamburger {
     display: flex;
   }

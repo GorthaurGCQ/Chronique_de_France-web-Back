@@ -1,16 +1,41 @@
 .hero {
-  background-color: var(--color-navy);
-  padding: 4rem 2rem 5rem;
+  position: relative;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 2rem;
+  overflow: hidden;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 20, 45, 0.62);
+  z-index: 1;
 }
 
 .container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
   max-width: 860px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  justify-content: space-between;
+  gap: 0;
   text-align: center;
+  min-height: 100%;
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: auto;
+  padding-top: 12rem;
 }
 
 /* Badge */
@@ -26,41 +51,6 @@
   border-radius: 4px;
 }
 
-/* Image placeholder */
-.imagePlaceholder {
-  width: 100%;
-  max-width: 560px;
-  height: 180px;
-  background: linear-gradient(160deg, #1e3a5f 0%, #0d1929 100%);
-  border-radius: 16px;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-}
-
-.castleSvg {
-  width: 100%;
-  height: auto;
-}
-
-/* Title */
-.title {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-family: var(--font-display, serif);
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  font-weight: 900;
-  line-height: 1.15;
-}
-
-.titleWhite {
-  color: var(--color-white);
-}
-
-.titleGold {
-  color: var(--color-gold);
-}
 
 /* Subtitle */
 .subtitle {
@@ -112,11 +102,12 @@
 /* ─── Responsive ─────────────────────────────────── */
 @media (max-width: 768px) {
   .hero {
-    padding: 3rem 1.25rem 4rem;
+    min-height: 420px;
+    padding: 3rem 1.25rem 3rem;
   }
 
-  .imagePlaceholder {
-    height: 140px;
+  .bottom {
+    padding-top: 8rem;
   }
 
   .actions {
