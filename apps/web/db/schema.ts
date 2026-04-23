@@ -24,10 +24,37 @@ export const resourceTypeEnum = pgEnum("resource_type", [
   "DOCUMENT_EDUCATIF",
   "PUBLICATION",
 ]);
+export const regionEnum = pgEnum("region", [
+  "NATIONAL",
+  "AUVERGNE_RHONE_ALPES",
+  "BOURGOGNE_FRANCHE_COMTE",
+  "BRETAGNE",
+  "CENTRE_VAL_DE_LOIRE",
+  "CORSE",
+  "GRAND_EST",
+  "HAUTS_DE_FRANCE",
+  "ILE_DE_FRANCE",
+  "NORMANDIE",
+  "NOUVELLE_AQUITAINE",
+  "OCCITANIE",
+  "PAYS_DE_LA_LOIRE",
+  "PROVENCE_ALPES_COTE_AZUR",
+]);
+export const timelineEnum = pgEnum("timeline", [
+  "ANTIQUITE",
+  "MOYEN_AGE",
+  "RENAISSANCE",
+  "ANCIEN_REGIME",
+  "REVOLUTION",
+  "XIXE_SIECLE",
+  "CONTEMPORAIN",
+]);
 
 // Types TypeScript dérivés des enums
 export type Role = (typeof roleEnum.enumValues)[number];
 export type ResourceType = (typeof resourceTypeEnum.enumValues)[number];
+export type Region = (typeof regionEnum.enumValues)[number];
+export type Timeline = (typeof timelineEnum.enumValues)[number];
 
 // ---------------------------------------------------------------------------
 // Table : users
@@ -66,6 +93,8 @@ export const resources = pgTable(
     description: text("description").notNull(),
     contenu: text("contenu").notNull(),
     type: resourceTypeEnum().notNull(),
+    region: regionEnum().notNull().default("NATIONAL"),
+    timeline: timelineEnum().notNull(),
     authorId: varchar("author_id", { length: 36 })
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),

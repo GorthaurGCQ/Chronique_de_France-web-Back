@@ -3,7 +3,7 @@
 
 import { eq, and, or, ilike, desc, count, SQL } from "drizzle-orm";
 import { db } from "@/db";
-import { resources, users } from "@/db/schema";
+import { resources, authUser } from "@/db/schema";
 import type { ResourceType } from "@/db/schema";
 import { verifyJWT, requireRole, handleAuthError } from "@/lib/jwt";
 import { parseBody, createResourceSchema, resourceQuerySchema } from "@/lib/validation";
@@ -55,17 +55,15 @@ export async function GET(req: Request) {
           description: resources.description,
           contenu: resources.contenu,
           type: resources.type,
+          region: resources.region,
+          timeline: resources.timeline,
           authorId: resources.authorId,
           publishedAt: resources.publishedAt,
           updatedAt: resources.updatedAt,
-          author: {
-            id: users.id,
-            nom: users.nom,
-            email: users.email,
-          },
+          authorName: authUser.name,
         })
         .from(resources)
-        .leftJoin(users, eq(resources.authorId, users.id))
+        .leftJoin(authUser, eq(resources.authorId, authUser.id))
         .where(where)
         .orderBy(desc(resources.publishedAt))
         .limit(limit)

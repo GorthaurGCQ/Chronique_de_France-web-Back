@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
+import { db } from "@/db";
+import { resources, authUser } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
 import CarteInteractive from "@/components/CarteInteractive/CarteInteractive";
+import ResourceCard from "@/components/ResourceCard";
+import type { ResourceCardData } from "@/components/ResourceCard";
 import styles from "./bibliotheque.module.css";
 
 export const metadata: Metadata = {
@@ -8,7 +13,36 @@ export const metadata: Metadata = {
     "Accédez aux ressources pédagogiques de la Fondation : chronologies, fiches thématiques, documents éducatifs et publications, classées par région.",
 };
 
-export default function BibliothequePage() {
+async function getResources(): Promise<ResourceCardData[]> {
+  try {
+    const rows = await db
+      .select({
+        id: resources.id,
+        titre: resources.titre,
+        description: resources.description,
+        contenu: resources.contenu,
+        type: resources.type,
+        region: resources.region,
+        timeline: resources.timeline,
+        publishedAt: resources.publishedAt,
+        authorName: authUser.name,
+      })
+      .from(resources)
+      .leftJoin(authUser, eq(resources.authorId, authUser.id))
+      .orderBy(desc(resources.publishedAt));
+
+    return rows.map((r) => ({
+      ...r,
+      publishedAt: r.publishedAt.toISOString(),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export default async function BibliothequePage() {
+  const resourceList = await getResources();
+
   return (
     <main className={styles.main}>
       {/* En-tête */}
@@ -25,6 +59,26 @@ export default function BibliothequePage() {
       {/* Carte interactive */}
       <section className={styles.mapSection}>
         <CarteInteractive />
+      </section>
+
+      {/* Grille de ressources */}
+      <section className={styles.resourcesSection}>
+        <div className={styles.resourcesHeader}>
+          <h2 className={styles.resourcesTitle}>Toutes les ressources</h2>
+          <span className={styles.resourcesCount}>{resourceList.length} ressource{resourceList.length !== 1 ? "s" : ""}</span>
+        </div>
+
+        {resourceList.length === 0 ? (
+          <div className={styles.empty}>
+            <p>Aucune ressource publiée pour le moment.</p>
+          </div>
+        ) : (
+          <div className={styles.grid}>
+            {resourceList.map((resource) => (
+              <ResourceCard key={resource.id} resource={resource} />
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );

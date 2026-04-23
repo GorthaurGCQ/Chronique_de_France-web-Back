@@ -53,6 +53,48 @@
   justify-content: center;
 }
 
+/* ─── Section ressources ─────────────────────────── */
+.resourcesSection {
+  padding: 3rem 2rem 5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.resourcesHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.resourcesTitle {
+  font-family: var(--font-display, serif);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-navy);
+  margin: 0;
+}
+
+.resourcesCount {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #9ca3af;
+  font-size: 0.95rem;
+}
+
 /* ─── Responsive ─────────────────────────────────── */
 @media (max-width: 768px) {
   .header {
@@ -60,5 +102,11 @@
   }
   .mapSection {
     padding: 2.5rem 1rem 3.5rem;
+  }
+  .resourcesSection {
+    padding: 2rem 1rem 3rem;
+  }
+  .grid {
+    grid-template-columns: 1fr;
   }
 }
