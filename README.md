@@ -1,1 +1,1 @@
-﻿# Chronique de France - Monorepo
+﻿# Chronique de France
