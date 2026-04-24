@@ -9,6 +9,7 @@ export type ResourceCardData = {
   type: string;
   region: string | null;
   timeline: string | null;
+  domaine: string | null;
   publishedAt: string;
   authorName: string | null;
 };

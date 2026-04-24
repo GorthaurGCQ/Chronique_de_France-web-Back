@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { resources, authUser } from "@/db/schema";
+import { resources, authUser, type Domaine } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { headers } from "next/headers";
 
@@ -18,6 +18,7 @@ export async function GET() {
       type: resources.type,
       region: resources.region,
       timeline: resources.timeline,
+      domaine: resources.domaine,
       publishedAt: resources.publishedAt,
       authorName: authUser.name,
     })
@@ -36,9 +37,9 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { titre, description, contenu, type, region, timeline } = body;
+    const { titre, description, contenu, type, region, timeline, domaine } = body;
 
-    if (!titre || !description || !contenu || !type || !region || !timeline) {
+    if (!titre || !description || !contenu || !type || !region || !timeline || !domaine) {
       return Response.json({ success: false, message: "Tous les champs sont requis." }, { status: 400 });
     }
 
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
         type,
         region,
         timeline,
+        domaine: domaine as Domaine,
         authorId: session.user.id,
       })
       .returning({ id: resources.id, titre: resources.titre });

@@ -10,6 +10,7 @@ type Resource = {
   type: string;
   region: string | null;
   timeline: string | null;
+  domaine: string | null;
   publishedAt: string;
   authorName: string | null;
 };
@@ -41,12 +42,30 @@ const TIMELINES = [
   { value: "CONTEMPORAIN", label: "Contemporain (1914 – auj.)" },
 ];
 
+const DOMAINES = [
+  { value: "PATRIMOINE_HISTOIRE",  label: "Patrimoine & Histoire" },
+  { value: "CULTURE_TRADITIONS",   label: "Culture & Traditions" },
+  { value: "ARCHITECTURE",         label: "Architecture & Patrimoine Bâti" },
+  { value: "GEOGRAPHIE",           label: "Géographie & Territoires" },
+  { value: "FIGURES_HISTORIQUES",  label: "Figures Historiques" },
+  { value: "EVENEMENTS_MARQUANTS", label: "Événements Marquants" },
+];
+
 const TYPES = [
   { value: "CHRONOLOGIE", label: "Chronologie" },
   { value: "FICHE_THEMATIQUE", label: "Fiche thématique" },
   { value: "DOCUMENT_EDUCATIF", label: "Document éducatif" },
   { value: "PUBLICATION", label: "Publication" },
 ];
+
+const DOMAINE_LABELS: Record<string, string> = {
+  PATRIMOINE_HISTOIRE:  "Patrimoine & Histoire",
+  CULTURE_TRADITIONS:   "Culture & Traditions",
+  ARCHITECTURE:         "Architecture & Patrimoine Bâti",
+  GEOGRAPHIE:           "Géographie & Territoires",
+  FIGURES_HISTORIQUES:  "Figures Historiques",
+  EVENEMENTS_MARQUANTS: "Événements Marquants",
+};
 
 const TYPE_LABELS: Record<string, string> = {
   CHRONOLOGIE: "Chronologie",
@@ -95,6 +114,7 @@ export default function AdminRessources() {
     contenu: "",
     region: "NATIONAL",
     timeline: "ANTIQUITE",
+    domaine: "PATRIMOINE_HISTOIRE",
     type: "CHRONOLOGIE",
   });
 
@@ -123,7 +143,7 @@ export default function AdminRessources() {
 
     if (data.success) {
       setMessage({ type: "success", text: `Ressource "${data.data.titre}" publiée avec succès.` });
-      setForm({ titre: "", description: "", contenu: "", region: "NATIONAL", timeline: "ANTIQUITE", type: "CHRONOLOGIE" });
+      setForm({ titre: "", description: "", contenu: "", region: "NATIONAL", timeline: "ANTIQUITE", domaine: "PATRIMOINE_HISTOIRE", type: "CHRONOLOGIE" });
       await fetchResources();
     } else {
       setMessage({ type: "error", text: data.message });
@@ -202,6 +222,18 @@ export default function AdminRessources() {
               </select>
             </div>
             <div className={styles.formField}>
+              <label className={styles.formLabel}>Domaine</label>
+              <select
+                className={styles.formSelect}
+                value={form.domaine}
+                onChange={(e) => setForm({ ...form, domaine: e.target.value })}
+              >
+                {DOMAINES.map((d) => (
+                  <option key={d.value} value={d.value}>{d.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formField}>
               <label className={styles.formLabel}>Type de ressource</label>
               <select
                 className={styles.formSelect}
@@ -266,6 +298,7 @@ export default function AdminRessources() {
                   <th>Titre</th>
                   <th>Région</th>
                   <th>Période</th>
+                  <th>Domaine</th>
                   <th>Type</th>
                   <th>Auteur</th>
                   <th>Publié le</th>
@@ -278,6 +311,7 @@ export default function AdminRessources() {
                     <td style={{ fontWeight: 600 }}>{r.titre}</td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{REGION_LABELS[r.region ?? ""] ?? r.region ?? "—"}</td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{TIMELINE_LABELS[r.timeline ?? ""] ?? r.timeline ?? "—"}</td>
+                    <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{DOMAINE_LABELS[r.domaine ?? ""] ?? r.domaine ?? "—"}</td>
                     <td>
                       <span className={styles.roleUser} style={{ background: "#f0fdf4", color: "#15803d" }}>
                         {TYPE_LABELS[r.type] ?? r.type}

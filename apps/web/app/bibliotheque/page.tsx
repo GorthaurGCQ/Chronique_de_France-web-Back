@@ -3,8 +3,8 @@ import { db } from "@/db";
 import { resources, authUser } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import CarteInteractive from "@/components/CarteInteractive/CarteInteractive";
-import ResourceCard from "@/components/ResourceCard";
 import type { ResourceCardData } from "@/components/ResourceCard";
+import BibliothequeContent from "./BibliothequeContent";
 import styles from "./bibliotheque.module.css";
 
 export const metadata: Metadata = {
@@ -24,11 +24,13 @@ async function getResources(): Promise<ResourceCardData[]> {
         type: resources.type,
         region: resources.region,
         timeline: resources.timeline,
+        domaine: resources.domaine,
         publishedAt: resources.publishedAt,
         authorName: authUser.name,
       })
       .from(resources)
       .leftJoin(authUser, eq(resources.authorId, authUser.id))
+      .where(eq(resources.region, "NATIONAL"))
       .orderBy(desc(resources.publishedAt));
 
     return rows.map((r) => ({
@@ -61,24 +63,15 @@ export default async function BibliothequePage() {
         <CarteInteractive />
       </section>
 
-      {/* Grille de ressources */}
+      {/* Ressources nationales avec filtres domaine + frise */}
       <section className={styles.resourcesSection}>
         <div className={styles.resourcesHeader}>
-          <h2 className={styles.resourcesTitle}>Toutes les ressources</h2>
-          <span className={styles.resourcesCount}>{resourceList.length} ressource{resourceList.length !== 1 ? "s" : ""}</span>
+          <h2 className={styles.resourcesTitle}>Ressources — France entière</h2>
+          <span className={styles.resourcesCount}>
+            {resourceList.length} ressource{resourceList.length !== 1 ? "s" : ""}
+          </span>
         </div>
-
-        {resourceList.length === 0 ? (
-          <div className={styles.empty}>
-            <p>Aucune ressource publiée pour le moment.</p>
-          </div>
-        ) : (
-          <div className={styles.grid}>
-            {resourceList.map((resource) => (
-              <ResourceCard key={resource.id} resource={resource} />
-            ))}
-          </div>
-        )}
+        <BibliothequeContent resources={resourceList} />
       </section>
     </main>
   );
