@@ -30,6 +30,7 @@
 .logo {
   display: flex;
   align-items: center;
+  gap: 0.6rem;
   flex-shrink: 0;
   margin-right: auto;
   transition: opacity 0.2s;

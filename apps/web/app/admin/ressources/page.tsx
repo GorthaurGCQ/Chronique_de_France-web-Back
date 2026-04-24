@@ -1,18 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "../admin.module.css";
+import RichTextEditor from "@/components/RichTextEditor";
 
 type Resource = {
   id: string;
   titre: string;
   description: string;
+  contenu: string;
   type: string;
   region: string | null;
   timeline: string | null;
   domaine: string | null;
+  mediaUrl: string | null;
   publishedAt: string;
   authorName: string | null;
+};
+
+const EMPTY_FORM = {
+  titre: "",
+  description: "",
+  contenu: "",
+  region: "NATIONAL",
+  timeline: "ANTIQUITE",
+  domaine: "PATRIMOINE_HISTOIRE",
+  type: "CHRONOLOGIE",
+  mediaUrl: "",
 };
 
 const REGIONS = [
@@ -102,21 +116,16 @@ const TIMELINE_LABELS: Record<string, string> = {
 };
 
 export default function AdminRessources() {
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [resources, setResources]     = useState<Resource[]>([]);
+  const [loading, setLoading]         = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [message, setMessage]         = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  const [form, setForm] = useState({
-    titre: "",
-    description: "",
-    contenu: "",
-    region: "NATIONAL",
-    timeline: "ANTIQUITE",
-    domaine: "PATRIMOINE_HISTOIRE",
-    type: "CHRONOLOGIE",
-  });
+  // null = mode création, string = ID de la ressource en cours d'édition
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const formRef = useRef<HTMLDivElement>(null);
 
   async function fetchResources() {
     const res = await fetch("/api/admin/resources");
@@ -125,25 +134,55 @@ export default function AdminRessources() {
     setLoading(false);
   }
 
-  useEffect(() => {
-    fetchResources();
-  }, []);
+  useEffect(() => { fetchResources(); }, []);
+
+  // Passer en mode édition
+  function startEdit(r: Resource) {
+    setEditingId(r.id);
+    setForm({
+      titre:       r.titre,
+      description: r.description,
+      contenu:     r.contenu,
+      region:      r.region      ?? "NATIONAL",
+      timeline:    r.timeline    ?? "ANTIQUITE",
+      domaine:     r.domaine     ?? "PATRIMOINE_HISTOIRE",
+      type:        r.type        ?? "CHRONOLOGIE",
+      mediaUrl:    r.mediaUrl    ?? "",
+    });
+    setMessage(null);
+    // Scroll vers le formulaire
+    setTimeout(() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  }
+
+  // Annuler l'édition → retour au mode création
+  function cancelEdit() {
+    setEditingId(null);
+    setForm(EMPTY_FORM);
+    setMessage(null);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitLoading(true);
     setMessage(null);
 
+    const isEditing = editingId !== null;
     const res = await fetch("/api/admin/resources", {
-      method: "POST",
+      method: isEditing ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(isEditing ? { resourceId: editingId, ...form } : form),
     });
     const data = await res.json();
 
     if (data.success) {
-      setMessage({ type: "success", text: `Ressource "${data.data.titre}" publiée avec succès.` });
-      setForm({ titre: "", description: "", contenu: "", region: "NATIONAL", timeline: "ANTIQUITE", domaine: "PATRIMOINE_HISTOIRE", type: "CHRONOLOGIE" });
+      setMessage({
+        type: "success",
+        text: isEditing
+          ? `Ressource "${data.data.titre}" modifiée avec succès.`
+          : `Ressource "${data.data.titre}" publiée avec succès.`,
+      });
+      setEditingId(null);
+      setForm(EMPTY_FORM);
       await fetchResources();
     } else {
       setMessage({ type: "error", text: data.message });
@@ -161,6 +200,7 @@ export default function AdminRessources() {
     });
     const data = await res.json();
     if (data.success) {
+      if (editingId === resourceId) cancelEdit();
       await fetchResources();
     } else {
       setMessage({ type: "error", text: data.message });
@@ -181,9 +221,19 @@ export default function AdminRessources() {
         <p className={styles.pageSubtitle}>Publier et gérer les ressources de la bibliothèque</p>
       </div>
 
-      {/* Formulaire d'ajout */}
-      <div className={styles.formCard}>
-        <h2 className={styles.formTitle}>Ajouter une ressource</h2>
+      {/* ── Formulaire création / édition ── */}
+      <div className={styles.formCard} ref={formRef}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+          <h2 className={styles.formTitle} style={{ margin: 0 }}>
+            {editingId ? `Modifier la ressource` : "Ajouter une ressource"}
+          </h2>
+          {editingId && (
+            <button type="button" onClick={cancelEdit} className={styles.btnAction}>
+              ✕ Annuler
+            </button>
+          )}
+        </div>
+
         <form onSubmit={handleSubmit}>
           <div className={styles.formGrid}>
             <div className={`${styles.formField} ${styles.formFieldFull}`}>
@@ -258,12 +308,25 @@ export default function AdminRessources() {
             </div>
             <div className={`${styles.formField} ${styles.formFieldFull}`}>
               <label className={styles.formLabel}>Contenu</label>
-              <textarea
-                className={styles.formTextarea}
-                placeholder="Contenu complet de la ressource…"
-                required
+              <RichTextEditor
                 value={form.contenu}
-                onChange={(e) => setForm({ ...form, contenu: e.target.value })}
+                onChange={(html) => setForm({ ...form, contenu: html })}
+                placeholder="Rédigez le contenu complet de la ressource…"
+              />
+            </div>
+            <div className={`${styles.formField} ${styles.formFieldFull}`}>
+              <label className={styles.formLabel}>
+                Lien média{" "}
+                <span style={{ fontWeight: 400, color: "#9ca3af" }}>
+                  (optionnel — YouTube, Google Drive, lien direct MP3/MP4…)
+                </span>
+              </label>
+              <input
+                type="url"
+                className={styles.formInput}
+                placeholder="https://…"
+                value={form.mediaUrl}
+                onChange={(e) => setForm({ ...form, mediaUrl: e.target.value })}
               />
             </div>
           </div>
@@ -274,13 +337,22 @@ export default function AdminRessources() {
             </p>
           )}
 
-          <button type="submit" className={styles.btnSubmit} disabled={submitLoading}>
-            {submitLoading ? "Publication…" : "Publier la ressource"}
-          </button>
+          <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
+            <button type="submit" className={styles.btnSubmit} disabled={submitLoading}>
+              {submitLoading
+                ? (editingId ? "Enregistrement…" : "Publication…")
+                : (editingId ? "Enregistrer les modifications" : "Publier la ressource")}
+            </button>
+            {editingId && (
+              <button type="button" className={styles.btnAction} onClick={cancelEdit}>
+                Annuler
+              </button>
+            )}
+          </div>
         </form>
       </div>
 
-      {/* Liste des ressources */}
+      {/* ── Liste des ressources ── */}
       <div className={styles.tableCard}>
         <div className={styles.tableHeader}>
           <h2 className={styles.tableTitle}>Ressources publiées ({resources.length})</h2>
@@ -302,13 +374,18 @@ export default function AdminRessources() {
                   <th>Type</th>
                   <th>Auteur</th>
                   <th>Publié le</th>
-                  <th>Action</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {resources.map((r) => (
-                  <tr key={r.id}>
-                    <td style={{ fontWeight: 600 }}>{r.titre}</td>
+                  <tr key={r.id} style={editingId === r.id ? { background: "rgba(184,147,58,0.06)" } : {}}>
+                    <td style={{ fontWeight: 600 }}>
+                      {r.titre}
+                      {r.mediaUrl && (
+                        <span title="Contient un lien média" style={{ marginLeft: "0.4rem", fontSize: "0.8rem" }}>🎬</span>
+                      )}
+                    </td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{REGION_LABELS[r.region ?? ""] ?? r.region ?? "—"}</td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{TIMELINE_LABELS[r.timeline ?? ""] ?? r.timeline ?? "—"}</td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{DOMAINE_LABELS[r.domaine ?? ""] ?? r.domaine ?? "—"}</td>
@@ -319,7 +396,14 @@ export default function AdminRessources() {
                     </td>
                     <td style={{ color: "#6b7280" }}>{r.authorName ?? "—"}</td>
                     <td style={{ color: "#6b7280" }}>{formatDate(r.publishedAt)}</td>
-                    <td>
+                    <td style={{ display: "flex", gap: "0.5rem" }}>
+                      <button
+                        className={styles.btnAction}
+                        onClick={() => startEdit(r)}
+                        disabled={editingId === r.id}
+                      >
+                        {editingId === r.id ? "En cours…" : "Modifier"}
+                      </button>
                       <button
                         className={`${styles.btnAction} ${styles.btnActionDanger}`}
                         disabled={deleteLoading === r.id}

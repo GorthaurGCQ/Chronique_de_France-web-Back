@@ -163,6 +163,7 @@ export const resources = pgTable(
     region: regionEnum().notNull().default("NATIONAL"),
     timeline: timelineEnum().notNull(),
     domaine: domaineEnum().notNull().default("PATRIMOINE_HISTOIRE"),
+    mediaUrl: varchar("media_url", { length: 1024 }),
     authorId: varchar("author_id", { length: 36 })
       .notNull()
       .references(() => authUser.id, { onDelete: "cascade" }),

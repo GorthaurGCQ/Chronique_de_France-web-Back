@@ -12,15 +12,17 @@ export async function GET() {
 
   const list = await db
     .select({
-      id: resources.id,
-      titre: resources.titre,
+      id:          resources.id,
+      titre:       resources.titre,
       description: resources.description,
-      type: resources.type,
-      region: resources.region,
-      timeline: resources.timeline,
-      domaine: resources.domaine,
+      contenu:     resources.contenu,
+      type:        resources.type,
+      region:      resources.region,
+      timeline:    resources.timeline,
+      domaine:     resources.domaine,
+      mediaUrl:    resources.mediaUrl,
       publishedAt: resources.publishedAt,
-      authorName: authUser.name,
+      authorName:  authUser.name,
     })
     .from(resources)
     .leftJoin(authUser, eq(resources.authorId, authUser.id))
@@ -37,7 +39,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { titre, description, contenu, type, region, timeline, domaine } = body;
+    const { titre, description, contenu, type, region, timeline, domaine, mediaUrl } = body;
 
     if (!titre || !description || !contenu || !type || !region || !timeline || !domaine) {
       return Response.json({ success: false, message: "Tous les champs sont requis." }, { status: 400 });
@@ -53,6 +55,7 @@ export async function POST(req: Request) {
         region,
         timeline,
         domaine: domaine as Domaine,
+        mediaUrl: mediaUrl || null,
         authorId: session.user.id,
       })
       .returning({ id: resources.id, titre: resources.titre });
@@ -60,6 +63,46 @@ export async function POST(req: Request) {
     return Response.json({ success: true, data: resource }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/admin/resources]", err);
+    return Response.json({ success: false, message: "Erreur interne du serveur.", error: String(err) }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session || session.user.role !== "admin") {
+      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const { resourceId, titre, description, contenu, type, region, timeline, domaine, mediaUrl } = body;
+
+    if (!resourceId) {
+      return Response.json({ success: false, message: "ID manquant." }, { status: 400 });
+    }
+    if (!titre || !description || !contenu || !type || !region || !timeline || !domaine) {
+      return Response.json({ success: false, message: "Tous les champs sont requis." }, { status: 400 });
+    }
+
+    const [updated] = await db
+      .update(resources)
+      .set({
+        titre,
+        description,
+        contenu,
+        type,
+        region,
+        timeline,
+        domaine: domaine as Domaine,
+        mediaUrl: mediaUrl || null,
+        updatedAt: new Date(),
+      })
+      .where(eq(resources.id, resourceId))
+      .returning({ id: resources.id, titre: resources.titre });
+
+    return Response.json({ success: true, data: updated });
+  } catch (err) {
+    console.error("[PATCH /api/admin/resources]", err);
     return Response.json({ success: false, message: "Erreur interne du serveur.", error: String(err) }, { status: 500 });
   }
 }

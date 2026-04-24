@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import type { RegionCategorie } from "@/data/regionsContent";
 import styles from "./region.module.css";
 
@@ -230,13 +231,13 @@ export default function RegionFriseEtCards({
                 <p className={styles.cardDescription}>{card.description}</p>
                 <div className={styles.cardFooter}>
                   <span className={styles.cardReadTime}>{card.readTime}</span>
-                  <button
-                    type="button"
+                  <Link
+                    href={`/bibliotheque/${card.id}`}
                     className={styles.cardArrow}
-                    aria-label={`Voir ${card.titre}`}
+                    aria-label={`Lire : ${card.titre}`}
                   >
                     →
-                  </button>
+                  </Link>
                 </div>
               </div>
             </article>
