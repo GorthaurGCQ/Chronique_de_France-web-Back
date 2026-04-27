@@ -1,4 +1,11 @@
 import type { Metadata } from "next";
+import { db } from "@/db";
+import { events, authUser } from "@/db/schema";
+import { eq, gte, lt, desc } from "drizzle-orm";
+import styles from "./evenement.module.css";
+import { UpcomingGrid } from "./EventsClient";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Événements | Chronique de France",
@@ -6,15 +13,115 @@ export const metadata: Metadata = {
     "Consultez l'agenda culturel de la Fondation Chroniques de France : conférences, expositions, ateliers et rencontres.",
 };
 
-export default function EvenementPage() {
+const REGION_LABELS: Record<string, string> = {
+  NATIONAL: "National", AUVERGNE_RHONE_ALPES: "Auvergne-Rhône-Alpes",
+  BOURGOGNE_FRANCHE_COMTE: "Bourgogne-Franche-Comté", BRETAGNE: "Bretagne",
+  CENTRE_VAL_DE_LOIRE: "Centre-Val de Loire", CORSE: "Corse",
+  GRAND_EST: "Grand Est", HAUTS_DE_FRANCE: "Hauts-de-France",
+  ILE_DE_FRANCE: "Île-de-France", NORMANDIE: "Normandie",
+  NOUVELLE_AQUITAINE: "Nouvelle-Aquitaine", OCCITANIE: "Occitanie",
+  PAYS_DE_LA_LOIRE: "Pays de la Loire", PROVENCE_ALPES_COTE_AZUR: "Provence-Alpes-Côte d'Azur",
+};
+
+const fields = {
+  id:           events.id,
+  titre:        events.titre,
+  description:  events.description,
+  lieu:         events.lieu,
+  date:         events.date,
+  thumbnailUrl: events.thumbnailUrl,
+  region:       events.region,
+  domaine:      events.domaine,
+  authorName:   authUser.name,
+};
+
+export default async function EvenementPage() {
+  const now = new Date();
+
+  const [upcoming, past] = await Promise.all([
+    db.select(fields).from(events)
+      .leftJoin(authUser, eq(events.organisateurId, authUser.id))
+      .where(gte(events.date, now))
+      .orderBy(events.date),
+
+    db.select(fields).from(events)
+      .leftJoin(authUser, eq(events.organisateurId, authUser.id))
+      .where(lt(events.date, now))
+      .orderBy(desc(events.date))
+      .limit(6),
+  ]);
+
+  // Sérialiser les dates en string pour les passer au Client Component
+  const upcomingSerialized = upcoming.map((e) => ({
+    ...e,
+    date: e.date instanceof Date ? e.date.toISOString() : String(e.date),
+  }));
+  const pastSerialized = past.map((e) => ({
+    ...e,
+    date: e.date instanceof Date ? e.date.toISOString() : String(e.date),
+  }));
+
+  function formatDate(d: Date) {
+    return d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  }
+
   return (
-    <main style={{ padding: "2rem" }}>
-      <h1>Événements</h1>
-      <p>
-        Découvrez l&apos;agenda culturel de la Fondation Chroniques de France :
-        conférences, expositions, ateliers pédagogiques et rencontres
-        scientifiques autour du patrimoine historique français.
-      </p>
+    <main className={styles.page}>
+      {/* ── HERO ── */}
+      <section className={styles.hero}>
+        <div className={styles.heroInner}>
+          <p className={styles.heroEyebrow}>Agenda culturel</p>
+          <h1 className={styles.heroTitle}>Événements</h1>
+          <p className={styles.heroDesc}>
+            Conférences, expositions, ateliers pédagogiques et rencontres scientifiques
+            autour du patrimoine historique français.
+          </p>
+        </div>
+      </section>
+
+      <div className={styles.container}>
+
+        {/* ── À VENIR ── */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.sectionDot} style={{ background: "#22c55e" }} />
+            À venir
+            <span className={styles.sectionCount}>{upcoming.length}</span>
+          </h2>
+          <UpcomingGrid events={upcomingSerialized} />
+        </section>
+
+        {/* ── PASSÉS ── */}
+        {pastSerialized.length > 0 && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>
+              <span className={styles.sectionDot} style={{ background: "#9ca3af" }} />
+              Événements passés
+            </h2>
+            <div className={styles.pastList}>
+              {pastSerialized.map((ev) => {
+                const d = new Date(ev.date);
+                return (
+                  <div key={ev.id} className={styles.pastItem}>
+                    <div className={styles.pastDate}>
+                      <span>{d.getDate()}</span>
+                      <span>{d.toLocaleDateString("fr-FR", { month: "short" })}</span>
+                      <span>{d.getFullYear()}</span>
+                    </div>
+                    <div className={styles.pastBody}>
+                      <p className={styles.pastTitle}>{ev.titre}</p>
+                      <p className={styles.pastMeta}>
+                        {ev.lieu}
+                        {ev.region && ev.region !== "NATIONAL" ? ` · ${REGION_LABELS[ev.region] ?? ev.region}` : ""}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+      </div>
     </main>
   );
 }

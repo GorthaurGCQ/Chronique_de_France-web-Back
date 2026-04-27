@@ -216,8 +216,13 @@ export const events = pgTable("events", {
     .$defaultFn(() => crypto.randomUUID()),
   titre: varchar("titre", { length: 255 }).notNull(),
   description: text("description").notNull(),
+  contenu: text("contenu").notNull().default(""),
   lieu: varchar("lieu", { length: 255 }).notNull(),
   date: timestamp("date").notNull(),
+  thumbnailUrl: varchar("thumbnail_url", { length: 1024 }),
+  region: regionEnum().notNull().default("NATIONAL"),
+  timeline: timelineEnum().notNull().default("CONTEMPORAIN"),
+  domaine: domaineEnum().notNull().default("EVENEMENTS_MARQUANTS"),
   organisateurId: varchar("organisateur_id", { length: 36 })
     .notNull()
     .references(() => authUser.id, { onDelete: "cascade" }),
@@ -227,6 +232,30 @@ export const events = pgTable("events", {
     .notNull()
     .$onUpdate(() => new Date()),
 });
+
+// ---------------------------------------------------------------------------
+// Table : event_registrations
+// ---------------------------------------------------------------------------
+
+export const eventRegistrations = pgTable(
+  "event_registrations",
+  {
+    id: varchar("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    eventId: varchar("event_id", { length: 36 })
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    nom:    varchar("nom",    { length: 100 }).notNull(),
+    prenom: varchar("prenom", { length: 100 }).notNull(),
+    email:  varchar("email",  { length: 255 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("registrations_event_idx").on(table.eventId),
+    uniqueIndex("registrations_event_email_idx").on(table.eventId, table.email),
+  ],
+);
 
 // ---------------------------------------------------------------------------
 // Relations (utilisées par l'API relationnelle de Drizzle)
