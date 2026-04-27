@@ -10,6 +10,7 @@ export type RegionCard = {
   type: string;
   gradient: string;
   readTime: string;
+  thumbnailUrl?: string | null;
 };
 
 export type RegionCategorie = {

@@ -93,13 +93,14 @@ async function enrichContent(
   try {
     const rows = await db
       .select({
-        id:          resources.id,
-        titre:       resources.titre,
-        description: resources.description,
-        contenu:     resources.contenu,
-        type:        resources.type,
-        timeline:    resources.timeline,
-        domaine:     resources.domaine,
+        id:           resources.id,
+        titre:        resources.titre,
+        description:  resources.description,
+        contenu:      resources.contenu,
+        type:         resources.type,
+        timeline:     resources.timeline,
+        domaine:      resources.domaine,
+        thumbnailUrl: resources.thumbnailUrl,
       })
       .from(resources)
       .leftJoin(authUser, eq(resources.authorId, authUser.id))
@@ -125,8 +126,9 @@ async function enrichContent(
         epoque:      TIMELINE_TO_EPOQUE[row.timeline ?? ""] ?? "CONTEMPORAINE",
         epoqueColor: EPOQUE_COLORS[row.timeline ?? ""] ?? "#2d2d2d",
         type:        TYPE_LABELS[row.type ?? ""] ?? row.type ?? "Ressource",
-        gradient:    TIMELINE_GRADIENTS[row.timeline ?? ""] ?? "linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)",
-        readTime:    `${estimateReadingTime(row.contenu)} min de lecture`,
+        gradient:     TIMELINE_GRADIENTS[row.timeline ?? ""] ?? "linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)",
+        readTime:     `${estimateReadingTime(row.contenu)} min de lecture`,
+        thumbnailUrl: row.thumbnailUrl ?? null,
       };
 
       cat.cards.push(card);

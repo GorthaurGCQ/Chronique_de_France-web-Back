@@ -5,30 +5,37 @@ import { eq, desc } from "drizzle-orm";
 import { headers } from "next/headers";
 
 export async function GET() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "admin") {
-    return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session || session.user.role !== "admin") {
+      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
+    }
+
+    const list = await db
+      .select({
+        id:          resources.id,
+        titre:       resources.titre,
+        description: resources.description,
+        contenu:     resources.contenu,
+        type:        resources.type,
+        region:      resources.region,
+        timeline:    resources.timeline,
+        domaine:     resources.domaine,
+      mediaUrl:     resources.mediaUrl,
+      bannerUrl:    resources.bannerUrl,
+      thumbnailUrl: resources.thumbnailUrl,
+      publishedAt:  resources.publishedAt,
+        authorName:  authUser.name,
+      })
+      .from(resources)
+      .leftJoin(authUser, eq(resources.authorId, authUser.id))
+      .orderBy(desc(resources.publishedAt));
+
+    return Response.json({ success: true, data: list });
+  } catch (err) {
+    console.error("[GET /api/admin/resources]", err);
+    return Response.json({ success: false, message: "Erreur interne du serveur.", error: String(err) }, { status: 500 });
   }
-
-  const list = await db
-    .select({
-      id:          resources.id,
-      titre:       resources.titre,
-      description: resources.description,
-      contenu:     resources.contenu,
-      type:        resources.type,
-      region:      resources.region,
-      timeline:    resources.timeline,
-      domaine:     resources.domaine,
-      mediaUrl:    resources.mediaUrl,
-      publishedAt: resources.publishedAt,
-      authorName:  authUser.name,
-    })
-    .from(resources)
-    .leftJoin(authUser, eq(resources.authorId, authUser.id))
-    .orderBy(desc(resources.publishedAt));
-
-  return Response.json({ success: true, data: list });
 }
 
 export async function POST(req: Request) {
@@ -39,7 +46,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { titre, description, contenu, type, region, timeline, domaine, mediaUrl } = body;
+    const { titre, description, contenu, type, region, timeline, domaine, mediaUrl, bannerUrl, thumbnailUrl } = body;
 
     if (!titre || !description || !contenu || !type || !region || !timeline || !domaine) {
       return Response.json({ success: false, message: "Tous les champs sont requis." }, { status: 400 });
@@ -55,7 +62,9 @@ export async function POST(req: Request) {
         region,
         timeline,
         domaine: domaine as Domaine,
-        mediaUrl: mediaUrl || null,
+        mediaUrl:     mediaUrl     || null,
+        bannerUrl:    bannerUrl    || null,
+        thumbnailUrl: thumbnailUrl || null,
         authorId: session.user.id,
       })
       .returning({ id: resources.id, titre: resources.titre });
@@ -75,7 +84,7 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { resourceId, titre, description, contenu, type, region, timeline, domaine, mediaUrl } = body;
+    const { resourceId, titre, description, contenu, type, region, timeline, domaine, mediaUrl, bannerUrl, thumbnailUrl } = body;
 
     if (!resourceId) {
       return Response.json({ success: false, message: "ID manquant." }, { status: 400 });
@@ -93,8 +102,10 @@ export async function PATCH(req: Request) {
         type,
         region,
         timeline,
-        domaine: domaine as Domaine,
-        mediaUrl: mediaUrl || null,
+        domaine:   domaine as Domaine,
+        mediaUrl:     mediaUrl     || null,
+        bannerUrl:    bannerUrl    || null,
+        thumbnailUrl: thumbnailUrl || null,
         updatedAt: new Date(),
       })
       .where(eq(resources.id, resourceId))

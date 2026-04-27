@@ -10,6 +10,7 @@ export type ResourceCardData = {
   region: string | null;
   timeline: string | null;
   domaine: string | null;
+  thumbnailUrl: string | null;
   publishedAt: string;
   authorName: string | null;
 };
@@ -55,8 +56,16 @@ export default function ResourceCard({ resource }: { resource: ResourceCardData 
 
   return (
     <div className={styles.card}>
-      {/* Visuel coloré */}
-      <div className={styles.visual} style={{ background: bgColor }}>
+      {/* Visuel : miniature ou couleur de la période */}
+      <div
+        className={styles.visual}
+        style={
+          resource.thumbnailUrl
+            ? { backgroundImage: `url(${resource.thumbnailUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+            : { background: bgColor }
+        }
+      >
+        {resource.thumbnailUrl && <div className={styles.visualOverlay} aria-hidden="true" />}
         <span className={styles.timelineBadge}>{timelineLabel}</span>
         <button className={styles.bookmarkBtn} aria-label="Marquer comme favori">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

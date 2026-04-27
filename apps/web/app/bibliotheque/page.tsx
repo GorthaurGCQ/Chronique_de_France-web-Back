@@ -24,9 +24,10 @@ async function getResources(): Promise<ResourceCardData[]> {
         type: resources.type,
         region: resources.region,
         timeline: resources.timeline,
-        domaine: resources.domaine,
-        publishedAt: resources.publishedAt,
-        authorName: authUser.name,
+        domaine:      resources.domaine,
+        thumbnailUrl: resources.thumbnailUrl,
+        publishedAt:  resources.publishedAt,
+        authorName:   authUser.name,
       })
       .from(resources)
       .leftJoin(authUser, eq(resources.authorId, authUser.id))

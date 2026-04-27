@@ -208,9 +208,14 @@ export default function RegionFriseEtCards({
               <div className={styles.cardImageWrapper}>
                 <div
                   className={styles.cardImage}
-                  style={{ background: card.gradient }}
+                  style={
+                    card.thumbnailUrl
+                      ? { backgroundImage: `url(${card.thumbnailUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+                      : { background: card.gradient }
+                  }
                   aria-hidden="true"
                 />
+                {card.thumbnailUrl && <div className={styles.cardImageOverlay} aria-hidden="true" />}
                 <span
                   className={styles.cardEpoque}
                   style={{ background: card.epoqueColor }}

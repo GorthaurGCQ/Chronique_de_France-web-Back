@@ -13,7 +13,7 @@
   box-shadow: 0 8px 24px rgba(0,0,0,0.13);
 }
 
-/* Zone colorée en haut */
+/* Zone colorée / photo en haut */
 .visual {
   position: relative;
   height: 160px;
@@ -24,6 +24,8 @@
 }
 
 .timelineBadge {
+  position: relative;
+  z-index: 1;
   background: rgba(0,0,0,0.35);
   color: #fff;
   font-size: 0.68rem;
@@ -35,7 +37,16 @@
   backdrop-filter: blur(4px);
 }
 
+/* Overlay léger quand une miniature photo est présente */
+.visualOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.42) 100%);
+}
+
 .bookmarkBtn {
+  position: relative;
+  z-index: 1;
   background: rgba(255,255,255,0.15);
   border: none;
   border-radius: 8px;

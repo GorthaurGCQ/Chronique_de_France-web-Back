@@ -95,14 +95,15 @@ function estimateReadingTime(contenu: string): number {
 
 function toRegionCard(r: ResourceCardData): RegionCard {
   return {
-    id:          r.id,
-    titre:       r.titre,
-    description: r.description,
-    epoque:      TIMELINE_TO_EPOQUE[r.timeline ?? ""] ?? "CONTEMPORAINE",
-    epoqueColor: EPOQUE_COLORS[r.timeline ?? ""] ?? "#2d2d2d",
-    type:        TYPE_LABELS[r.type] ?? r.type,
-    gradient:    TIMELINE_GRADIENTS[r.timeline ?? ""] ?? "linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)",
-    readTime:    `${estimateReadingTime(r.contenu)} min de lecture`,
+    id:           r.id,
+    titre:        r.titre,
+    description:  r.description,
+    epoque:       TIMELINE_TO_EPOQUE[r.timeline ?? ""] ?? "CONTEMPORAINE",
+    epoqueColor:  EPOQUE_COLORS[r.timeline ?? ""] ?? "#2d2d2d",
+    type:         TYPE_LABELS[r.type] ?? r.type,
+    gradient:     TIMELINE_GRADIENTS[r.timeline ?? ""] ?? "linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)",
+    readTime:     `${estimateReadingTime(r.contenu)} min de lecture`,
+    thumbnailUrl: r.thumbnailUrl ?? null,
   };
 }
 

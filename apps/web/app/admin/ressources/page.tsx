@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import styles from "../admin.module.css";
 import RichTextEditor from "@/components/RichTextEditor";
 
@@ -13,7 +13,9 @@ type Resource = {
   region: string | null;
   timeline: string | null;
   domaine: string | null;
-  mediaUrl: string | null;
+  mediaUrl:     string | null;
+  bannerUrl:    string | null;
+  thumbnailUrl: string | null;
   publishedAt: string;
   authorName: string | null;
 };
@@ -26,7 +28,9 @@ const EMPTY_FORM = {
   timeline: "ANTIQUITE",
   domaine: "PATRIMOINE_HISTOIRE",
   type: "CHRONOLOGIE",
-  mediaUrl: "",
+  mediaUrl:     "",
+  bannerUrl:    "",
+  thumbnailUrl: "",
 };
 
 const REGIONS = [
@@ -126,6 +130,13 @@ export default function AdminRessources() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const formRef = useRef<HTMLDivElement>(null);
+  const bannerInputRef    = useRef<HTMLInputElement>(null);
+  const [bannerUploading, setBannerUploading]     = useState(false);
+  const [bannerError, setBannerError]             = useState<string | null>(null);
+
+  const thumbInputRef     = useRef<HTMLInputElement>(null);
+  const [thumbUploading, setThumbUploading]       = useState(false);
+  const [thumbError, setThumbError]               = useState<string | null>(null);
 
   async function fetchResources() {
     const res = await fetch("/api/admin/resources");
@@ -147,7 +158,9 @@ export default function AdminRessources() {
       timeline:    r.timeline    ?? "ANTIQUITE",
       domaine:     r.domaine     ?? "PATRIMOINE_HISTOIRE",
       type:        r.type        ?? "CHRONOLOGIE",
-      mediaUrl:    r.mediaUrl    ?? "",
+      mediaUrl:     r.mediaUrl     ?? "",
+      bannerUrl:    r.bannerUrl    ?? "",
+      thumbnailUrl: r.thumbnailUrl ?? "",
     });
     setMessage(null);
     // Scroll vers le formulaire
@@ -207,6 +220,36 @@ export default function AdminRessources() {
     }
     setDeleteLoading(null);
   }
+
+  const handleBannerUpload = useCallback(async (file: File) => {
+    setBannerUploading(true);
+    setBannerError(null);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    if (data.success) {
+      setForm((prev) => ({ ...prev, bannerUrl: data.url }));
+    } else {
+      setBannerError(data.message ?? "Erreur lors de l'upload.");
+    }
+    setBannerUploading(false);
+  }, []);
+
+  const handleThumbUpload = useCallback(async (file: File) => {
+    setThumbUploading(true);
+    setThumbError(null);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    if (data.success) {
+      setForm((prev) => ({ ...prev, thumbnailUrl: data.url }));
+    } else {
+      setThumbError(data.message ?? "Erreur lors de l'upload.");
+    }
+    setThumbUploading(false);
+  }, []);
 
   function formatDate(dateStr: string) {
     return new Date(dateStr).toLocaleDateString("fr-FR", {
@@ -328,6 +371,151 @@ export default function AdminRessources() {
                 value={form.mediaUrl}
                 onChange={(e) => setForm({ ...form, mediaUrl: e.target.value })}
               />
+            </div>
+            {/* ── Miniature ── */}
+            <div className={`${styles.formField} ${styles.formFieldFull}`}>
+              <label className={styles.formLabel}>
+                Miniature de la carte{" "}
+                <span style={{ fontWeight: 400, color: "#9ca3af" }}>
+                  (optionnel — JPG, PNG, WebP · max 5 Mo · format recommandé : 400×240 px)
+                </span>
+              </label>
+
+              <div
+                style={{
+                  border: "2px dashed #d4cfc5", borderRadius: "10px", padding: "1.25rem",
+                  textAlign: "center", cursor: "pointer", background: "#faf9f7",
+                  transition: "border-color 0.15s",
+                }}
+                onClick={() => thumbInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files[0];
+                  if (file) handleThumbUpload(file);
+                }}
+              >
+                <input
+                  ref={thumbInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                  style={{ display: "none" }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleThumbUpload(file);
+                  }}
+                />
+                {thumbUploading ? (
+                  <span style={{ color: "#b8933a", fontSize: "0.9rem" }}>⏳ Upload en cours…</span>
+                ) : (
+                  <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>
+                    🖼️ Cliquez ou déposez une image ici
+                  </span>
+                )}
+              </div>
+
+              {thumbError && (
+                <p style={{ color: "#dc2626", fontSize: "0.82rem", marginTop: "0.4rem" }}>{thumbError}</p>
+              )}
+
+              {form.thumbnailUrl && !thumbUploading && (
+                <div style={{ marginTop: "0.75rem", borderRadius: "8px", overflow: "hidden", position: "relative", maxWidth: "220px" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={form.thumbnailUrl}
+                    alt="Aperçu miniature"
+                    style={{ width: "100%", aspectRatio: "5/3", objectFit: "cover", display: "block" }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setForm((p) => ({ ...p, thumbnailUrl: "" }))}
+                    style={{
+                      position: "absolute", top: "6px", right: "6px",
+                      background: "rgba(0,0,0,0.55)", color: "#fff",
+                      border: "none", borderRadius: "6px", padding: "3px 8px",
+                      fontSize: "0.75rem", cursor: "pointer",
+                    }}
+                  >
+                    ✕ Supprimer
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* ── Bannière ── */}
+            <div className={`${styles.formField} ${styles.formFieldFull}`}>
+              <label className={styles.formLabel}>
+                Bannière{" "}
+                <span style={{ fontWeight: 400, color: "#9ca3af" }}>
+                  (optionnel — JPG, PNG, WebP · max 5 Mo · format recommandé : 1320×300 px)
+                </span>
+              </label>
+
+              {/* Zone de dépôt */}
+              <div
+                style={{
+                  border: "2px dashed #d4cfc5",
+                  borderRadius: "10px",
+                  padding: "1.25rem",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  background: "#faf9f7",
+                  transition: "border-color 0.15s",
+                }}
+                onClick={() => bannerInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files[0];
+                  if (file) handleBannerUpload(file);
+                }}
+              >
+                <input
+                  ref={bannerInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                  style={{ display: "none" }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleBannerUpload(file);
+                  }}
+                />
+                {bannerUploading ? (
+                  <span style={{ color: "#b8933a", fontSize: "0.9rem" }}>⏳ Upload en cours…</span>
+                ) : (
+                  <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>
+                    📁 Cliquez ou déposez une image ici
+                  </span>
+                )}
+              </div>
+
+              {bannerError && (
+                <p style={{ color: "#dc2626", fontSize: "0.82rem", marginTop: "0.4rem" }}>{bannerError}</p>
+              )}
+
+              {/* Aperçu + bouton supprimer */}
+              {form.bannerUrl && !bannerUploading && (
+                <div style={{ marginTop: "0.75rem", borderRadius: "8px", overflow: "hidden", position: "relative" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={form.bannerUrl}
+                    alt="Aperçu bannière"
+                    style={{ width: "100%", maxHeight: "140px", objectFit: "cover", display: "block" }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => { setForm((p) => ({ ...p, bannerUrl: "" })); }}
+                    style={{
+                      position: "absolute", top: "6px", right: "6px",
+                      background: "rgba(0,0,0,0.55)", color: "#fff",
+                      border: "none", borderRadius: "6px", padding: "3px 8px",
+                      fontSize: "0.75rem", cursor: "pointer",
+                    }}
+                  >
+                    ✕ Supprimer
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

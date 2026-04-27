@@ -593,6 +593,14 @@
   display: block;
 }
 
+/* Overlay discret quand une miniature photo est présente */
+.cardImageOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.38) 100%);
+  pointer-events: none;
+}
+
 .cardEpoque {
   position: absolute;
   top: 10px;

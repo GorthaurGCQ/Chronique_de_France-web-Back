@@ -83,6 +83,7 @@ async function getResource(id: string) {
         timeline:    resources.timeline,
         domaine:     resources.domaine,
         mediaUrl:    resources.mediaUrl,
+        bannerUrl:   resources.bannerUrl,
         publishedAt: resources.publishedAt,
         authorName:  authUser.name,
       })
@@ -134,9 +135,16 @@ export default async function RessourcePage({ params }: Props) {
       <section className={styles.hero}>
         <div
           className={styles.heroBg}
-          style={{ background: gradient }}
+          style={
+            resource.bannerUrl
+              ? { backgroundImage: `url(${resource.bannerUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+              : { background: gradient }
+          }
           aria-hidden="true"
         />
+        {resource.bannerUrl && (
+          <div className={styles.heroBgOverlay} aria-hidden="true" />
+        )}
         <div className={styles.heroContent}>
           <Link href="/bibliotheque" className={styles.backLink}>
             ← Retour à la bibliothèque

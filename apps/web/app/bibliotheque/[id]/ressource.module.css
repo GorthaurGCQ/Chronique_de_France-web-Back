@@ -19,6 +19,23 @@
   opacity: 0.45;
 }
 
+/* Quand une bannière photo est présente, on force l'opacité à 1 */
+.heroBg[style*="backgroundImage"] {
+  opacity: 1;
+}
+
+/* Overlay sombre pour garantir la lisibilité du texte sur la photo */
+.heroBgOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 18, 40, 0.55) 0%,
+    rgba(10, 18, 40, 0.75) 100%
+  );
+  z-index: 0;
+}
+
 .heroContent {
   position: relative;
   z-index: 1;
