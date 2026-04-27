@@ -593,6 +593,14 @@
   display: block;
 }
 
+/* Étoile favoris positionnée en absolu haut-droite */
+.cardBookmarkAbsolute {
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+}
+
 /* Overlay discret quand une miniature photo est présente */
 .cardImageOverlay {
   position: absolute;

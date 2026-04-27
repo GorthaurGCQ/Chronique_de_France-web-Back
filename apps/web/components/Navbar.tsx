@@ -93,9 +93,9 @@ export default function Navbar() {
             </div>
             {session ? (
               <div className={styles.userMenu}>
-                <Link href="/profil" className={styles.userMenuLink} onClick={() => setIsOpen(false)}>
+                <Link href="/dashboard" className={styles.userMenuLink} onClick={() => setIsOpen(false)}>
                   <span className={styles.avatar}>{userInitial}</span>
-                  <span>{session.user.name}</span>
+                  <span>Dashboard</span>
                 </Link>
                 <button className={styles.btnSignOut} onClick={handleSignOut}>
                   Se déconnecter
@@ -125,9 +125,9 @@ export default function Navbar() {
           </div>
           {session ? (
             <div className={styles.userMenu}>
-              <Link href="/profil" className={styles.userMenuLink}>
+              <Link href="/dashboard" className={styles.userMenuLink}>
                 <span className={styles.avatar}>{userInitial}</span>
-                <span className={styles.userName}>{session.user.name}</span>
+                <span className={styles.userName}>Dashboard</span>
               </Link>
               <button className={styles.btnSignOut} onClick={handleSignOut}>
                 Se déconnecter

@@ -1,0 +1,53 @@
+.wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  backdrop-filter: blur(4px);
+  position: relative;
+  z-index: 1;
+}
+.btn:hover { background: rgba(255,255,255,0.3); }
+.btn:disabled { opacity: 0.6; cursor: default; }
+
+.btnSaved {
+  background: var(--color-gold, #b8933a) !important;
+  color: #fff !important;
+}
+.btnSaved:hover { background: #a07a2a !important; }
+
+/* Tooltip éphémère */
+.tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: fadeInOut 1.8s ease forwards;
+  z-index: 10;
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: translateY(4px); }
+  15%  { opacity: 1; transform: translateY(0); }
+  75%  { opacity: 1; }
+  100% { opacity: 0; }
+}

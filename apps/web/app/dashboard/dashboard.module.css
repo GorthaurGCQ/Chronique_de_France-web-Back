@@ -1,0 +1,408 @@
+/* ════════════════════════════════════════════
+   Dashboard utilisateur
+════════════════════════════════════════════ */
+
+.page {
+  min-height: 100vh;
+  background: var(--color-bg, #f5f3ef);
+  padding: 2.5rem 1rem 4rem;
+}
+
+.inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* ── Loader ── */
+.loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loadingDot {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e0dbd0;
+  border-top-color: var(--color-gold, #b8933a);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Hero ── */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  background: var(--color-navy, #1a2744);
+  border-radius: 18px;
+  padding: 2rem 2.5rem;
+  color: #fff;
+}
+
+.avatarLg {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--color-gold, #b8933a);
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+.heroInfo { display: flex; flex-direction: column; gap: 0.3rem; }
+.heroName  { font-size: 1.6rem; font-weight: 800; margin: 0; }
+.heroEmail { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin: 0; }
+.heroJoin  { font-size: 0.8rem; color: rgba(255,255,255,0.45); margin: 0; }
+
+/* ── Grille principale ── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Carte générique ── */
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-navy, #1a2744);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cardIcon { font-size: 1.1rem; }
+
+.countBadge {
+  margin-left: auto;
+  background: var(--color-navy, #1a2744);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+/* ── Champs de profil ── */
+.fieldRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0ece4;
+}
+.fieldRow:last-child { border-bottom: none; padding-bottom: 0; }
+
+.fieldLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.fieldValue {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: #1a1a1a;
+}
+
+.fieldEdit {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.fieldInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid #d4cfc5;
+  border-radius: 7px;
+  font-size: 0.92rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.fieldInput:focus { border-color: var(--color-gold, #b8933a); }
+
+.btnSave {
+  padding: 0.4rem 0.9rem;
+  background: var(--color-navy, #1a2744);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btnSave:disabled { opacity: 0.55; cursor: default; }
+
+.btnCancel {
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #d4cfc5;
+  border-radius: 7px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.btnEdit {
+  margin-left: auto;
+  padding: 0.3rem 0.7rem;
+  background: transparent;
+  border: 1px solid #d4cfc5;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btnEdit:hover { background: #f5f3ef; border-color: #b8933a; color: #b8933a; }
+
+.nameMsg { font-size: 0.8rem; color: #16a34a; margin: 0; }
+
+.badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 5px;
+  background: #f0ece4;
+  color: #888;
+}
+
+.roleBadge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+}
+.roleBadgeAdmin { background: #fef3c7; color: #92400e; }
+.roleBadgeUser  { background: #eff6ff; color: #1d4ed8; }
+
+/* ── Statistiques ── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 1rem 0.5rem;
+  background: #faf9f7;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-navy, #1a2744);
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ── Actions compte ── */
+.accountActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.btnAccount {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1rem;
+  border-radius: 9px;
+  border: 1px solid #e5e2da;
+  background: #faf9f7;
+  color: #1a1a1a;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btnAccount:hover { background: #f0ece4; border-color: #d4cfc5; }
+
+.btnAccountDanger { color: #dc2626; }
+.btnAccountDanger:hover { background: #fef2f2; border-color: #fca5a5; }
+
+/* ── Liste des favoris ── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 0;
+  text-align: center;
+}
+.emptyMsg  { color: #9ca3af; font-size: 0.9rem; margin: 0; }
+.emptyHint { color: #b8b3a8; font-size: 0.8rem; margin: 0; }
+
+.btnBrowse {
+  padding: 0.55rem 1.25rem;
+  background: var(--color-navy, #1a2744);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.btnBrowse:hover { background: #243460; }
+
+.favList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.favItem {
+  display: flex;
+  gap: 0.9rem;
+  padding: 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #f0ece4;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.favItem:hover { border-color: #d4cfc5; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+.favThumb {
+  width: 80px;
+  height: 56px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.favEpoque {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.favBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.favType {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b8933a;
+}
+
+.favTitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-navy, #1a2744);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.15s;
+}
+.favTitle:hover { color: #b8933a; }
+
+.favDesc {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.favFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.favDate { font-size: 0.7rem; color: #b8b3a8; }
+
+.favRemove {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid #e5e2da;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.favRemove:hover { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr; }
+  .hero { flex-direction: column; text-align: center; padding: 1.5rem; }
+  .statsGrid { grid-template-columns: repeat(3, 1fr); }
+  .heroInfo { align-items: center; }
+}

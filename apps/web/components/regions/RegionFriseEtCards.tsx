@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import type { RegionCategorie } from "@/data/regionsContent";
 import styles from "./region.module.css";
+import BookmarkButton from "@/components/BookmarkButton";
 
 const EPOQUES = [
   { id: "ANTIQUITÉ",     label: "Antiquité",    date: "av. J.-C. – Ve s." },
@@ -222,13 +223,7 @@ export default function RegionFriseEtCards({
                 >
                   {card.epoque}
                 </span>
-                <button
-                  type="button"
-                  className={styles.cardBookmark}
-                  aria-label={`Sauvegarder : ${card.titre}`}
-                >
-                  <IconBookmark />
-                </button>
+                <BookmarkButton resourceId={card.id} className={styles.cardBookmarkAbsolute} />
               </div>
               <div className={styles.cardBody}>
                 <span className={styles.cardType}>{card.type}</span>

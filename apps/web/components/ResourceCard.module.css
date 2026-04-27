@@ -37,6 +37,14 @@
   backdrop-filter: blur(4px);
 }
 
+/* Étoile favoris positionnée en absolu haut-droite */
+.bookmarkAbsolute {
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+}
+
 /* Overlay léger quand une miniature photo est présente */
 .visualOverlay {
   position: absolute;

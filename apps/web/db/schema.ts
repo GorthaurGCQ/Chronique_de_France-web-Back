@@ -79,6 +79,7 @@ export const authUser = pgTable("auth_user", {
   banned: boolean("banned").default(false),
   banReason: varchar("ban_reason", { length: 512 }),
   banExpires: timestamp("ban_expires"),
+  permissions: text("permissions").default("[]"), // JSON array de Permission
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -178,6 +179,29 @@ export const resources = pgTable(
   (table) => [
     index("resources_type_idx").on(table.type),
     index("resources_titre_idx").on(table.titre),
+  ],
+);
+
+// ---------------------------------------------------------------------------
+// Table : favorites
+// ---------------------------------------------------------------------------
+
+export const favorites = pgTable(
+  "favorites",
+  {
+    id: varchar("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: varchar("user_id", { length: 36 })
+      .notNull()
+      .references(() => authUser.id, { onDelete: "cascade" }),
+    resourceId: varchar("resource_id", { length: 36 })
+      .notNull()
+      .references(() => resources.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("favorites_user_resource_idx").on(table.userId, table.resourceId),
   ],
 );
 
