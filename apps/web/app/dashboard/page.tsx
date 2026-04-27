@@ -197,9 +197,19 @@ export default function DashboardPage() {
               <div className={styles.fieldRow}>
                 <label className={styles.fieldLabel}>Rôle</label>
                 <div className={styles.fieldValue}>
-                  <span className={`${styles.roleBadge} ${user.role === "admin" ? styles.roleBadgeAdmin : styles.roleBadgeUser}`}>
-                    {user.role === "admin" ? "Administrateur" : "Membre"}
-                  </span>
+                  {user.role === "founder" ? (
+                    <span className={`${styles.roleBadge} ${styles.roleBadgeFounder}`}>
+                      👑 Fondateur
+                    </span>
+                  ) : user.role === "admin" ? (
+                    <span className={`${styles.roleBadge} ${styles.roleBadgeAdmin}`}>
+                      Administrateur
+                    </span>
+                  ) : (
+                    <span className={`${styles.roleBadge} ${styles.roleBadgeUser}`}>
+                      Membre
+                    </span>
+                  )}
                 </div>
               </div>
             </section>
@@ -233,7 +243,7 @@ export default function DashboardPage() {
                 <span className={styles.cardIcon}>⚙️</span> Mon compte
               </h2>
               <div className={styles.accountActions}>
-                {user.role === "admin" && (
+                {(user.role === "admin" || user.role === "founder") && (
                   <Link href="/admin" className={styles.btnAccount}>
                     🛡️ Accéder au panneau admin
                   </Link>

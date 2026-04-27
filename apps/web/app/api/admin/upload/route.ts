@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   try {
     // ── Auth ──────────────────────────────────────────────────
     const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || session.user.role !== "admin") {
+    if (!session || (session.user.role !== "admin" && session.user.role !== "founder")) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
     }
 

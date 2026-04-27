@@ -48,11 +48,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
 
+  const isAdmin = session?.user.role === "admin" || session?.user.role === "founder";
+
   useEffect(() => {
-    if (!isPending && (!session || session.user.role !== "admin")) {
+    if (!isPending && (!session || !isAdmin)) {
       router.replace("/");
     }
-  }, [session, isPending, router]);
+  }, [session, isPending, isAdmin, router]);
 
   if (isPending) {
     return (
@@ -62,7 +64,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!session || session.user.role !== "admin") {
+  if (!session || !isAdmin) {
     return null;
   }
 
@@ -72,7 +74,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
           <span className={styles.sidebarTitle}>Administration</span>
-          <span className={styles.sidebarBadge}>Admin</span>
+          <span className={styles.sidebarBadge}>
+            {session?.user.role === "founder" ? "👑 Fondateur" : "Admin"}
+          </span>
         </div>
 
         <nav className={styles.sidebarNav}>

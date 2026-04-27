@@ -26,7 +26,12 @@ export const auth = betterAuth({
   plugins: [
     admin({
       defaultRole: "user",
-      adminRoles: ["admin"],
+      adminRoles: ["admin", "founder"],
+      roles: {
+        user:    { permissions: [] },
+        admin:   { permissions: [] },
+        founder: { permissions: [] },
+      },
     }),
   ],
   secret: process.env.BETTER_AUTH_SECRET,

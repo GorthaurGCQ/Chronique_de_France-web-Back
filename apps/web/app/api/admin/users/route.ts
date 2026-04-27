@@ -7,20 +7,20 @@ import { headers } from "next/headers";
 export async function GET() {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || session.user.role !== "admin") {
+    if (!session || (session.user.role !== "admin" && session.user.role !== "founder")) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
     }
 
     const users = await db
       .select({
-        id:            authUser.id,
-        name:          authUser.name,
-        email:         authUser.email,
-        role:          authUser.role,
-        banned:        authUser.banned,
-        emailVerified: authUser.emailVerified,
-        permissions:   authUser.permissions,
-        createdAt:     authUser.createdAt,
+        id:                authUser.id,
+        name:              authUser.name,
+        email:             authUser.email,
+        role:              authUser.role,
+        banned:            authUser.banned,
+        emailVerified:     authUser.emailVerified,
+        customPermissions: authUser.customPermissions,
+        createdAt:         authUser.createdAt,
       })
       .from(authUser)
       .orderBy(authUser.createdAt);
@@ -35,7 +35,7 @@ export async function GET() {
 export async function PATCH(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || session.user.role !== "admin") {
+    if (!session || (session.user.role !== "admin" && session.user.role !== "founder")) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
     }
 
@@ -60,8 +60,8 @@ export async function PATCH(req: Request) {
       await db
         .update(authUser)
         .set({
-          role:        role ?? "user",
-          permissions: JSON.stringify(permissions ?? []),
+      role:              role ?? "user",
+        customPermissions: JSON.stringify(permissions ?? []),
           updatedAt:   new Date(),
         })
         .where(eq(authUser.id, userId));

@@ -208,8 +208,9 @@
   padding: 3px 10px;
   border-radius: 6px;
 }
-.roleBadgeAdmin { background: #fef3c7; color: #92400e; }
-.roleBadgeUser  { background: #eff6ff; color: #1d4ed8; }
+.roleBadgeFounder { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; }
+.roleBadgeAdmin   { background: #fef3c7; color: #92400e; }
+.roleBadgeUser    { background: #eff6ff; color: #1d4ed8; }
 
 /* ── Statistiques ── */
 .statsGrid {

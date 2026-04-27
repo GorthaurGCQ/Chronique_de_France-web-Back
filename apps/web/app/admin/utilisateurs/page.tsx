@@ -63,11 +63,17 @@ type User = {
   role: string | null;
   banned: boolean | null;
   emailVerified: boolean;
-  permissions: string | null;
+  customPermissions: string | null;
   createdAt: string;
 };
 
-function parsePermissions(raw: string | null): Permission[] {
+const DEFAULT_PAGE_PERMISSIONS: Permission[] = [
+  "ACCES_BIBLIOTHEQUE",
+  "ACCES_REGIONS",
+  "ACCES_EVENEMENTS",
+];
+
+function parsePermissions(raw: string | null | undefined): Permission[] {
   try { return JSON.parse(raw ?? "[]"); } catch { return []; }
 }
 
@@ -116,7 +122,10 @@ export default function AdminUtilisateurs() {
   function openEdit(user: User) {
     setEditingUser(user);
     setEditRole(user.role ?? "user");
-    setEditPerms(parsePermissions(user.permissions));
+    const existing = parsePermissions(user.customPermissions);
+    // Ajoute les accès aux pages par défaut s'ils ne sont pas déjà définis
+    const withDefaults = Array.from(new Set([...DEFAULT_PAGE_PERMISSIONS, ...existing]));
+    setEditPerms(withDefaults);
     setMessage(null);
   }
 
@@ -197,7 +206,7 @@ export default function AdminUtilisateurs() {
               </thead>
               <tbody>
                 {users.map((user) => {
-                  const perms = parsePermissions(user.permissions);
+                  const perms = parsePermissions(user.customPermissions);
                   return (
                     <tr key={user.id}>
                       <td style={{ fontWeight: 600 }}>

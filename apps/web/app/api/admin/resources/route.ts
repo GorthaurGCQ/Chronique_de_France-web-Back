@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 export async function GET() {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || session.user.role !== "admin") {
+    if (!session || (session.user.role !== "admin" && session.user.role !== "founder")) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
     }
 
@@ -41,7 +41,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || session.user.role !== "admin") {
+    if (!session || (session.user.role !== "admin" && session.user.role !== "founder")) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
     }
 
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
 export async function PATCH(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || session.user.role !== "admin") {
+    if (!session || (session.user.role !== "admin" && session.user.role !== "founder")) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
     }
 
@@ -121,7 +121,7 @@ export async function PATCH(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || session.user.role !== "admin") {
+    if (!session || (session.user.role !== "admin" && session.user.role !== "founder")) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
     }
 

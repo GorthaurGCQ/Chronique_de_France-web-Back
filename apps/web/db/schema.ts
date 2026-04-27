@@ -79,7 +79,8 @@ export const authUser = pgTable("auth_user", {
   banned: boolean("banned").default(false),
   banReason: varchar("ban_reason", { length: 512 }),
   banExpires: timestamp("ban_expires"),
-  permissions: text("permissions").default("[]"), // JSON array de Permission
+  permissions:       text("permissions"),                       // Réservé Better Auth admin plugin (ne pas modifier)
+  customPermissions: text("custom_permissions").default("[]"), // Nos droits granulaires
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
