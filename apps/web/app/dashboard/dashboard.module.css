@@ -400,6 +400,51 @@
 }
 .favRemove:hover { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
 
+/* ── Note sur favori ── */
+.favNote { margin-top: 0.6rem; }
+
+.favNoteAdd {
+  background: none; border: 1.5px dashed #d1d5db; border-radius: 6px;
+  color: #9ca3af; font-size: 0.78rem; padding: 0.35rem 0.7rem;
+  cursor: pointer; transition: border-color 0.15s, color 0.15s; width: 100%;
+  text-align: left;
+}
+.favNoteAdd:hover { border-color: #b8933a; color: #b8933a; }
+
+.favNoteDisplay {
+  display: flex; align-items: flex-start; gap: 0.4rem;
+  background: #fefce8; border: 1px solid #fde68a; border-radius: 6px;
+  padding: 0.5rem 0.7rem; cursor: pointer;
+  transition: background 0.15s;
+}
+.favNoteDisplay:hover { background: #fef9c3; }
+.favNoteIcon { font-size: 0.75rem; flex-shrink: 0; margin-top: 1px; }
+.favNoteText { font-size: 0.8rem; color: #78350f; line-height: 1.4; white-space: pre-wrap; }
+
+.favNoteEdit { display: flex; flex-direction: column; gap: 0.4rem; }
+.favNoteTextarea {
+  width: 100%; padding: 0.5rem 0.7rem;
+  border: 1.5px solid #b8933a; border-radius: 6px;
+  font-size: 0.82rem; color: #1a1a2e; resize: vertical;
+  outline: none; font-family: inherit; line-height: 1.4;
+  background: #fffbf0;
+}
+.favNoteTextarea:focus { border-color: #92400e; }
+.favNoteActions { display: flex; gap: 0.5rem; }
+.favNoteSave {
+  padding: 0.3rem 0.8rem; background: #1a1a2e; color: #f5f0e8;
+  border: none; border-radius: 6px; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; transition: background 0.15s;
+}
+.favNoteSave:hover:not(:disabled) { background: #b8933a; }
+.favNoteSave:disabled { opacity: 0.6; cursor: not-allowed; }
+.favNoteCancel {
+  padding: 0.3rem 0.75rem; background: #f3f4f6; color: #6b7280;
+  border: none; border-radius: 6px; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; transition: background 0.15s;
+}
+.favNoteCancel:hover { background: #e5e7eb; }
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .grid { grid-template-columns: 1fr; }

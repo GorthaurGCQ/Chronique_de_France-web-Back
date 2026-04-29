@@ -1,0 +1,124 @@
+/* Réutilise exactement le même style que la page connexion */
+
+.main {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-navy, #1a2744);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg { position: absolute; inset: 0; pointer-events: none; }
+.bgShape1 {
+  position: absolute; top: -180px; right: -180px;
+  width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(184,147,58,0.12) 0%, transparent 70%);
+}
+.bgShape2 {
+  position: absolute; bottom: -150px; left: -150px;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(100,140,200,0.1) 0%, transparent 70%);
+}
+
+.container {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 440px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 24px;
+}
+
+/* Brand */
+.brand { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.logoLink { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; }
+.logoText { font-family: var(--font-display, serif); font-size: 1rem; font-weight: 700; letter-spacing: 0.05em; color: #fff; }
+.tagline { font-size: 1.25rem; font-weight: 600; color: rgba(255,255,255,0.85); font-family: var(--font-display, serif); }
+
+/* Carte */
+.card {
+  width: 100%; background: #fff; border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.3); overflow: hidden;
+}
+
+/* Formulaire */
+.form { padding: 32px 28px 28px; display: flex; flex-direction: column; gap: 18px; }
+
+.intro {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: rgba(26,39,68,0.04); border-radius: 10px; padding: 14px;
+}
+.introIcon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: rgba(26,39,68,0.08); color: #1a2744;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.introText { font-size: 0.82rem; color: #555; line-height: 1.55; margin: 0; padding-top: 2px; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 0.8rem; font-weight: 600; color: var(--color-navy, #1a2744); }
+.input {
+  height: 44px; padding: 0 14px;
+  border: 1.5px solid #e0e0e0; border-radius: 10px;
+  font-size: 0.875rem; color: var(--color-navy, #1a2744);
+  background: #fafafa; outline: none; width: 100%; box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input:focus {
+  border-color: var(--color-gold, #b8933a);
+  box-shadow: 0 0 0 3px rgba(184,147,58,0.12);
+  background: #fff;
+}
+.input::placeholder { color: #bbb; }
+
+.btnPrimary {
+  width: 100%; height: 46px;
+  background: var(--color-navy, #1a2744); color: #fff;
+  border: none; border-radius: 10px;
+  font-size: 0.9rem; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.03em; transition: background 0.2s, transform 0.1s;
+}
+.btnPrimary:hover:not(:disabled) { background: #243660; }
+.btnPrimary:active:not(:disabled) { transform: scale(0.98); }
+.btnPrimary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.errorMsg {
+  background: rgba(220,38,38,0.12); border: 1px solid rgba(220,38,38,0.4);
+  color: #dc2626; border-radius: 8px; padding: 10px 14px; font-size: 0.875rem;
+}
+
+.switchText { font-size: 0.8rem; color: #888; text-align: center; }
+.switchLink { color: var(--color-gold, #b8933a); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.switchLink:hover { color: #9a7820; }
+
+/* État succès */
+.successBox {
+  padding: 36px 28px 32px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 1rem; text-align: center;
+}
+.successIcon {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, #b8933a, #d4aa52);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+}
+.successTitle { font-size: 1.15rem; font-weight: 700; color: #1a2744; margin: 0; }
+.successDesc { font-size: 0.875rem; color: #555; line-height: 1.6; margin: 0; }
+.successHint { font-size: 0.8rem; color: #999; margin: 0; }
+.retryBtn {
+  background: none; border: none; color: var(--color-gold, #b8933a);
+  font-weight: 700; cursor: pointer; font-size: inherit;
+  text-decoration: underline; text-underline-offset: 2px;
+  padding: 0;
+}
+.retryBtn:hover { color: #9a7820; }
+
+/* Footer */
+.footer { text-align: center; }
+.footerLink { font-size: 0.8rem; color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.2s; }
+.footerLink:hover { color: rgba(255,255,255,0.8); }
+
+@media (max-width: 480px) {
+  .form { padding: 24px 18px 22px; }
+}

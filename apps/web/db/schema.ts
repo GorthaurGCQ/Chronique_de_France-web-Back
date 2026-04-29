@@ -199,6 +199,7 @@ export const favorites = pgTable(
     resourceId: varchar("resource_id", { length: 36 })
       .notNull()
       .references(() => resources.id, { onDelete: "cascade" }),
+    note:      text("note"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [
@@ -232,6 +233,27 @@ export const events = pgTable("events", {
     .notNull()
     .$onUpdate(() => new Date()),
 });
+
+// ---------------------------------------------------------------------------
+// Table : audit_logs
+// ---------------------------------------------------------------------------
+
+export const auditLogs = pgTable("audit_logs", {
+  id:          varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  actorId:     varchar("actor_id",   { length: 36 }),          // null si système
+  actorName:   varchar("actor_name", { length: 255 }),
+  actorRole:   varchar("actor_role", { length: 50 }),
+  action:      varchar("action",     { length: 100 }).notNull(), // CREATE_RESOURCE, DELETE_USER…
+  category:    varchar("category",   { length: 50 }).notNull(),  // resources | users | events
+  severity:    varchar("severity",   { length: 20 }).notNull().default("info"), // success | info | warning | danger
+  target:      varchar("target",     { length: 255 }),           // "Ressource : Clovis Ier"
+  details:     text("details"),                                  // JSON ou texte libre
+  createdAt:   timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("audit_logs_category_idx").on(table.category),
+  index("audit_logs_actor_idx").on(table.actorId),
+  index("audit_logs_created_idx").on(table.createdAt),
+]);
 
 // ---------------------------------------------------------------------------
 // Table : event_registrations

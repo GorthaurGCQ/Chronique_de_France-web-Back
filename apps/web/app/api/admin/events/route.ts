@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { events, authUser, type Domaine, type Region, type Timeline } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { headers } from "next/headers";
+import { logAudit } from "@/lib/audit";
 
 function isAdmin(role: string | null | undefined) {
   return role === "admin" || role === "founder";
@@ -71,6 +72,11 @@ export async function POST(req: Request) {
       })
       .returning({ id: events.id, titre: events.titre });
 
+    await logAudit({
+      actorId: session.user.id, actorName: session.user.name, actorRole: session.user.role ?? undefined,
+      action: "CREATE_EVENT", category: "events", severity: "success",
+      target: `Événement : ${event.titre}`,
+    });
     return Response.json({ success: true, data: event }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/admin/events]", err);
@@ -112,6 +118,11 @@ export async function PATCH(req: Request) {
       .where(eq(events.id, eventId))
       .returning({ id: events.id, titre: events.titre });
 
+    await logAudit({
+      actorId: session.user.id, actorName: session.user.name, actorRole: session.user.role ?? undefined,
+      action: "UPDATE_EVENT", category: "events", severity: "info",
+      target: `Événement : ${updated.titre}`,
+    });
     return Response.json({ success: true, data: updated });
   } catch (err) {
     console.error("[PATCH /api/admin/events]", err);
@@ -132,6 +143,11 @@ export async function DELETE(req: Request) {
     }
 
     await db.delete(events).where(eq(events.id, eventId));
+    await logAudit({
+      actorId: session.user.id, actorName: session.user.name, actorRole: session.user.role ?? undefined,
+      action: "DELETE_EVENT", category: "events", severity: "danger",
+      target: `Événement ID : ${eventId}`,
+    });
     return Response.json({ success: true });
   } catch (err) {
     console.error("[DELETE /api/admin/events]", err);

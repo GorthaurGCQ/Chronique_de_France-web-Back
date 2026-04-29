@@ -161,9 +161,9 @@ export default function ConnexionPage() {
                   <label className={styles.label} htmlFor="password-login">
                     Mot de passe
                   </label>
-                  <button type="button" className={styles.forgotLink}>
+                  <Link href="/mot-de-passe-oublie" className={styles.forgotLink}>
                     Mot de passe oublié ?
-                  </button>
+                  </Link>
                 </div>
                 <div className={styles.inputWrapper}>
                   <input

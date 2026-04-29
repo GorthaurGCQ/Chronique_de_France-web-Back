@@ -23,6 +23,7 @@ export async function GET() {
         domaine:      resources.domaine,
         thumbnailUrl: resources.thumbnailUrl,
         authorName:   authUser.name,
+        note:         favorites.note,
         savedAt:      favorites.createdAt,
       })
       .from(favorites)
@@ -60,6 +61,31 @@ export async function POST(req: Request) {
     return Response.json({ success: true, data: fav ?? null }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/favorites]", err);
+    return Response.json({ success: false, message: "Erreur interne." }, { status: 500 });
+  }
+}
+
+// ── PATCH : mettre à jour la note d'un favori ────────────────────────────────
+export async function PATCH(req: Request) {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+      return Response.json({ success: false, message: "Non authentifié." }, { status: 401 });
+    }
+
+    const { resourceId, note } = await req.json();
+    if (!resourceId) {
+      return Response.json({ success: false, message: "resourceId manquant." }, { status: 400 });
+    }
+
+    await db
+      .update(favorites)
+      .set({ note: note ?? null })
+      .where(and(eq(favorites.userId, session.user.id), eq(favorites.resourceId, resourceId)));
+
+    return Response.json({ success: true });
+  } catch (err) {
+    console.error("[PATCH /api/favorites]", err);
     return Response.json({ success: false, message: "Erreur interne." }, { status: 500 });
   }
 }

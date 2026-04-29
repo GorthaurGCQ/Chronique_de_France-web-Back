@@ -17,6 +17,7 @@ type Favorite = {
   timeline: string | null;
   thumbnailUrl: string | null;
   authorName: string | null;
+  note: string | null;
   savedAt: string;
 };
 
@@ -104,6 +105,31 @@ export default function DashboardPage() {
       body: JSON.stringify({ resourceId }),
     });
     setFavorites((prev) => prev.filter((f) => f.resourceId !== resourceId));
+  }
+
+  // ── Notes ─────────────────────────────────────────────────────────────────
+  const [editingNote, setEditingNote]   = useState<string | null>(null); // resourceId en cours
+  const [noteValues, setNoteValues]     = useState<Record<string, string>>({});
+  const [noteSaving, setNoteSaving]     = useState<string | null>(null);
+
+  function startEditNote(fav: Favorite) {
+    setEditingNote(fav.resourceId);
+    setNoteValues((prev) => ({ ...prev, [fav.resourceId]: fav.note ?? "" }));
+  }
+
+  async function saveNote(resourceId: string) {
+    setNoteSaving(resourceId);
+    const note = noteValues[resourceId] ?? "";
+    await fetch("/api/favorites", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resourceId, note: note.trim() || null }),
+    });
+    setFavorites((prev) =>
+      prev.map((f) => f.resourceId === resourceId ? { ...f, note: note.trim() || null } : f)
+    );
+    setEditingNote(null);
+    setNoteSaving(null);
   }
 
   async function handleSignOut() {
@@ -304,7 +330,48 @@ export default function DashboardPage() {
                             {fav.titre}
                           </Link>
                           <p className={styles.favDesc}>{fav.description}</p>
-                          <div className={styles.favFooter}>
+                          {/* Note */}
+                        <div className={styles.favNote}>
+                          {editingNote === fav.resourceId ? (
+                            <div className={styles.favNoteEdit}>
+                              <textarea
+                                className={styles.favNoteTextarea}
+                                placeholder="Ajoutez une note personnelle…"
+                                value={noteValues[fav.resourceId] ?? ""}
+                                onChange={(e) => setNoteValues((p) => ({ ...p, [fav.resourceId]: e.target.value }))}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) saveNote(fav.resourceId);
+                                  if (e.key === "Escape") setEditingNote(null);
+                                }}
+                                autoFocus
+                                rows={3}
+                              />
+                              <div className={styles.favNoteActions}>
+                                <button
+                                  className={styles.favNoteSave}
+                                  onClick={() => saveNote(fav.resourceId)}
+                                  disabled={noteSaving === fav.resourceId}
+                                >
+                                  {noteSaving === fav.resourceId ? "…" : "Enregistrer"}
+                                </button>
+                                <button className={styles.favNoteCancel} onClick={() => setEditingNote(null)}>
+                                  Annuler
+                                </button>
+                              </div>
+                            </div>
+                          ) : fav.note ? (
+                            <div className={styles.favNoteDisplay} onClick={() => startEditNote(fav)}>
+                              <span className={styles.favNoteIcon}>📝</span>
+                              <span className={styles.favNoteText}>{fav.note}</span>
+                            </div>
+                          ) : (
+                            <button className={styles.favNoteAdd} onClick={() => startEditNote(fav)}>
+                              + Ajouter une note
+                            </button>
+                          )}
+                        </div>
+
+                        <div className={styles.favFooter}>
                             <span className={styles.favDate}>
                               Sauvegardé le {new Date(fav.savedAt).toLocaleDateString("fr-FR")}
                             </span>

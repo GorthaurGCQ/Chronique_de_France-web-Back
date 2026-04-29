@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { resources, authUser, type Domaine } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { headers } from "next/headers";
+import { logAudit } from "@/lib/audit";
 
 export async function GET() {
   try {
@@ -69,6 +70,11 @@ export async function POST(req: Request) {
       })
       .returning({ id: resources.id, titre: resources.titre });
 
+    await logAudit({
+      actorId: session.user.id, actorName: session.user.name, actorRole: session.user.role ?? undefined,
+      action: "CREATE_RESOURCE", category: "resources", severity: "success",
+      target: `Ressource : ${resource.titre}`,
+    });
     return Response.json({ success: true, data: resource }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/admin/resources]", err);
@@ -111,6 +117,11 @@ export async function PATCH(req: Request) {
       .where(eq(resources.id, resourceId))
       .returning({ id: resources.id, titre: resources.titre });
 
+    await logAudit({
+      actorId: session.user.id, actorName: session.user.name, actorRole: session.user.role ?? undefined,
+      action: "UPDATE_RESOURCE", category: "resources", severity: "info",
+      target: `Ressource : ${updated.titre}`,
+    });
     return Response.json({ success: true, data: updated });
   } catch (err) {
     console.error("[PATCH /api/admin/resources]", err);
@@ -131,6 +142,11 @@ export async function DELETE(req: Request) {
     }
 
     await db.delete(resources).where(eq(resources.id, resourceId));
+    await logAudit({
+      actorId: session.user.id, actorName: session.user.name, actorRole: session.user.role ?? undefined,
+      action: "DELETE_RESOURCE", category: "resources", severity: "danger",
+      target: `Ressource ID : ${resourceId}`,
+    });
     return Response.json({ success: true });
   } catch (err) {
     console.error("[DELETE /api/admin/resources]", err);
