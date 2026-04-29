@@ -413,6 +413,89 @@
   margin-bottom: 4px;
 }
 
+/* ── Critères de force du mot de passe ───────────────────────────────── */
+.criteriaBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 10px 12px;
+  background: #f8f8f6;
+  border: 1px solid #e8e8e4;
+  border-radius: 8px;
+}
+
+.criteriaBar {
+  display: flex;
+  gap: 4px;
+}
+
+.criteriaSegment {
+  flex: 1;
+  height: 4px;
+  border-radius: 99px;
+  transition: background 0.25s ease;
+}
+
+.criteriaList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px 8px;
+}
+
+.criteriaOk {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.criteriaKo {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #ef4444;
+}
+
+/* ── Avertissement mot de passe faible (connexion) ───────────────────── */
+.weakPwdWarning {
+  font-size: 0.73rem;
+  font-weight: 500;
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.07);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* ── Validation confirmation mot de passe ────────────────────────────── */
+.inputError {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.1) !important;
+}
+
+.inputSuccess {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.1) !important;
+}
+
+.fieldError {
+  font-size: 0.72rem;
+  color: #ef4444;
+  font-weight: 500;
+  margin: 0;
+}
+
+.fieldOk {
+  font-size: 0.72rem;
+  color: #16a34a;
+  font-weight: 600;
+  margin: 0;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .form {

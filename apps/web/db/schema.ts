@@ -81,6 +81,7 @@ export const authUser = pgTable("auth_user", {
   banExpires: timestamp("ban_expires"),
   permissions:       text("permissions"),                       // Réservé Better Auth admin plugin (ne pas modifier)
   customPermissions: text("custom_permissions").default("[]"), // Nos droits granulaires
+  userPreferences:   text("user_preferences").default('{"emailNotifications":true,"defaultRegion":"NATIONAL"}'),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -254,6 +255,24 @@ export const auditLogs = pgTable("audit_logs", {
   index("audit_logs_actor_idx").on(table.actorId),
   index("audit_logs_created_idx").on(table.createdAt),
 ]);
+
+// ---------------------------------------------------------------------------
+// Table : resource_views (historique de consultation)
+// ---------------------------------------------------------------------------
+
+export const resourceViews = pgTable(
+  "resource_views",
+  {
+    id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+    userId:     varchar("user_id",     { length: 36 }).notNull().references(() => authUser.id,  { onDelete: "cascade" }),
+    resourceId: varchar("resource_id", { length: 36 }).notNull().references(() => resources.id, { onDelete: "cascade" }),
+    viewedAt:   timestamp("viewed_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("resource_views_user_idx").on(table.userId),
+    uniqueIndex("resource_views_user_resource_idx").on(table.userId, table.resourceId),
+  ],
+);
 
 // ---------------------------------------------------------------------------
 // Table : event_registrations

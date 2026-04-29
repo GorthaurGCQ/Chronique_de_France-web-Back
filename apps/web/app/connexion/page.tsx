@@ -29,6 +29,26 @@ export default function ConnexionPage() {
   const [registerError, setRegisterError] = useState("");
   const [registerLoading, setRegisterLoading] = useState(false);
 
+  // ── Faiblesse du mot de passe (connexion) ───────────────
+  const loginPwdWeak = loginPassword.length > 0 && !(
+    loginPassword.length >= 8 &&
+    /[a-z]/.test(loginPassword) &&
+    /[A-Z]/.test(loginPassword) &&
+    /[0-9]/.test(loginPassword) &&
+    /[^A-Za-z0-9]/.test(loginPassword)
+  );
+
+  // ── Critères de force du mot de passe (inscription) ─────
+  const pwdCriteria = {
+    length:    registerPassword.length >= 8,
+    lowercase: /[a-z]/.test(registerPassword),
+    uppercase: /[A-Z]/.test(registerPassword),
+    number:    /[0-9]/.test(registerPassword),
+    symbol:    /[^A-Za-z0-9]/.test(registerPassword),
+  };
+  const pwdAllMet = Object.values(pwdCriteria).every(Boolean);
+  const pwdMetCount = Object.values(pwdCriteria).filter(Boolean).length;
+
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoginError("");
@@ -310,6 +330,44 @@ export default function ConnexionPage() {
                     )}
                   </button>
                 </div>
+                {/* Avertissement mot de passe faible */}
+                {registerPassword.length > 0 && !pwdAllMet && (
+                  <p className={styles.weakPwdWarning}>
+                    ⚠ Mot de passe trop faible — utilisez au moins 8 caractères avec une majuscule, un chiffre et un symbole.
+                  </p>
+                )}
+
+                {/* Critères de force */}
+                {registerPassword.length > 0 && (
+                  <div className={styles.criteriaBox}>
+                    <div className={styles.criteriaBar}>
+                      {[1,2,3,4,5].map((i) => (
+                        <div
+                          key={i}
+                          className={styles.criteriaSegment}
+                          style={{
+                            background: i <= pwdMetCount
+                              ? pwdAllMet ? "#16a34a" : pwdMetCount >= 3 ? "#eab308" : "#ef4444"
+                              : "#e5e7eb"
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <ul className={styles.criteriaList}>
+                      {[
+                        { ok: pwdCriteria.length,    label: "8 caractères minimum" },
+                        { ok: pwdCriteria.lowercase,  label: "Une lettre minuscule" },
+                        { ok: pwdCriteria.uppercase,  label: "Une lettre majuscule" },
+                        { ok: pwdCriteria.number,     label: "Un chiffre" },
+                        { ok: pwdCriteria.symbol,     label: "Un symbole (!@#$…)" },
+                      ].map(({ ok, label }) => (
+                        <li key={label} className={ok ? styles.criteriaOk : styles.criteriaKo}>
+                          {ok ? "✓" : "✗"} {label}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               <div className={styles.field}>
@@ -321,11 +379,17 @@ export default function ConnexionPage() {
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
                   placeholder="••••••••"
-                  className={styles.input}
+                  className={`${styles.input} ${registerConfirm.length > 0 && registerConfirm !== registerPassword ? styles.inputError : ""} ${registerConfirm.length > 0 && registerConfirm === registerPassword ? styles.inputSuccess : ""}`}
                   required
                   value={registerConfirm}
                   onChange={(e) => setRegisterConfirm(e.target.value)}
                 />
+                {registerConfirm.length > 0 && registerConfirm !== registerPassword && (
+                  <p className={styles.fieldError}>Les mots de passe ne correspondent pas.</p>
+                )}
+                {registerConfirm.length > 0 && registerConfirm === registerPassword && (
+                  <p className={styles.fieldOk}>✓ Les mots de passe correspondent.</p>
+                )}
               </div>
 
               <label className={styles.checkboxRow}>
@@ -338,7 +402,11 @@ export default function ConnexionPage() {
                 </span>
               </label>
 
-              <button type="submit" className={styles.btnPrimary} disabled={registerLoading}>
+              <button
+                type="submit"
+                className={styles.btnPrimary}
+                disabled={registerLoading || (registerPassword.length > 0 && !pwdAllMet) || (registerConfirm.length > 0 && registerConfirm !== registerPassword)}
+              >
                 {registerLoading ? "Création…" : "Créer mon compte"}
               </button>
 

@@ -46,7 +46,8 @@ export default function Navbar() {
     router.refresh();
   }
 
-  const userInitial = session?.user?.name?.charAt(0).toUpperCase() ?? "?";
+  const userInitial  = session?.user?.name?.charAt(0).toUpperCase() ?? "?";
+  const userImage    = (session?.user as { image?: string } | undefined)?.image ?? null;
 
   return (
     <header className={`${styles.header} ${visible ? styles.headerVisible : styles.headerHidden}`}>
@@ -94,7 +95,11 @@ export default function Navbar() {
             {session ? (
               <div className={styles.userMenu}>
                 <Link href="/dashboard" className={styles.userMenuLink} onClick={() => setIsOpen(false)}>
-                  <span className={styles.avatar}>{userInitial}</span>
+                  {userImage ? (
+                    <Image src={userImage} alt="Avatar" width={32} height={32} className={styles.avatarImg} unoptimized />
+                  ) : (
+                    <span className={styles.avatar}>{userInitial}</span>
+                  )}
                   <span>Dashboard</span>
                 </Link>
                 <button className={styles.btnSignOut} onClick={handleSignOut}>
@@ -126,7 +131,11 @@ export default function Navbar() {
           {session ? (
             <div className={styles.userMenu}>
               <Link href="/dashboard" className={styles.userMenuLink}>
-                <span className={styles.avatar}>{userInitial}</span>
+                {userImage ? (
+                  <Image src={userImage} alt="Avatar" width={32} height={32} className={styles.avatarImg} unoptimized />
+                ) : (
+                  <span className={styles.avatar}>{userInitial}</span>
+                )}
                 <span className={styles.userName}>Dashboard</span>
               </Link>
               <button className={styles.btnSignOut} onClick={handleSignOut}>

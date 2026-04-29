@@ -116,6 +116,9 @@ export default async function RessourcePage({ params }: Props) {
   const resource = await getResource(id);
   if (!resource) notFound();
 
+  // Tracking de vue (client-side, non bloquant)
+  const ViewTracker = (await import("./ViewTracker")).default;
+
   const gradient = TIMELINE_GRADIENTS[resource.timeline ?? ""] ?? "linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)";
   const timelineLabel = TIMELINE_LABELS[resource.timeline ?? ""] ?? resource.timeline ?? "";
   const typeLabel = TYPE_LABELS[resource.type] ?? resource.type;
@@ -130,6 +133,7 @@ export default async function RessourcePage({ params }: Props) {
 
   return (
     <main className={styles.page}>
+      <ViewTracker resourceId={resource.id} />
 
       {/* ── 1. HERO ── */}
       <section className={styles.hero}>

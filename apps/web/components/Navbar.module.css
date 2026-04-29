@@ -181,6 +181,15 @@
   flex-shrink: 0;
 }
 
+.avatarImg {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+
 .userName {
   max-width: 120px;
   overflow: hidden;
