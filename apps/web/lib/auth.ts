@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
+import { adminAc, userAc } from "better-auth/plugins/admin/access";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import nodemailer from "nodemailer";
@@ -87,9 +88,9 @@ export const auth = betterAuth({
       defaultRole: "user",
       adminRoles: ["admin", "founder"],
       roles: {
-        user:    { permissions: [] },
-        admin:   { permissions: [] },
-        founder: { permissions: [] },
+        user:    userAc,
+        admin:   adminAc,
+        founder: adminAc,
       },
     }),
   ],

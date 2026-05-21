@@ -112,14 +112,20 @@ export async function POST(req: Request) {
 
     const [resource] = await db
       .insert(resources)
-      .values({ ...parsed.data, authorId: jwtPayload.userId })
+      .values({
+        ...parsed.data,
+        authorId: jwtPayload.userId,
+        timeline: "CONTEMPORAIN",
+        region: "NATIONAL",
+        domaine: "PATRIMOINE_HISTOIRE",
+      })
       .returning();
 
     // Récupérer l'auteur pour la réponse
     const [author] = await db
-      .select({ id: users.id, nom: users.nom, email: users.email })
-      .from(users)
-      .where(eq(users.id, jwtPayload.userId))
+      .select({ id: authUser.id, name: authUser.name, email: authUser.email })
+      .from(authUser)
+      .where(eq(authUser.id, jwtPayload.userId))
       .limit(1);
 
     return Response.json(

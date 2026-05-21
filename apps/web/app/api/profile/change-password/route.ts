@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     }
 
     // Vérifier l'ancien mot de passe
-    const valid = await verifyPassword({ hash: account.password, password: currentPassword });
+    const valid = await verifyPassword(account.password, currentPassword);
     if (!valid) {
       return Response.json({ success: false, message: "Mot de passe actuel incorrect." }, { status: 403 });
     }

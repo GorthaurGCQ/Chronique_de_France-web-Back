@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/db";
-import { resources, authUser } from "@/db/schema";
+import { resources, authUser, type Region } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { REGIONS_CONTENT } from "@/data/regionsContent";
 import type { RegionCard, RegionContent } from "@/data/regionsContent";
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ id: string }> };
 
 // ── Correspondance slug → valeur enum DB ───────────────────────────────────
-const SLUG_TO_DB_REGION: Record<string, string> = {
+const SLUG_TO_DB_REGION: Record<string, Region> = {
   "ile-de-france":          "ILE_DE_FRANCE",
   "centre-val-de-loire":    "CENTRE_VAL_DE_LOIRE",
   "bourgogne-franche-comte":"BOURGOGNE_FRANCHE_COMTE",
@@ -104,7 +104,7 @@ async function enrichContent(
       })
       .from(resources)
       .leftJoin(authUser, eq(resources.authorId, authUser.id))
-      .where(eq(resources.region, dbRegion as Parameters<typeof eq>[1]));
+      .where(eq(resources.region, dbRegion));
 
     if (rows.length === 0) return content;
 

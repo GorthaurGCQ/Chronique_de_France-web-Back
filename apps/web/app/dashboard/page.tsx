@@ -373,9 +373,12 @@ export default function DashboardPage() {
     return <div className={styles.loading}><span className={styles.loadingDot} /></div>;
   }
 
-  const user = session.user as { id: string; name: string; email: string; role?: string; image?: string; createdAt?: string };
+  const user = session.user;
+  const userRole = (user as { role?: string }).role;
   const initial = user.name?.charAt(0).toUpperCase() ?? "?";
-  const joinDate = new Date(user.createdAt ?? Date.now()).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  const createdAtDate = user.createdAt instanceof Date ? user.createdAt : new Date(String(user.createdAt));
+  const joinDate = createdAtDate.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  const daysSinceJoin = Math.max(0, Math.floor((Date.now() - createdAtDate.getTime()) / 86400000));
   const totalReadTime = favorites.length * 3;
 
   // Répartition favoris par timeline
@@ -423,9 +426,9 @@ export default function DashboardPage() {
             <p className={styles.heroJoin}>Membre depuis le {joinDate}</p>
           </div>
           <div className={styles.heroRole}>
-            {user.role === "founder" ? (
+            {userRole === "founder" ? (
               <span className={`${styles.roleBadge} ${styles.roleBadgeFounder}`}>👑 Fondateur</span>
-            ) : user.role === "admin" ? (
+            ) : userRole === "admin" ? (
               <span className={`${styles.roleBadge} ${styles.roleBadgeAdmin}`}>Administrateur</span>
             ) : (
               <span className={`${styles.roleBadge} ${styles.roleBadgeUser}`}>Membre</span>
@@ -501,9 +504,9 @@ export default function DashboardPage() {
                 <div className={styles.fieldRow}>
                   <label className={styles.fieldLabel}>Rôle</label>
                   <div className={styles.fieldValue}>
-                    {user.role === "founder" ? (
+                    {userRole === "founder" ? (
                       <span className={`${styles.roleBadge} ${styles.roleBadgeFounder}`}>👑 Fondateur</span>
-                    ) : user.role === "admin" ? (
+                    ) : userRole === "admin" ? (
                       <span className={`${styles.roleBadge} ${styles.roleBadgeAdmin}`}>Administrateur</span>
                     ) : (
                       <span className={`${styles.roleBadge} ${styles.roleBadgeUser}`}>Membre</span>
@@ -516,7 +519,7 @@ export default function DashboardPage() {
               <section className={styles.card}>
                 <h2 className={styles.cardTitle}><span className={styles.cardIcon}>⚙️</span> Mon compte</h2>
                 <div className={styles.accountActions}>
-                  {(user.role === "admin" || user.role === "founder") && (
+                  {(userRole === "admin" || userRole === "founder") && (
                     <Link href="/admin" className={styles.btnAccount}>🛡️ Accéder au panneau admin</Link>
                   )}
                   <button className={styles.btnAccount} onClick={handleSignOut}>🚪 Se déconnecter</button>
@@ -627,7 +630,7 @@ export default function DashboardPage() {
                   </div>
                   <div className={styles.statItem}>
                     <span className={styles.statValue}>
-                      {Math.floor((Date.now() - new Date(user.createdAt ?? Date.now()).getTime()) / (1000 * 60 * 60 * 24))}j
+                      {daysSinceJoin}j
                     </span>
                     <span className={styles.statLabel}>Jours d&apos;ancienneté</span>
                   </div>
