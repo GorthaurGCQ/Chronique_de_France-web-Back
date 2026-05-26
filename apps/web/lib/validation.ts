@@ -1,4 +1,7 @@
-// Schémas de validation Zod — Fondation Chroniques de France
+// =============================================================================
+// COUCHE BACK — Validation des données entrantes (schémas Zod)
+// Appelée par les route.ts avant INSERT/UPDATE en base
+// =============================================================================
 
 import { z } from "zod";
 
@@ -39,7 +42,7 @@ export const createResourceSchema = z.object({
   type: resourceTypeEnum,
 });
 
-export const updateResourceSchema = createResourceSchema.partial();
+export const updateResourceSchema = createResourceSchema.partial(); // tous les champs optionnels
 
 // ---------------------------------------------------------------------------
 // Événements
@@ -83,13 +86,13 @@ export const eventQuerySchema = paginationSchema.extend({
 });
 
 // ---------------------------------------------------------------------------
-// Helper : parse et retourne une erreur 400 formatée si invalide
+// Helper : parse le body JSON et renvoie erreurs 400 structurées si invalide
 // ---------------------------------------------------------------------------
 
 export function parseBody<T>(schema: z.ZodSchema<T>, data: unknown):
   | { success: true; data: T }
   | { success: false; errors: Record<string, string[]> } {
-  const result = schema.safeParse(data);
+  const result = schema.safeParse(data); // validation sans lever d'exception
   if (!result.success) {
     const errors: Record<string, string[]> = {};
     for (const issue of result.error.issues) {
@@ -98,5 +101,5 @@ export function parseBody<T>(schema: z.ZodSchema<T>, data: unknown):
     }
     return { success: false, errors };
   }
-  return { success: true, data: result.data };
+  return { success: true, data: result.data }; // données typées et validées
 }

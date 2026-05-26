@@ -1,20 +1,23 @@
-// Schéma Drizzle ORM — Fondation Chroniques de France
-// Dialette : PostgreSQL (Supabase)
+// =============================================================================
+// COUCHE DONNÉES (BACK) — Modèle des tables PostgreSQL (Drizzle ORM)
+// Définit la structure persistée ; utilisé par db/index.ts et toutes les route.ts
+// Dialecte : PostgreSQL (hébergé sur Supabase)
+// =============================================================================
 
 import {
-  pgTable,
-  pgEnum,
-  varchar,
-  text,
-  timestamp,
-  boolean,
-  index,
-  uniqueIndex,
+  pgTable,      // déclare une table SQL
+  pgEnum,       // colonne à valeurs fixes (enum PostgreSQL)
+  varchar,      // chaîne courte (email, id…)
+  text,         // chaîne longue (contenu, description…)
+  timestamp,    // date/heure
+  boolean,      // vrai/faux
+  index,        // index non unique (perf recherche)
+  uniqueIndex,  // contrainte d'unicité
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations } from "drizzle-orm"; // liens entre tables (optionnel, requêtes relationnelles)
 
 // ---------------------------------------------------------------------------
-// Enums
+// Enums — valeurs autorisées en base (cohérence métier)
 // ---------------------------------------------------------------------------
 
 export const roleEnum = pgEnum("role", ["USER", "ADMIN", "SCIENTIFIQUE"]);
@@ -58,7 +61,7 @@ export const domaineEnum = pgEnum("domaine", [
   "EVENEMENTS_MARQUANTS",
 ]);
 
-// Types TypeScript dérivés des enums
+// Types TS inférés depuis les enums (autocomplétion dans le code back)
 export type Role = (typeof roleEnum.enumValues)[number];
 export type ResourceType = (typeof resourceTypeEnum.enumValues)[number];
 export type Region = (typeof regionEnum.enumValues)[number];
@@ -66,11 +69,12 @@ export type Timeline = (typeof timelineEnum.enumValues)[number];
 export type Domaine = (typeof domaineEnum.enumValues)[number];
 
 // ---------------------------------------------------------------------------
-// Table : auth_user (Better Auth — doit être définie avant resources/events)
+// Tables Better Auth — utilisateurs, sessions, comptes (login email/mdp)
+// Liées à /api/auth/* et auth.api.getSession() dans les route.ts
 // ---------------------------------------------------------------------------
 
 export const authUser = pgTable("auth_user", {
-  id: varchar("id", { length: 36 }).primaryKey(),
+  id: varchar("id", { length: 36 }).primaryKey(), // identifiant unique utilisateur
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
@@ -88,8 +92,8 @@ export const authUser = pgTable("auth_user", {
 
 export const authSession = pgTable("auth_session", {
   id: varchar("id", { length: 36 }).primaryKey(),
-  expiresAt: timestamp("expires_at").notNull(),
-  token: varchar("token", { length: 512 }).notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(), // fin de validité session
+  token: varchar("token", { length: 512 }).notNull().unique(), // cookie de session côté client
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   ipAddress: varchar("ip_address", { length: 64 }),
@@ -150,7 +154,7 @@ export const users = pgTable(
 );
 
 // ---------------------------------------------------------------------------
-// Table : resources
+// Table : resources — contenus pédagogiques (bibliothèque, admin CRUD)
 // ---------------------------------------------------------------------------
 
 export const resources = pgTable(
@@ -158,7 +162,7 @@ export const resources = pgTable(
   {
     id: varchar("id", { length: 36 })
       .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
+      .$defaultFn(() => crypto.randomUUID()), // UUID généré à l'insertion
     titre: varchar("titre", { length: 255 }).notNull(),
     description: text("description").notNull(),
     contenu: text("contenu").notNull(),
@@ -171,7 +175,7 @@ export const resources = pgTable(
     thumbnailUrl: varchar("thumbnail_url", { length: 1024 }),
     authorId: varchar("author_id", { length: 36 })
       .notNull()
-      .references(() => authUser.id, { onDelete: "cascade" }),
+      .references(() => authUser.id, { onDelete: "cascade" }), // clé étrangère → auth_user
     publishedAt: timestamp("published_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -185,7 +189,7 @@ export const resources = pgTable(
 );
 
 // ---------------------------------------------------------------------------
-// Table : favorites
+// Table : favorites — lien utilisateur ↔ ressource (API /api/favorites)
 // ---------------------------------------------------------------------------
 
 export const favorites = pgTable(
@@ -204,12 +208,12 @@ export const favorites = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [
-    uniqueIndex("favorites_user_resource_idx").on(table.userId, table.resourceId),
+    uniqueIndex("favorites_user_resource_idx").on(table.userId, table.resourceId), // 1 favori max par couple user+ressource
   ],
 );
 
 // ---------------------------------------------------------------------------
-// Table : events
+// Table : events — (suite du schéma : events, audit, relations… même principe)
 // ---------------------------------------------------------------------------
 
 export const events = pgTable("events", {

@@ -1,25 +1,32 @@
-// Helpers d'authentification JWT — Fondation Chroniques de France
+// =============================================================================
+// COUCHE BACK (utilitaires) — Authentification JWT pour certaines routes API
+// Alternative à Better Auth session : header Authorization: Bearer <token>
+// Utilisé par ex. PUT/DELETE /api/resources/[id]
+// =============================================================================
 
 import jwt from "jsonwebtoken";
 import type { Role } from "@/db/schema";
 import type { JwtPayload } from "@/types";
 
+// Secret partagé serveur ↔ token (variable d'environnement, jamais exposée au front)
 const JWT_SECRET = process.env.JWT_SECRET;
+// Durée de validité du token signé
 const JWT_EXPIRY = "7d";
 
 // ---------------------------------------------------------------------------
-// Génération du token
+// Génération du token (appelé après login réussi dans /api/auth/login)
 // ---------------------------------------------------------------------------
 
 export function signJWT(payload: Omit<JwtPayload, "iat" | "exp">): string {
   if (!JWT_SECRET) {
     throw new Error("JWT_SECRET est absent des variables d'environnement.");
   }
+  // Signe le payload (userId, email, role) avec algorithme HS256
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY, algorithm: "HS256" });
 }
 
 // ---------------------------------------------------------------------------
-// Vérification du token depuis le header Authorization
+// Vérification du token depuis le header Authorization de la requête HTTP
 // ---------------------------------------------------------------------------
 
 export function verifyJWT(req: Request): JwtPayload {
@@ -27,14 +34,18 @@ export function verifyJWT(req: Request): JwtPayload {
     throw new AuthError("JWT_SECRET est absent des variables d'environnement.", 500);
   }
 
+  // Lit l'en-tête HTTP "Authorization"
   const authHeader = req.headers.get("Authorization");
+  // Format attendu : "Bearer eyJhbGciOiJIUzI1NiIs..."
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     throw new AuthError("Token d'authentification manquant.", 401);
   }
 
+  // Retire le préfixe "Bearer " pour ne garder que le token
   const token = authHeader.slice(7);
 
   try {
+    // Vérifie signature + expiration ; retourne le contenu décodé
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
     return decoded;
   } catch {
@@ -43,7 +54,7 @@ export function verifyJWT(req: Request): JwtPayload {
 }
 
 // ---------------------------------------------------------------------------
-// Guard de rôle
+// Guard de rôle : vérifie que l'utilisateur a un des rôles autorisés
 // ---------------------------------------------------------------------------
 
 export function requireRole(allowedRoles: Role[]): (user: JwtPayload) => void {
@@ -58,7 +69,7 @@ export function requireRole(allowedRoles: Role[]): (user: JwtPayload) => void {
 }
 
 // ---------------------------------------------------------------------------
-// Classe d'erreur d'authentification personnalisée
+// Erreur métier avec code HTTP associé (401, 403, 500…)
 // ---------------------------------------------------------------------------
 
 export class AuthError extends Error {
@@ -72,7 +83,7 @@ export class AuthError extends Error {
 }
 
 // ---------------------------------------------------------------------------
-// Helper pour construire une réponse d'erreur JSON depuis une AuthError
+// Convertit AuthError → Response.json pour les route.ts
 // ---------------------------------------------------------------------------
 
 export function handleAuthError(error: unknown): Response {

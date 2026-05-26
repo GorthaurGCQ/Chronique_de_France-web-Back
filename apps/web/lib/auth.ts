@@ -1,3 +1,9 @@
+// =============================================================================
+// COUCHE BACK — Configuration serveur Better Auth (sessions, BDD, emails)
+// Utilisé par : app/api/auth/[...all]/route.ts et les route.ts qui appellent
+// auth.api.getSession()
+// =============================================================================
+
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
@@ -6,6 +12,7 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import nodemailer from "nodemailer";
 
+// Transport SMTP pour envoyer les e-mails (reset mot de passe)
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -14,7 +21,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Instance principale Better Auth — cœur de l'authentification côté serveur
 export const auth = betterAuth({
+  // Branche Better Auth sur PostgreSQL via Drizzle (mêmes tables que le reste de l'app)
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
@@ -27,11 +36,13 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
+    // Callback appelé quand l'utilisateur demande un reset : envoie l'e-mail
     sendResetPassword: async ({ user, url }) => {
       await transporter.sendMail({
         from: `"Chronique de France" <${process.env.GMAIL_USER}>`,
         to: user.email,
         subject: "Réinitialisation de votre mot de passe",
+        // Template HTML de l'e-mail (contenu visuel uniquement, pas de logique métier)
         html: `
 <!DOCTYPE html>
 <html lang="fr">
@@ -40,14 +51,12 @@ export const auth = betterAuth({
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f0;padding:40px 0;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
-        <!-- Header -->
         <tr>
           <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:40px 40px 32px;text-align:center;">
             <h1 style="color:#d4af37;margin:0;font-size:26px;font-weight:700;letter-spacing:1px;">⚜ Chronique de France</h1>
             <p style="color:rgba(255,255,255,0.7);margin:8px 0 0;font-size:13px;letter-spacing:2px;text-transform:uppercase;">Réinitialisation du mot de passe</p>
           </td>
         </tr>
-        <!-- Body -->
         <tr>
           <td style="padding:40px;">
             <p style="color:#333;font-size:16px;margin:0 0 16px;">Bonjour <strong>${user.name ?? user.email}</strong>,</p>
@@ -64,7 +73,6 @@ export const auth = betterAuth({
             </p>
           </td>
         </tr>
-        <!-- Footer -->
         <tr>
           <td style="background:#f9f9f7;padding:20px 40px;text-align:center;border-top:1px solid #eee;">
             <p style="color:#bbb;font-size:12px;margin:0;">© ${new Date().getFullYear()} Chronique de France · Tous droits réservés</p>
@@ -80,7 +88,7 @@ export const auth = betterAuth({
   },
   user: {
     deleteUser: {
-      enabled: true,
+      enabled: true, // permet la suppression de compte
     },
   },
   plugins: [
@@ -94,9 +102,10 @@ export const auth = betterAuth({
       },
     }),
   ],
-  secret: process.env.BETTER_AUTH_SECRET,
+  secret: process.env.BETTER_AUTH_SECRET, // clé de signature des sessions
   baseURL: process.env.BETTER_AUTH_URL ?? process.env.NEXTAUTH_URL ?? "http://localhost:3000",
-  trustedOrigins: ["http://localhost:3000"],
+  trustedOrigins: ["http://localhost:3000"], // CORS / origines autorisées
 });
 
+// Type TypeScript de la session (utilisable dans les route.ts)
 export type Session = typeof auth.$Infer.Session;

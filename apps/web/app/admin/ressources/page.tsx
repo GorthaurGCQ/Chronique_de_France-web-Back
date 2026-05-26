@@ -1,3 +1,7 @@
+// =============================================================================
+// COUCHE FRONT — Page admin ressources
+// Communique avec le back via fetch("/api/admin/resources") — voir fetchResources / handleSubmit
+// =============================================================================
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -138,14 +142,15 @@ export default function AdminRessources() {
   const [thumbUploading, setThumbUploading]       = useState(false);
   const [thumbError, setThumbError]               = useState<string | null>(null);
 
+  // FRONT → BACK : chargement de la liste au montage de la page admin
   async function fetchResources() {
-    const res = await fetch("/api/admin/resources");
-    const data = await res.json();
-    if (data.success) setResources(data.data);
+    const res = await fetch("/api/admin/resources"); // GET → app/api/admin/resources/route.ts
+    const data = await res.json(); // parse la réponse JSON du serveur
+    if (data.success) setResources(data.data); // met à jour l'état React si succès
     setLoading(false);
   }
 
-  useEffect(() => { fetchResources(); }, []);
+  useEffect(() => { fetchResources(); }, []); // appel une fois au chargement
 
   // Passer en mode édition
   function startEdit(r: Resource) {
@@ -174,6 +179,7 @@ export default function AdminRessources() {
     setMessage(null);
   }
 
+  // FRONT → BACK : création (POST) ou modification (PATCH) d'une ressource
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitLoading(true);
@@ -181,11 +187,11 @@ export default function AdminRessources() {
 
     const isEditing = editingId !== null;
     const res = await fetch("/api/admin/resources", {
-      method: isEditing ? "PATCH" : "POST",
+      method: isEditing ? "PATCH" : "POST", // verbe HTTP selon le mode formulaire
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(isEditing ? { resourceId: editingId, ...form } : form),
+      body: JSON.stringify(isEditing ? { resourceId: editingId, ...form } : form), // corps JSON
     });
-    const data = await res.json();
+    const data = await res.json(); // { success, data, message } renvoyé par route.ts
 
     if (data.success) {
       setMessage({

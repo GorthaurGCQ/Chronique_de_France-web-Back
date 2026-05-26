@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
+    "test:unit": "vitest run __tests__/unit",
+    "test:integration": "vitest run __tests__/integration",
+    "test:perf": "vitest run __tests__/performance",
+    "test:bench": "vitest bench",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

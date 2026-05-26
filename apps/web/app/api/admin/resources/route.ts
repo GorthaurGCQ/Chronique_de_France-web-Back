@@ -1,13 +1,21 @@
+// =============================================================================
+// ROUTE API BACK — URL : /api/admin/resources
+// CRUD admin ressources | Appelée par app/admin/ressources/page.tsx (fetch)
+// Auth : session Better Auth + rôle admin ou founder
+// =============================================================================
+
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { resources, authUser, type Domaine } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { headers } from "next/headers";
-import { logAudit } from "@/lib/audit";
+import { logAudit } from "@/lib/audit"; // journal des actions admin
 
+// ── GET : liste toutes les ressources (admin) ────────────────────────────────
 export async function GET() {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
+    // Contrôle d'accès : connecté ET rôle autorisé
     if (!session || (session.user.role !== "admin" && session.user.role !== "founder")) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
     }
@@ -22,10 +30,10 @@ export async function GET() {
         region:      resources.region,
         timeline:    resources.timeline,
         domaine:     resources.domaine,
-      mediaUrl:     resources.mediaUrl,
-      bannerUrl:    resources.bannerUrl,
-      thumbnailUrl: resources.thumbnailUrl,
-      publishedAt:  resources.publishedAt,
+        mediaUrl:     resources.mediaUrl,
+        bannerUrl:    resources.bannerUrl,
+        thumbnailUrl: resources.thumbnailUrl,
+        publishedAt:  resources.publishedAt,
         authorName:  authUser.name,
       })
       .from(resources)
@@ -39,6 +47,7 @@ export async function GET() {
   }
 }
 
+// ── POST : créer une ressource ───────────────────────────────────────────────
 export async function POST(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -46,7 +55,7 @@ export async function POST(req: Request) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
     }
 
-    const body = await req.json();
+    const body = await req.json(); // JSON envoyé par le formulaire admin (front)
     const { titre, description, contenu, type, region, timeline, domaine, mediaUrl, bannerUrl, thumbnailUrl } = body;
 
     if (!titre || !description || !contenu || !type || !region || !timeline || !domaine) {
@@ -66,7 +75,7 @@ export async function POST(req: Request) {
         mediaUrl:     mediaUrl     || null,
         bannerUrl:    bannerUrl    || null,
         thumbnailUrl: thumbnailUrl || null,
-        authorId: session.user.id,
+        authorId: session.user.id, // auteur = admin connecté
       })
       .returning({ id: resources.id, titre: resources.titre });
 
@@ -82,6 +91,7 @@ export async function POST(req: Request) {
   }
 }
 
+// ── PATCH : modifier une ressource existante ─────────────────────────────────
 export async function PATCH(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -129,6 +139,7 @@ export async function PATCH(req: Request) {
   }
 }
 
+// ── DELETE : supprimer une ressource ─────────────────────────────────────────
 export async function DELETE(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });

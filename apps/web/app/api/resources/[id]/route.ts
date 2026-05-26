@@ -1,6 +1,7 @@
-// GET    /api/resources/[id] — Détail d'une ressource (public)
-// PUT    /api/resources/[id] — Modification (ADMIN / SCIENTIFIQUE)
-// DELETE /api/resources/[id] — Suppression (ADMIN uniquement)
+// =============================================================================
+// ROUTE API BACK — URL : /api/resources/:id
+// GET = public | PUT/DELETE = JWT + contrôle de rôle
+// =============================================================================
 
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
@@ -8,15 +9,16 @@ import { resources, users } from "@/db/schema";
 import { verifyJWT, requireRole, handleAuthError } from "@/lib/jwt";
 import { parseBody, updateResourceSchema } from "@/lib/validation";
 
+// Next.js 15 : params est une Promise (id dynamique dans l'URL)
 type RouteParams = { params: Promise<{ id: string }> };
 
 // ---------------------------------------------------------------------------
-// GET — Détail d'une ressource
+// GET — Détail d'une ressource (accessible sans être connecté)
 // ---------------------------------------------------------------------------
 
 export async function GET(_req: Request, { params }: RouteParams) {
   try {
-    const { id } = await params;
+    const { id } = await params; // ex. /api/resources/abc-123 → id = "abc-123"
 
     const [resource] = await db
       .select({
@@ -56,13 +58,13 @@ export async function GET(_req: Request, { params }: RouteParams) {
 }
 
 // ---------------------------------------------------------------------------
-// PUT — Modification d'une ressource
+// PUT — Modification (JWT obligatoire, rôles ADMIN ou SCIENTIFIQUE)
 // ---------------------------------------------------------------------------
 
 export async function PUT(req: Request, { params }: RouteParams) {
   try {
-    const jwtPayload = verifyJWT(req);
-    requireRole(["ADMIN", "SCIENTIFIQUE"])(jwtPayload);
+    const jwtPayload = verifyJWT(req); // lit Authorization: Bearer …
+    requireRole(["ADMIN", "SCIENTIFIQUE"])(jwtPayload); // 403 si mauvais rôle
 
     const { id } = await params;
 
@@ -80,7 +82,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
     }
 
     const body = await req.json();
-    const parsed = parseBody(updateResourceSchema, body);
+    const parsed = parseBody(updateResourceSchema, body); // validation Zod
 
     if (!parsed.success) {
       return Response.json(
@@ -107,12 +109,12 @@ export async function PUT(req: Request, { params }: RouteParams) {
       message: "Ressource mise à jour avec succès.",
     });
   } catch (error) {
-    return handleAuthError(error);
+    return handleAuthError(error); // 401/403 formatés en JSON
   }
 }
 
 // ---------------------------------------------------------------------------
-// DELETE — Suppression d'une ressource
+// DELETE — Suppression (JWT + rôle ADMIN uniquement)
 // ---------------------------------------------------------------------------
 
 export async function DELETE(req: Request, { params }: RouteParams) {
