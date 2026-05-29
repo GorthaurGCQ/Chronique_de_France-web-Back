@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Source_Sans_3 } from "next/font/google";
+import { Cinzel_Decorative, MedievalSharp, Source_Sans_3 } from "next/font/google";
 import NavbarWrapper from "@/components/NavbarWrapper";
 import FooterWrapper from "@/components/FooterWrapper";
 import "./globals.css";
 
-const playfairDisplay = Playfair_Display({
+/** Titres et accents — inspiration médiévale / patrimoniale */
+const cinzelDecorative = Cinzel_Decorative({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["400", "700", "900"],
+});
+
+/** Accroches fantastiques (accueil, citations) */
+const medievalSharp = MedievalSharp({
+  variable: "--font-medieval",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 const sourceSans3 = Source_Sans_3({
@@ -29,7 +37,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={`${playfairDisplay.variable} ${sourceSans3.variable}`}>
+      <body
+        className={`${cinzelDecorative.variable} ${medievalSharp.variable} ${sourceSans3.variable}`}
+      >
         <NavbarWrapper />
         {children}
         <FooterWrapper />

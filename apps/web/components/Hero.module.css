@@ -1,71 +1,346 @@
 .hero {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Bannière (optimisée GPU : peu de calques, transform/opacity) ─── */
+.banner {
   position: relative;
   min-height: 520px;
+  width: 100%;
+  overflow: hidden;
+  background: var(--color-navy);
+  contain: layout paint;
+  isolation: isolate;
+}
+
+.bannerMedia {
+  position: absolute;
+  inset: -8%;
+  z-index: 0;
+  transform: translateZ(0);
+}
+
+.bannerImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bannerMedia {
+    will-change: transform;
+    animation: bannerKenBurns 28s ease-in-out infinite alternate;
+  }
+}
+
+/* Voile + vignette statiques (pas d'animation = moins de repaints) */
+.bannerTint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: rgba(10, 20, 45, 0.18);
+  box-shadow: inset 0 0 100px rgba(10, 20, 45, 0.22);
+}
+
+/* Lueurs chaud/froid + centre : un seul calque, pulse via opacity */
+.bannerGlow {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 55% 80% at 18% 55%,
+      rgba(212, 175, 90, 0.35) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 55% 80% at 82% 55%,
+      rgba(90, 140, 220, 0.28) 0%,
+      transparent 70%
+    );
+  transform: translateZ(0);
+}
+
+.bannerGlow::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: min(42vw, 380px);
+  height: min(32vw, 280px);
+  transform: translate(-50%, -50%) translateZ(0);
+  background: radial-gradient(
+    circle,
+    rgba(255, 248, 230, 0.22) 0%,
+    rgba(255, 248, 230, 0.06) 45%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bannerGlow {
+    animation: bannerGlowPulse 8s ease-in-out infinite;
+  }
+
+  .bannerGlow::after {
+    will-change: transform, opacity;
+    animation: centerBreath 5s ease-in-out infinite;
+  }
+}
+
+/* Reflet : bande étroite déplacée en transform (pas background-position) */
+.bannerShine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  transform: translateX(-120%) translateZ(0);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bannerShine {
+    will-change: transform;
+    animation: bannerShineMove 9s ease-in-out infinite alternate;
+  }
+}
+
+.particles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  opacity: 0;
+  transform: translateZ(0);
+  animation: particleFloat 7s ease-in-out infinite;
+  animation-delay: var(--particle-delay, 0s);
+}
+
+.particle[data-i="0"] { left: 12%; top: 35%; }
+.particle[data-i="1"] { left: 22%; top: 62%; }
+.particle[data-i="2"] { left: 78%; top: 38%; }
+.particle[data-i="3"] { left: 88%; top: 58%; }
+.particle[data-i="4"] { left: 45%; top: 28%; }
+.particle[data-i="5"] { left: 55%; top: 68%; }
+
+.frameCorners {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .frameCorners {
+    animation: cornerGlow 4s ease-in-out infinite;
+  }
+}
+
+.frameCorner {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+}
+
+.frameCorner[data-pos="tl"] {
+  top: 1rem;
+  left: 1rem;
+  border-top: 2px solid var(--color-gold);
+  border-left: 2px solid var(--color-gold);
+}
+
+.frameCorner[data-pos="tr"] {
+  top: 1rem;
+  right: 1rem;
+  border-top: 2px solid var(--color-gold);
+  border-right: 2px solid var(--color-gold);
+}
+
+.frameCorner[data-pos="bl"] {
+  bottom: 1rem;
+  left: 1rem;
+  border-bottom: 2px solid var(--color-gold);
+  border-left: 2px solid var(--color-gold);
+}
+
+.frameCorner[data-pos="br"] {
+  bottom: 1rem;
+  right: 1rem;
+  border-bottom: 2px solid var(--color-gold);
+  border-right: 2px solid var(--color-gold);
+}
+
+/* ─── Bloc sous la bannière ─── */
+.below {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  text-align: center;
+  padding: 2.5rem 2rem 3rem;
+  background: var(--color-bg);
+}
+
+/* Banderole animée autour du texte */
+.banderoleWrap {
+  position: relative;
+  width: 100%;
+  max-width: 920px;
+  padding: 0 1.25rem;
+  opacity: 0;
+  transform: translateY(24px) scale(0.96);
+  animation: banderoleEnter 1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+}
+
+.banderole {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 5rem 2rem;
+  gap: 1rem;
+  padding: 1.6rem 2rem 1.75rem;
+  background: linear-gradient(
+    165deg,
+    #faf6ee 0%,
+    #f3ead6 35%,
+    #ebe0c8 70%,
+    #e2d4b8 100%
+  );
+  border: 2px solid var(--color-gold);
+  border-radius: 2px;
+  box-shadow:
+    0 6px 28px rgba(26, 39, 68, 0.14),
+    0 2px 0 rgba(255, 255, 255, 0.6) inset,
+    0 -1px 0 rgba(184, 147, 58, 0.25) inset;
   overflow: hidden;
 }
 
-.overlay {
+@media (prefers-reduced-motion: no-preference) {
+  .banderole {
+    animation: banderoleSway 7s ease-in-out 1.2s infinite;
+  }
+}
+
+.banderole::before,
+.banderole::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-gold),
+    var(--color-gold),
+    transparent
+  );
+  opacity: 0.85;
+}
+
+.banderole::before {
+  top: 0;
+}
+
+.banderole::after {
+  bottom: 0;
+}
+
+.banderoleShine {
   position: absolute;
   inset: 0;
-  background: rgba(10, 20, 45, 0.62);
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  pointer-events: none;
+  animation: banderoleShine 5s ease-in-out infinite;
+}
+
+.banderoleOrnament {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  color: var(--color-gold);
+  opacity: 0.9;
+  animation: ornamentPulse 3s ease-in-out infinite;
+}
+
+.banderoleOrnament:last-of-type {
+  animation-delay: 1.5s;
+}
+
+.banderoleTailLeft,
+.banderoleTailRight {
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  transform: translateY(-50%);
+  filter: drop-shadow(0 2px 4px rgba(26, 39, 68, 0.15));
+}
+
+.banderoleTailLeft {
+  left: 0.35rem;
+  border-width: 14px 18px 14px 0;
+  border-color: transparent #a67c2e transparent transparent;
+  animation: tailFlutterLeft 4s ease-in-out infinite;
+}
+
+.banderoleTailRight {
+  right: 0.35rem;
+  border-width: 14px 0 14px 18px;
+  border-color: transparent transparent transparent #a67c2e;
+  animation: tailFlutterRight 4s ease-in-out infinite;
+}
+
+.tagline {
+  margin: 0;
+  flex: 1;
+  font-family: var(--font-medieval), var(--font-display), serif;
+  color: var(--color-navy);
+  font-size: clamp(1.25rem, 3.2vw, 1.95rem);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  position: relative;
   z-index: 1;
 }
 
-.container {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 860px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0;
-  text-align: center;
-  min-height: 100%;
-}
-
-.bottom {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  margin-top: auto;
-  padding-top: 12rem;
-}
-
-/* Badge */
-.badge {
-  display: inline-block;
-  padding: 0.35rem 1.1rem;
-  border: 1px solid var(--color-gold);
-  color: var(--color-gold);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  border-radius: 4px;
-}
-
-
-/* Subtitle */
-.subtitle {
-  color: #a8b4c8;
-  font-size: 1rem;
-  max-width: 560px;
-  line-height: 1.7;
-}
-
-/* Actions */
 .actions {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
   justify-content: center;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: taglineEnter 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards;
 }
 
 .btnOutlineGold {
@@ -87,8 +362,8 @@
 .btnWhite {
   display: inline-block;
   padding: 0.7rem 1.6rem;
-  background: var(--color-white);
-  color: var(--color-navy);
+  background: var(--color-navy);
+  color: var(--color-white);
   font-size: 0.9rem;
   font-weight: 600;
   border-radius: 6px;
@@ -96,18 +371,207 @@
 }
 
 .btnWhite:hover {
-  background: #e8e8e8;
+  background: #243556;
 }
 
-/* ─── Responsive ─────────────────────────────────── */
-@media (max-width: 768px) {
-  .hero {
-    min-height: 420px;
-    padding: 3rem 1.25rem 3rem;
+@keyframes bannerKenBurns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  100% {
+    transform: scale(1.08) translate(-1.5%, -0.8%);
+  }
+}
+
+@keyframes bannerGlowPulse {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes centerBreath {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+}
+
+@keyframes bannerShineMove {
+  0% {
+    transform: translateX(-120%) translateZ(0);
+  }
+  100% {
+    transform: translateX(320%) translateZ(0);
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.5);
+  }
+  20% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) scale(1);
+  }
+}
+
+@keyframes cornerGlow {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes taglineEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes banderoleEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes banderoleSway {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.5deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(0.5deg);
+  }
+}
+
+@keyframes banderoleShine {
+  0%,
+  100% {
+    background-position: 200% 0;
+  }
+  50% {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes ornamentPulse {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes tailFlutterLeft {
+  0%,
+  100% {
+    transform: translateY(-50%) translateX(0);
+  }
+  50% {
+    transform: translateY(-52%) translateX(-3px);
+  }
+}
+
+@keyframes tailFlutterRight {
+  0%,
+  100% {
+    transform: translateY(-50%) translateX(0);
+  }
+  50% {
+    transform: translateY(-48%) translateX(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bannerMedia,
+  .bannerGlow,
+  .bannerGlow::after,
+  .bannerShine,
+  .particle,
+  .frameCorners {
+    animation: none;
+    will-change: auto;
   }
 
-  .bottom {
-    padding-top: 8rem;
+  .bannerMedia {
+    inset: 0;
+  }
+
+  .bannerShine {
+    transform: translateX(-120%) translateZ(0);
+  }
+
+  .banderoleWrap,
+  .actions {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .banderole {
+    animation: none;
+  }
+
+  .banderoleShine,
+  .banderoleOrnament,
+  .banderoleTailLeft,
+  .banderoleTailRight {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .banner {
+    min-height: 420px;
+  }
+
+  .below {
+    padding: 2rem 1.25rem 2.5rem;
+    gap: 1.5rem;
+  }
+
+  .banderole {
+    flex-direction: column;
+    padding: 1.35rem 1.25rem 1.5rem;
+    gap: 0.5rem;
+  }
+
+  .banderoleOrnament {
+    font-size: 0.95rem;
+  }
+
+  .banderoleTailLeft,
+  .banderoleTailRight {
+    display: none;
+  }
+
+  .tagline {
+    font-size: clamp(1.05rem, 4vw, 1.35rem);
   }
 
   .actions {
