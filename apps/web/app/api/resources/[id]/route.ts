@@ -5,7 +5,7 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { resources, users } from "@/db/schema";
+import { resources, authUser } from "@/db/schema";
 import { verifyJWT, requireRole, handleAuthError } from "@/lib/jwt";
 import { parseBody, updateResourceSchema } from "@/lib/validation";
 
@@ -31,13 +31,13 @@ export async function GET(_req: Request, { params }: RouteParams) {
         publishedAt: resources.publishedAt,
         updatedAt: resources.updatedAt,
         author: {
-          id: users.id,
-          nom: users.nom,
-          email: users.email,
+          id: authUser.id,
+          nom: authUser.name,
+          email: authUser.email,
         },
       })
       .from(resources)
-      .leftJoin(users, eq(resources.authorId, users.id))
+      .leftJoin(authUser, eq(resources.authorId, authUser.id))
       .where(eq(resources.id, id))
       .limit(1);
 
@@ -98,9 +98,9 @@ export async function PUT(req: Request, { params }: RouteParams) {
       .returning();
 
     const [author] = await db
-      .select({ id: users.id, nom: users.nom, email: users.email })
-      .from(users)
-      .where(eq(users.id, updated.authorId))
+      .select({ id: authUser.id, nom: authUser.name, email: authUser.email })
+      .from(authUser)
+      .where(eq(authUser.id, updated.authorId))
       .limit(1);
 
     return Response.json({

@@ -3,7 +3,7 @@
 
 import { eq, or, ilike, and, asc, count, SQL } from "drizzle-orm";
 import { db } from "@/db";
-import { events, users } from "@/db/schema";
+import { events, authUser } from "@/db/schema";
 import { verifyJWT, requireRole, handleAuthError } from "@/lib/jwt";
 import { parseBody, createEventSchema, eventQuerySchema } from "@/lib/validation";
 
@@ -55,13 +55,13 @@ export async function GET(req: Request) {
           createdAt: events.createdAt,
           updatedAt: events.updatedAt,
           organisateur: {
-            id: users.id,
-            nom: users.nom,
-            email: users.email,
+            id: authUser.id,
+            nom: authUser.name,
+            email: authUser.email,
           },
         })
         .from(events)
-        .leftJoin(users, eq(events.organisateurId, users.id))
+        .leftJoin(authUser, eq(events.organisateurId, authUser.id))
         .where(where)
         .orderBy(asc(events.date))
         .limit(limit)
@@ -113,9 +113,9 @@ export async function POST(req: Request) {
       .returning();
 
     const [organisateur] = await db
-      .select({ id: users.id, nom: users.nom, email: users.email })
-      .from(users)
-      .where(eq(users.id, jwtPayload.userId))
+      .select({ id: authUser.id, nom: authUser.name, email: authUser.email })
+      .from(authUser)
+      .where(eq(authUser.id, jwtPayload.userId))
       .limit(1);
 
     return Response.json(
