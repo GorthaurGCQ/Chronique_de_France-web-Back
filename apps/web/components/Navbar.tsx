@@ -10,6 +10,7 @@ import styles from "./Navbar.module.css";
 const navLinks = [
   { href: "/", label: "Accueil" },
   { href: "/bibliotheque", label: "Bibliothèque" },
+  { href: "/toto", label: "toto" },
   { href: "/evenement", label: "Événements" },
   { href: "/a-propos", label: "À propos" },
 ];

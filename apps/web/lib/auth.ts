@@ -104,7 +104,11 @@ export const auth = betterAuth({
   ],
   secret: process.env.BETTER_AUTH_SECRET, // clé de signature des sessions
   baseURL: process.env.BETTER_AUTH_URL ?? process.env.NEXTAUTH_URL ?? "http://localhost:3000",
-  trustedOrigins: ["http://localhost:3000"], // CORS / origines autorisées
+  trustedOrigins: [
+    "http://localhost:3000",
+    "http://localhost:8081",  // Expo Web
+    "http://localhost:19006", // Expo Web (port alternatif)
+  ],
 });
 
 // Type TypeScript de la session (utilisable dans les route.ts)
