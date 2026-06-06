@@ -27,9 +27,17 @@ export async function GET(_req: Request, { params }: RouteParams) {
         description: resources.description,
         contenu: resources.contenu,
         type: resources.type,
+        timeline: resources.timeline,
+        region: resources.region,
+        domaine: resources.domaine,
+        // URLs Supabase publiques — exposées pour l'app mobile (pas d'accès direct BDD)
+        thumbnailUrl: resources.thumbnailUrl,
+        mediaUrl: resources.mediaUrl,
+        bannerUrl: resources.bannerUrl,
         authorId: resources.authorId,
         publishedAt: resources.publishedAt,
         updatedAt: resources.updatedAt,
+        authorName: authUser.name,
         author: {
           id: authUser.id,
           nom: authUser.name,
