@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { signJWT, verifyJWT } from "@/lib/jwt";
+import { signJWT, verifyJWT } from "@/lib/auth/jwt";
 
 function measureMs(fn: () => void, iterations: number): number {
   const start = performance.now();

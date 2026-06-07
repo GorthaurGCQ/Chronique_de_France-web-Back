@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { authClient, signIn, signUp, signOut, useSession } from "@/lib/auth-client";
+import { authClient, signIn, signUp, signOut, useSession } from "@/lib/auth/auth-client";
 
 describe("auth-client", () => {
   it("exporte le client Better Auth", () => {

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 
 import {
   updateResourceSchema,
@@ -6,7 +6,7 @@ import {
   resourceQuerySchema,
   eventQuerySchema,
   parseBody,
-} from "@/lib/validation";
+} from "@/models_M/schemas/validation";
 
 describe("updateResourceSchema", () => {
   it("accepte un objet vide (tous les champs optionnels)", () => {

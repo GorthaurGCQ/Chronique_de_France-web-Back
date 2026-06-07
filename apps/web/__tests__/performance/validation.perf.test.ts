@@ -1,11 +1,11 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 
 import {
   registerSchema,
   loginSchema,
   createResourceSchema,
   parseBody,
-} from "@/lib/validation";
+} from "@/models_M/schemas/validation";
 
 /** Mesure le temps d'exécution d'une fonction synchrone (en ms). */
 function measureMs(fn: () => void, iterations: number): number {

@@ -1,6 +1,6 @@
 import { bench, describe } from "vitest";
 
-import { signJWT, verifyJWT } from "@/lib/jwt";
+import { signJWT, verifyJWT } from "@/lib/auth/jwt";
 
 /**
  * Benchmarks JWT — npm run test:bench

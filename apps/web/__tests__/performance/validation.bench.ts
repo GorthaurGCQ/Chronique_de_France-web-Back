@@ -1,6 +1,6 @@
-import { bench, describe } from "vitest";
+﻿import { bench, describe } from "vitest";
 
-import { loginSchema, registerSchema, createResourceSchema, parseBody } from "@/lib/validation";
+import { loginSchema, registerSchema, createResourceSchema, parseBody } from "@/models_M/schemas/validation";
 
 /**
  * Benchmarks interactifs (comparaison de performances).

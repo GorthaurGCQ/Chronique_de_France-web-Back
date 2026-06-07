@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 
 import {
   registerSchema,
@@ -7,7 +7,7 @@ import {
   createEventSchema,
   paginationSchema,
   parseBody,
-} from "@/lib/validation";
+} from "@/models_M/schemas/validation";
 
 // ---------------------------------------------------------------------------
 // registerSchema

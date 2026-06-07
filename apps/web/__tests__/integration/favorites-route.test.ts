@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 
 /**
  * Tests d'intégration — route /api/favorites
@@ -33,7 +33,7 @@ const mockInsert = vi.fn();
 const mockUpdate = vi.fn();
 const mockDelete = vi.fn();
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth/auth", () => ({
   auth: {
     api: {
       getSession: (...args: unknown[]) => mockGetSession(...args),
@@ -45,7 +45,7 @@ vi.mock("next/headers", () => ({
   headers: vi.fn().mockResolvedValue(new Headers()),
 }));
 
-vi.mock("@/db", () => ({
+vi.mock("@/models_M/db", () => ({
   db: {
     select: (...args: unknown[]) => mockSelect(...args),
     insert: (...args: unknown[]) => mockInsert(...args),
@@ -61,7 +61,7 @@ describe("GET /api/favorites", () => {
 
   it("retourne 401 si l'utilisateur n'est pas connecté", async () => {
     mockGetSession.mockResolvedValue(null);
-    const { GET } = await import("@/app/api/favorites/route");
+    const { GET } = await import("@/app/(C)/api/favorites/route");
 
     const res = await GET();
     const body = await res.json();
@@ -93,7 +93,7 @@ describe("GET /api/favorites", () => {
       ]),
     );
 
-    const { GET } = await import("@/app/api/favorites/route");
+    const { GET } = await import("@/app/(C)/api/favorites/route");
     const res = await GET();
     const body = await res.json();
 
@@ -114,7 +114,7 @@ describe("POST /api/favorites", () => {
       user: { id: "user-1" },
     });
 
-    const { POST } = await import("@/app/api/favorites/route");
+    const { POST } = await import("@/app/(C)/api/favorites/route");
     const res = await POST(
       new Request("http://localhost/api/favorites", {
         method: "POST",
@@ -133,7 +133,7 @@ describe("POST /api/favorites", () => {
     });
     mockInsert.mockReturnValue(createInsertChain({ id: "fav-new" }));
 
-    const { POST } = await import("@/app/api/favorites/route");
+    const { POST } = await import("@/app/(C)/api/favorites/route");
     const res = await POST(
       new Request("http://localhost/api/favorites", {
         method: "POST",
@@ -162,7 +162,7 @@ describe("DELETE /api/favorites", () => {
       where: vi.fn().mockResolvedValue(undefined),
     });
 
-    const { DELETE } = await import("@/app/api/favorites/route");
+    const { DELETE } = await import("@/app/(C)/api/favorites/route");
     const res = await DELETE(
       new Request("http://localhost/api/favorites", {
         method: "DELETE",

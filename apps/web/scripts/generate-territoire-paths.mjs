@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Generates TypeScript data files for historical territories.
  * Uses the same Mercator projection as generate-svg-paths.mjs.
  * Run: node scripts/generate-territoire-paths.mjs
@@ -453,8 +453,8 @@ writeFileSync(join(OUT, "types.ts"), `export type Territoire = {
 
 // contemporaine.ts — wraps france-svg-paths.ts
 writeFileSync(join(OUT, "contemporaine.ts"), `// Reuses the modern administrative regions from france-svg-paths.ts
-import { FRANCE_SVG_PATHS } from "@/data/france-svg-paths";
-import { REGIONS } from "@/data/regions";
+import { FRANCE_SVG_PATHS } from "@/models_M/data/france-svg-paths";
+import { REGIONS } from "@/models_M/data/regions";
 import type { Territoire } from "./types";
 
 export const TERRITOIRES_CONTEMPORAINE: Territoire[] = FRANCE_SVG_PATHS.map(({ code, nom, d }) => {

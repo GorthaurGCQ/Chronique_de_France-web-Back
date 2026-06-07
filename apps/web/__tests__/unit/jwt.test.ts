@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { AuthError, requireRole, handleAuthError, signJWT, verifyJWT } from "@/lib/jwt";
+import { AuthError, requireRole, handleAuthError, signJWT, verifyJWT } from "@/lib/auth/jwt";
 
 // ---------------------------------------------------------------------------
 // AuthError
