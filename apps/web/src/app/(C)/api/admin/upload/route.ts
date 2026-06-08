@@ -5,13 +5,16 @@ import { headers } from "next/headers";
 import { isAdminRole } from "@/lib/services_M/admin/auth";
 import { uploadAdminImage } from "@/lib/services_M/admin/upload.service";
 
+/** Handler POST — upload une image pour le panel admin (bannière, miniature…) */
 export async function POST(req: Request) {
   try {
+    // Vérification session + rôle admin | founder
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session || !isAdminRole(session.user.role)) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
     }
 
+    // Extraction du fichier depuis le formData
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
 
@@ -19,6 +22,7 @@ export async function POST(req: Request) {
       return Response.json({ success: false, message: "Aucun fichier reçu." }, { status: 400 });
     }
 
+    // Upload vers le stockage (Supabase) + retour de l'URL publique
     const result = await uploadAdminImage(file);
 
     if ("error" in result) {

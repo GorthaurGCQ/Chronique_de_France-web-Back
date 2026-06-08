@@ -5,10 +5,13 @@ import { getAdminSessionOr403 } from "@/lib/auth/require-session";
 import { parseBody, createEventSchema, eventQuerySchema } from "@/models_M/schemas/validation";
 import { listEvents, createEvent } from "@/lib/services_M/events.service";
 
+/** Handler GET — retourne la liste paginée des événements (accès public) */
 export async function GET(req: Request) {
   try {
+    // Extraction des query params (?page, ?limit, ?search)
     const { searchParams } = new URL(req.url);
 
+    // Validation Zod des paramètres de pagination/recherche
     const parsed = eventQuerySchema.safeParse({
       page: searchParams.get("page") ?? 1,
       limit: searchParams.get("limit") ?? 10,
@@ -22,6 +25,7 @@ export async function GET(req: Request) {
       );
     }
 
+    // Appel service métier — requête BDD paginée
     const { data, meta } = await listEvents(parsed.data);
     return Response.json({ success: true, data, meta });
   } catch {
@@ -32,11 +36,14 @@ export async function GET(req: Request) {
   }
 }
 
+/** Handler POST — crée un événement (réservé admin | founder) */
 export async function POST(req: Request) {
   try {
+    // Vérification session + rôle admin | founder
     const authResult = await getAdminSessionOr403();
     if (!authResult.ok) return authResult.response;
 
+    // Lecture et validation du body JSON (schéma createEventSchema)
     const body = await req.json();
     const parsed = parseBody(createEventSchema, body);
 
@@ -47,6 +54,7 @@ export async function POST(req: Request) {
       );
     }
 
+    // Insertion en BDD via le service, avec l'ID de l'auteur
     const event = await createEvent(parsed.data, authResult.session.user.id);
 
     return Response.json(

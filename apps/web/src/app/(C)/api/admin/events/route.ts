@@ -13,8 +13,10 @@ import {
   deleteAdminEvent,
 } from "@/lib/services_M/admin/events.service";
 
+/** Handler GET — retourne tous les événements pour le panel admin */
 export async function GET() {
   try {
+    // Vérification session + rôle admin | founder
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session || !isAdminRole(session.user.role)) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
@@ -31,8 +33,10 @@ export async function GET() {
   }
 }
 
+/** Handler POST — crée un événement depuis le panel admin (avec audit) */
 export async function POST(req: Request) {
   try {
+    // Vérification session + rôle admin | founder
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session || !isAdminRole(session.user.role)) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
@@ -41,10 +45,12 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { titre, description, contenu, lieu, date, thumbnailUrl, region, timeline, domaine } = body;
 
+    // Validation manuelle des champs obligatoires
     if (!titre || !description || !lieu || !date || !region || !timeline || !domaine) {
       return Response.json({ success: false, message: "Tous les champs sont requis." }, { status: 400 });
     }
 
+    // Insertion en BDD + journalisation audit
     const event = await createAdminEvent(
       { titre, description, contenu, lieu, date, thumbnailUrl, region, timeline, domaine },
       session.user.id,
@@ -61,8 +67,10 @@ export async function POST(req: Request) {
   }
 }
 
+/** Handler PATCH — modifie un événement depuis le panel admin (avec audit) */
 export async function PATCH(req: Request) {
   try {
+    // Vérification session + rôle admin | founder
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session || !isAdminRole(session.user.role)) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
@@ -78,6 +86,7 @@ export async function PATCH(req: Request) {
       return Response.json({ success: false, message: "Tous les champs sont requis." }, { status: 400 });
     }
 
+    // Mise à jour en BDD + journalisation audit
     const updated = await updateAdminEvent(
       eventId,
       { titre, description, contenu, lieu, date, thumbnailUrl, region, timeline, domaine },
@@ -94,8 +103,10 @@ export async function PATCH(req: Request) {
   }
 }
 
+/** Handler DELETE — supprime un événement depuis le panel admin (avec audit) */
 export async function DELETE(req: Request) {
   try {
+    // Vérification session + rôle admin | founder
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session || !isAdminRole(session.user.role)) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
@@ -106,6 +117,7 @@ export async function DELETE(req: Request) {
       return Response.json({ success: false, message: "ID manquant." }, { status: 400 });
     }
 
+    // Suppression en BDD + journalisation audit
     await deleteAdminEvent(eventId, {
       actorId: session.user.id,
       actorName: session.user.name,

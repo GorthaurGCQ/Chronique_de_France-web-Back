@@ -12,13 +12,16 @@ import {
   removeFavorite,
 } from "@/lib/services_M/favorites.service";
 
+/** Handler GET — retourne la liste des favoris de l'utilisateur connecté */
 export async function GET() {
   try {
+    // Vérification session utilisateur
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
       return Response.json({ success: false, message: "Non authentifié." }, { status: 401 });
     }
 
+    // Récupération des favoris en BDD pour cet utilisateur
     const list = await listFavorites(session.user.id);
     return Response.json({ success: true, data: list });
   } catch (err) {
@@ -27,8 +30,10 @@ export async function GET() {
   }
 }
 
+/** Handler POST — ajoute une ressource aux favoris de l'utilisateur */
 export async function POST(req: Request) {
   try {
+    // Vérification session utilisateur
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
       return Response.json({ success: false, message: "Non authentifié." }, { status: 401 });
@@ -39,6 +44,7 @@ export async function POST(req: Request) {
       return Response.json({ success: false, message: "resourceId manquant." }, { status: 400 });
     }
 
+    // Insertion du favori en BDD
     const fav = await addFavorite(session.user.id, resourceId);
     return Response.json({ success: true, data: fav ?? null }, { status: 201 });
   } catch (err) {
@@ -47,8 +53,10 @@ export async function POST(req: Request) {
   }
 }
 
+/** Handler PATCH — met à jour la note personnelle d'un favori */
 export async function PATCH(req: Request) {
   try {
+    // Vérification session utilisateur
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
       return Response.json({ success: false, message: "Non authentifié." }, { status: 401 });
@@ -59,6 +67,7 @@ export async function PATCH(req: Request) {
       return Response.json({ success: false, message: "resourceId manquant." }, { status: 400 });
     }
 
+    // Mise à jour de la note en BDD
     await updateFavoriteNote(session.user.id, resourceId, note ?? null);
     return Response.json({ success: true });
   } catch (err) {
@@ -67,8 +76,10 @@ export async function PATCH(req: Request) {
   }
 }
 
+/** Handler DELETE — retire une ressource des favoris de l'utilisateur */
 export async function DELETE(req: Request) {
   try {
+    // Vérification session utilisateur
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
       return Response.json({ success: false, message: "Non authentifié." }, { status: 401 });
@@ -79,6 +90,7 @@ export async function DELETE(req: Request) {
       return Response.json({ success: false, message: "resourceId manquant." }, { status: 400 });
     }
 
+    // Suppression du favori en BDD
     await removeFavorite(session.user.id, resourceId);
     return Response.json({ success: true });
   } catch (err) {

@@ -5,10 +5,13 @@ import { getAdminSessionOr403 } from "@/lib/auth/require-session";
 import { parseBody, createResourceSchema, resourceQuerySchema } from "@/models_M/schemas/validation";
 import { listResources, createResource } from "@/lib/services_M/resources.service";
 
+/** Handler GET — retourne la liste paginée des ressources (accès public) */
 export async function GET(req: Request) {
   try {
+    // Extraction des query params (?page, ?limit, ?search, ?type)
     const { searchParams } = new URL(req.url);
 
+    // Validation Zod des paramètres de pagination/filtrage
     const parsed = resourceQuerySchema.safeParse({
       page: searchParams.get("page") ?? 1,
       limit: searchParams.get("limit") ?? 10,
@@ -23,6 +26,7 @@ export async function GET(req: Request) {
       );
     }
 
+    // Appel service métier — requête BDD paginée
     const { data, meta } = await listResources(parsed.data);
     return Response.json({ success: true, data, meta });
   } catch (error) {
@@ -34,11 +38,14 @@ export async function GET(req: Request) {
   }
 }
 
+/** Handler POST — crée une ressource (réservé admin | founder) */
 export async function POST(req: Request) {
   try {
+    // Vérification session + rôle admin | founder
     const authResult = await getAdminSessionOr403();
     if (!authResult.ok) return authResult.response;
 
+    // Lecture et validation du body JSON (schéma createResourceSchema)
     const body = await req.json();
     const parsed = parseBody(createResourceSchema, body);
 
@@ -49,6 +56,7 @@ export async function POST(req: Request) {
       );
     }
 
+    // Insertion en BDD via le service, avec l'ID de l'auteur
     const resource = await createResource(parsed.data, authResult.session.user.id);
 
     return Response.json(

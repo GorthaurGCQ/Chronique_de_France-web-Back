@@ -9,14 +9,18 @@ import {
   deleteEventRegistration,
 } from "@/lib/services_M/admin/events.service";
 
+/** Handler GET — liste les inscriptions d'un événement donné */
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    // Vérification session + rôle admin | founder
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session || !isAdminRole(session.user.role)) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
     }
 
     const { id } = await params;
+
+    // Lecture des inscriptions en BDD pour cet événement
     const list = await listEventRegistrations(id);
     return Response.json({ success: true, data: list });
   } catch (err) {
@@ -25,8 +29,10 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   }
 }
 
+/** Handler DELETE — supprime une inscription à un événement */
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    // Vérification session + rôle admin | founder
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session || !isAdminRole(session.user.role)) {
       return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
@@ -38,6 +44,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       return Response.json({ success: false, message: "ID manquant." }, { status: 400 });
     }
 
+    // Suppression de l'inscription en BDD
     await deleteEventRegistration(registrationId);
     return Response.json({ success: true });
   } catch (err) {

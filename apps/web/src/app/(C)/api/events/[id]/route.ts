@@ -13,9 +13,12 @@ import {
 
 type RouteParams = { params: Promise<{ id: string }> };
 
+/** Handler GET — retourne le détail d'un événement par son ID (accès public) */
 export async function GET(_req: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
+
+    // Recherche de l'événement en BDD
     const event = await getEventById(id);
 
     if (!event) {
@@ -34,13 +37,16 @@ export async function GET(_req: Request, { params }: RouteParams) {
   }
 }
 
+/** Handler PUT — modifie un événement existant (réservé admin | founder) */
 export async function PUT(req: Request, { params }: RouteParams) {
   try {
+    // Vérification session + rôle admin | founder
     const authResult = await getAdminSessionOr403();
     if (!authResult.ok) return authResult.response;
 
     const { id } = await params;
 
+    // Vérifie que l'événement existe avant modification
     if (!(await eventExists(id))) {
       return Response.json(
         { success: false, message: "Événement introuvable." },
@@ -48,6 +54,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       );
     }
 
+    // Lecture et validation du body JSON (schéma updateEventSchema)
     const body = await req.json();
     const parsed = parseBody(updateEventSchema, body);
 
@@ -58,6 +65,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       );
     }
 
+    // Mise à jour en BDD via le service
     const updated = await updateEvent(id, parsed.data);
 
     return Response.json({
@@ -74,13 +82,16 @@ export async function PUT(req: Request, { params }: RouteParams) {
   }
 }
 
+/** Handler DELETE — supprime un événement (réservé admin | founder) */
 export async function DELETE(_req: Request, { params }: RouteParams) {
   try {
+    // Vérification session + rôle admin | founder
     const authResult = await getAdminSessionOr403();
     if (!authResult.ok) return authResult.response;
 
     const { id } = await params;
 
+    // Vérifie que l'événement existe avant suppression
     if (!(await eventExists(id))) {
       return Response.json(
         { success: false, message: "Événement introuvable." },
@@ -88,6 +99,7 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
       );
     }
 
+    // Suppression en BDD via le service
     await deleteEvent(id);
 
     return Response.json({ success: true, message: "Événement supprimé avec succès." });

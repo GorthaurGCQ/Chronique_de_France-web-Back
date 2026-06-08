@@ -5,17 +5,19 @@ import { authUser } from "@/models_M/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth/auth";
 
+/** Handler POST — déclenche l'envoi d'un email de réinitialisation de mot de passe */
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
 
+    // Validation : email obligatoire
     if (!email?.trim()) {
       return Response.json({ success: false, message: "Adresse e-mail requise." }, { status: 400 });
     }
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    // Vérifier si le compte existe en base
+    // Vérifie que le compte existe en BDD avant d'envoyer l'email
     const [user] = await db
       .select({ id: authUser.id })
       .from(authUser)
@@ -29,7 +31,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Appel au handler interne de Better Auth (endpoint réel = /request-password-reset)
+    // Délégation à Better Auth pour générer le token et envoyer l'email
     const baseUrl = process.env.BETTER_AUTH_URL ?? process.env.NEXTAUTH_URL ?? "http://localhost:3000";
     const internalReq = new Request(`${baseUrl}/api/auth/request-password-reset`, {
       method: "POST",

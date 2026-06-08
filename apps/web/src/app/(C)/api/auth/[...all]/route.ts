@@ -4,10 +4,11 @@
 // Rôles : gérés par Better Auth (user | admin | founder)
 // =============================================================================
 
-// Configuration serveur Better Auth (BDD, emails, rôles) — lib/auth.ts
+// Configuration serveur Better Auth (BDD, emails, rôles)
 import { auth } from "@/lib/auth/auth";
 // Adaptateur Next.js : transforme l'objet auth en handlers GET/POST Next
 import { toNextJsHandler } from "better-auth/next-js";
 
-// Export des handlers HTTP : Next.js route chaque requête /api/auth/... ici
+// Délégation complète à Better Auth — chaque requête /api/auth/... est routée ici
+// Exemples : /api/auth/sign-in/email, /api/auth/sign-out, /api/auth/get-session
 export const { GET, POST } = toNextJsHandler(auth);
