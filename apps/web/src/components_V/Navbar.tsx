@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth/auth-client";
+import NavbarSearch from "./NavbarSearch";
 import styles from "./Navbar.module.css";
 
 const navLinks = [
@@ -81,18 +82,7 @@ export default function Navbar() {
           ))}
           {/* Actions (dans le menu mobile) */}
           <li className={styles.mobileActions}>
-            <div className={styles.searchWrapper}>
-              <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="search"
-                placeholder="Rechercher..."
-                className={styles.searchInput}
-                aria-label="Rechercher"
-              />
-            </div>
+            <NavbarSearch fullWidth onNavigate={() => setIsOpen(false)} />
             {session ? (
               <div className={styles.userMenu}>
                 <Link href="/dashboard" className={styles.userMenuLink} onClick={() => setIsOpen(false)}>
@@ -117,18 +107,7 @@ export default function Navbar() {
 
         {/* Actions droite (desktop) */}
         <div className={styles.desktopActions}>
-          <div className={styles.searchWrapper}>
-            <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <input
-              type="search"
-              placeholder="Rechercher..."
-              className={styles.searchInput}
-              aria-label="Rechercher"
-            />
-          </div>
+          <NavbarSearch />
           {session ? (
             <div className={styles.userMenu}>
               <Link href="/dashboard" className={styles.userMenuLink}>

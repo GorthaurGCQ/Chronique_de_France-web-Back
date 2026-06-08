@@ -18,8 +18,8 @@ Quand l'utilisateur demande d'ajouter/modifier une fonctionnalité (rôle, permi
 ```
 apps/web/src/
 ├── models_M/              # Modèle — schema.ts, db.ts, schemas/validation.ts
-├── lib/services/          # Logique métier (+ admin/)
-├── lib/auth/              # auth.ts (Better Auth), jwt.ts (Bearer legacy)
+├── lib/services_M/        # Modèle — logique métier + requêtes BDD (+ admin/)
+├── lib/auth/              # Better Auth (session web + bearer)
 ├── app/(C)/api/           # Contrôleur HTTP — routes /api/*
 ├── app/(V)/               # Vue — pages
 ├── components_V/          # Composants React réutilisables
@@ -32,8 +32,7 @@ Imports : `@/` → `src/`. Config BDD : `drizzle.config.ts`.
 
 | Système | Fichiers | Rôles |
 |---------|----------|-------|
-| Better Auth (session web) | `lib/auth/auth.ts`, `lib/services/admin/auth.ts` | `user`, `admin`, `founder` |
-| JWT legacy (Bearer) | `lib/auth/jwt.ts`, `requireRole()` | `USER`, `ADMIN`, `SCIENTIFIQUE` (enum `models_M/schema.ts`) |
+| Better Auth (session web) | `lib/auth/auth.ts`, `lib/services_M/admin/auth.ts` | `user`, `admin`, `founder` |
 
 Permissions granulaires : colonne `customPermissions` sur `authUser` + page `app/(V)/admin/utilisateurs/page.tsx`.
 
