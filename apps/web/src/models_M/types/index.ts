@@ -1,4 +1,7 @@
-﻿// Types TypeScript partagés — Fondation Chroniques de France
+﻿// =============================================================================
+// TYPES PARTAGÉS — Réponses API standardisées (ApiResponse, pagination)
+// Utilisés par les services et potentiellement le front
+// =============================================================================
 
 import type { ResourceType } from "@/models_M/schema";
 

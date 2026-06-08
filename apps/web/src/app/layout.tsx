@@ -1,4 +1,8 @@
-﻿import type { Metadata } from "next";
+﻿// =============================================================================
+// LAYOUT RACINE — Polices, Navbar, Footer (toutes les pages sauf /admin)
+// =============================================================================
+
+import type { Metadata } from "next";
 import { Cinzel_Decorative, MedievalSharp, Source_Sans_3 } from "next/font/google";
 import NavbarWrapper from "@/components_V/NavbarWrapper";
 import FooterWrapper from "@/components_V/FooterWrapper";

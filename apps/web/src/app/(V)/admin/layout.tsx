@@ -1,3 +1,8 @@
+// =============================================================================
+// LAYOUT ADMIN — Sidebar + garde d'accès (admin | founder uniquement)
+// Redirige vers / si l'utilisateur n'a pas les droits
+// =============================================================================
+
 "use client";
 
 import { useEffect } from "react";
@@ -85,8 +90,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
 
+  // Vérifie le rôle admin | founder côté client
   const isAdmin = session?.user.role === "admin" || session?.user.role === "founder";
 
+  // Redirection si non connecté ou rôle insuffisant
   useEffect(() => {
     if (!isPending && (!session || !isAdmin)) {
       router.replace("/");

@@ -1,4 +1,7 @@
-﻿// COUCHE MODÈLE — logique métier ressources (partagée API + pages SSR)
+﻿// =============================================================================
+// COUCHE MODÈLE — Logique métier ressources pédagogiques
+// Consommé par : /api/resources/*, pages SSR bibliothèque/régions
+// =============================================================================
 
 import { eq, and, or, ilike, desc, count, SQL } from "drizzle-orm";
 import { db } from "@/models_M/db";

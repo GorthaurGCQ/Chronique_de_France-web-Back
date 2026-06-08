@@ -1,3 +1,8 @@
+// =============================================================================
+// COMPOSANT — Navigation principale (session, liens, recherche)
+// Session : useSession() → affiche connexion ou menu utilisateur
+// =============================================================================
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";

@@ -1,4 +1,9 @@
-﻿import type { Metadata } from "next";
+﻿// =============================================================================
+// VUE SSR — Événements à venir et passés
+// Données : listUpcomingAndPastEvents() | Inscription : EventsClient
+// =============================================================================
+
+import type { Metadata } from "next";
 import { listUpcomingAndPastEvents } from "@/lib/services_M/events.service";
 import styles from "./evenement.module.css";
 import { UpcomingGrid } from "@/components_V/evenement/EventsClient";

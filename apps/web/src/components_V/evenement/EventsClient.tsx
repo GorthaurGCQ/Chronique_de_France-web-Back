@@ -1,3 +1,8 @@
+// =============================================================================
+// COMPOSANT CLIENT — Liste événements + formulaire d'inscription public
+// Appel : POST /api/events/register { eventId, nom, prenom, email }
+// =============================================================================
+
 "use client";
 
 import { useState } from "react";

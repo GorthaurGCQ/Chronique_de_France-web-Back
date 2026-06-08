@@ -1,3 +1,8 @@
+// =============================================================================
+// VUE SSR — Détail d'une ressource (bibliothèque)
+// Données : getResourceForPage() | Tracking : ViewTracker → POST /api/profile/history
+// =============================================================================
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";

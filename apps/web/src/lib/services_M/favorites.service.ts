@@ -1,9 +1,13 @@
-﻿// COUCHE MODÈLE — favoris utilisateur
+﻿// =============================================================================
+// COUCHE MODÈLE — Favoris utilisateur (lien user ↔ ressource)
+// Consommé par : /api/favorites, dashboard utilisateur
+// =============================================================================
 
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "@/models_M/db";
 import { favorites, resources, authUser } from "@/models_M/schema";
 
+/** Retourne les favoris d'un utilisateur avec détails ressource */
 export async function listFavorites(userId: string) {
   // SELECT — favorites + resources + authUser : favoris d'un utilisateur avec détails ressource et auteur, triés du plus récent
   return db
@@ -27,6 +31,7 @@ export async function listFavorites(userId: string) {
     .orderBy(desc(favorites.createdAt));
 }
 
+/** Ajoute un favori (ignore si déjà existant — contrainte unique BDD) */
 export async function addFavorite(userId: string, resourceId: string) {
   // INSERT — favorites : ajoute un favori (ignore silencieusement si déjà existant)
   const [fav] = await db

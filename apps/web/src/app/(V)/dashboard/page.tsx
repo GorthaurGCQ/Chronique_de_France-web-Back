@@ -1,3 +1,8 @@
+// =============================================================================
+// VUE — Espace personnel (favoris, historique, profil, avatar)
+// Appels API : /api/favorites, /api/profile, /api/profile/history
+// =============================================================================
+
 "use client";
 
 import { useEffect, useState, useRef } from "react";

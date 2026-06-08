@@ -1,4 +1,9 @@
-﻿"use client";
+﻿// =============================================================================
+// COMPOSANT — Filtrage client des ressources (type, époque, recherche)
+// Reçoit les données SSR de bibliotheque/page.tsx
+// =============================================================================
+
+"use client";
 
 import { useMemo } from "react";
 import type { ResourceCardData } from "@/components_V/ResourceCard";

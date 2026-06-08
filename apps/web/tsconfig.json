@@ -1,4 +1,5 @@
 {
+  // Alias @/* → src/* (identique à vitest.config.ts et imports du projet)
   "compilerOptions": {
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],

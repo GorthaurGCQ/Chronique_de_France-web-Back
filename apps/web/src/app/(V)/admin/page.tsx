@@ -1,3 +1,7 @@
+// =============================================================================
+// VUE ADMIN — Tableau de bord (statistiques via GET /api/admin/stats)
+// =============================================================================
+
 "use client";
 
 import { useEffect, useState } from "react";

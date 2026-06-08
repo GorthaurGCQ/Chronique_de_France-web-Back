@@ -1,3 +1,8 @@
+// =============================================================================
+// VUE — Nouveau mot de passe (lien reçu par email)
+// Appel : Better Auth reset via token URL (?token=)
+// =============================================================================
+
 "use client";
 
 import { useState, useEffect, Suspense } from "react";

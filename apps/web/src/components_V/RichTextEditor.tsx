@@ -1,3 +1,8 @@
+// =============================================================================
+// COMPOSANT — Éditeur riche TipTap (contenu HTML des ressources/événements admin)
+// Valeur contrôlée : props value / onChange
+// =============================================================================
+
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";

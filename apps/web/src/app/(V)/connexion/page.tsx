@@ -1,3 +1,8 @@
+// =============================================================================
+// VUE — Connexion / Inscription (Better Auth via auth-client)
+// Appels : signIn.email(), signUp.email() → /api/auth/*
+// =============================================================================
+
 "use client";
 
 import { useState } from "react";

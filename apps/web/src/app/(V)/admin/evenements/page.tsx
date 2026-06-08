@@ -1,4 +1,9 @@
-﻿"use client";
+﻿// =============================================================================
+// VUE ADMIN — CRUD événements + gestion inscriptions
+// Appels : /api/admin/events, /api/admin/events/[id]/registrations, /api/admin/upload
+// =============================================================================
+
+"use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import styles from "../admin.module.css";

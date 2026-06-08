@@ -1,3 +1,8 @@
+// =============================================================================
+// COUCHE MODÈLE — Journal d'audit (traçabilité actions admin)
+// Consommé par : services admin (users, events, resources)
+// =============================================================================
+
 import { db } from "@/models_M/db";
 import { auditLogs } from "@/models_M/schema";
 
@@ -15,6 +20,7 @@ export interface AuditPayload {
   details?:   string;
 }
 
+/** Enregistre une action admin dans audit_logs (ne bloque jamais l'opération principale) */
 export async function logAudit(payload: AuditPayload): Promise<void> {
   try {
     // INSERT — auditLogs : enregistre une action admin (création, modification, suppression…)

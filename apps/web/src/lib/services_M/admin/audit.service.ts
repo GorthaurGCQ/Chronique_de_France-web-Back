@@ -1,4 +1,9 @@
-﻿import { eq, desc } from "drizzle-orm";
+﻿// =============================================================================
+// SERVICE ADMIN — Lecture du journal d'audit
+// Consommé par : GET /api/admin/audit, page /admin/journal
+// =============================================================================
+
+import { eq, desc } from "drizzle-orm";
 import { db } from "@/models_M/db";
 import { auditLogs } from "@/models_M/schema";
 

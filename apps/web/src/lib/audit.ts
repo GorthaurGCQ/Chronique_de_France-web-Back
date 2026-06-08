@@ -1,4 +1,4 @@
-﻿// Réexport — préférer @/lib/services_M/audit (couche Modèle)
+﻿// Réexport rétrocompatibilité — préférer @/lib/services_M/audit (couche Modèle)
 export {
   logAudit,
   type AuditCategory,

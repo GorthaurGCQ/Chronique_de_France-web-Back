@@ -1,4 +1,7 @@
-﻿// COUCHE MODÈLE — profil utilisateur, avatar, historique
+﻿// =============================================================================
+// COUCHE MODÈLE — Profil utilisateur, avatar, mot de passe, historique
+// Consommé par : /api/profile/*, dashboard
+// =============================================================================
 
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "@/models_M/db";

@@ -1,4 +1,7 @@
-﻿// COUCHE MODÈLE — événements
+﻿// =============================================================================
+// COUCHE MODÈLE — Logique métier événements (requêtes BDD)
+// Consommé par : /api/events/*, pages SSR événements, admin/events
+// =============================================================================
 
 import { eq, or, ilike, and, asc, desc, gte, lt, count, SQL } from "drizzle-orm";
 import { db } from "@/models_M/db";
@@ -10,6 +13,7 @@ export type ListEventsParams = {
   search?: string;
 };
 
+/** Liste paginée des événements avec recherche optionnelle */
 export async function listEvents(params: ListEventsParams) {
   const { page, limit, search } = params;
   const skip = (page - 1) * limit;
@@ -72,6 +76,7 @@ const pageEventFields = {
   authorName: authUser.name,
 };
 
+/** Événements à venir + 6 derniers passés (page publique /evenement) */
 export async function listUpcomingAndPastEvents() {
   const now = new Date();
   const [upcoming, past] = await Promise.all([

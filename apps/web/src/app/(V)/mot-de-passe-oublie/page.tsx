@@ -1,3 +1,8 @@
+// =============================================================================
+// VUE — Demande de réinitialisation mot de passe
+// Appel : POST /api/auth/forgot-password { email }
+// =============================================================================
+
 "use client";
 
 import { useState } from "react";

@@ -1,4 +1,9 @@
-﻿import type { Metadata } from "next";
+﻿// =============================================================================
+// VUE SSR — Bibliothèque nationale (carte interactive + ressources)
+// Données : listNationalResources() — filtrage côté client via BibliothequeContent
+// =============================================================================
+
+import type { Metadata } from "next";
 import CarteInteractive from "@/components_V/CarteInteractive/CarteInteractive";
 import type { ResourceCardData } from "@/components_V/ResourceCard";
 import { listNationalResources } from "@/lib/services_M/resources.service";

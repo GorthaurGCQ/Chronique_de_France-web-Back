@@ -1,4 +1,9 @@
-﻿import { eq, desc } from "drizzle-orm";
+﻿// =============================================================================
+// SERVICE ADMIN — CRUD événements + inscriptions (avec audit)
+// Consommé par : /api/admin/events/*, page /admin/evenements
+// =============================================================================
+
+import { eq, desc } from "drizzle-orm";
 import { db } from "@/models_M/db";
 import {
   events,

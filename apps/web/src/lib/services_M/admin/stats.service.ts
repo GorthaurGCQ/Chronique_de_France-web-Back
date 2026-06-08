@@ -1,7 +1,13 @@
-﻿import { count, gte } from "drizzle-orm";
+﻿// =============================================================================
+// SERVICE ADMIN — Statistiques agrégées du tableau de bord
+// Consommé par : GET /api/admin/stats, page /admin
+// =============================================================================
+
+import { count, gte } from "drizzle-orm";
 import { db } from "@/models_M/db";
 import { authUser, resources, events } from "@/models_M/schema";
 
+/** Compte users, ressources et événements à venir en parallèle */
 export async function getAdminStats() {
   const [[{ totalUsers }], [{ totalResources }], [{ totalEvents }]] =
     await Promise.all([

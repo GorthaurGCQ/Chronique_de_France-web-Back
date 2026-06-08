@@ -1,20 +1,29 @@
+// =============================================================================
+// PROXY CORS — Autorise les requêtes API depuis Expo (app mobile / web)
+// À brancher via middleware.ts : export { proxy as middleware } from "./proxy"
+// Cible : toutes les routes /api/* (matcher ci-dessous)
+// =============================================================================
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// Origines autorisées en développement (Next.js + Expo)
 const ALLOWED_ORIGINS = [
-  "http://localhost:3000",
-  "http://localhost:8081",
-  "http://localhost:19006",
+  "http://localhost:3000",   // Next.js web
+  "http://localhost:8081",   // Expo Web
+  "http://localhost:19006",  // Expo Web (port alternatif)
   "http://127.0.0.1:8081",
   "http://127.0.0.1:19006",
 ];
 
+/** Vérifie si l'origine de la requête est autorisée (localhost ou réseau local Expo) */
 function isAllowedOrigin(origin: string): boolean {
   if (ALLOWED_ORIGINS.includes(origin)) return true;
-  // Expo Web / appareil physique sur le réseau local (dev)
+  // Expo sur appareil physique : IP locale 192.168.x.x
   return /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}:(8081|19006|3000)$/.test(origin);
 }
 
+/** Construit les en-têtes CORS pour la réponse */
 function corsHeaders(origin: string | null) {
   const allowed =
     origin && isAllowedOrigin(origin) ? origin : ALLOWED_ORIGINS[0];
@@ -23,22 +32,26 @@ function corsHeaders(origin: string | null) {
     "Access-Control-Allow-Origin": allowed,
     "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, Cookie",
-    "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Expose-Headers": "set-auth-token",
+    "Access-Control-Allow-Credentials": "true",       // Envoie les cookies de session
+    "Access-Control-Expose-Headers": "set-auth-token", // Token bearer pour Expo
   };
 }
 
+/** Intercepte les requêtes /api/* et ajoute les en-têtes CORS */
 export function proxy(request: NextRequest) {
+  // Hors /api → pas de traitement CORS
   if (!request.nextUrl.pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
 
   const origin = request.headers.get("origin");
 
+  // Préflight OPTIONS : répond immédiatement avec les en-têtes CORS
   if (request.method === "OPTIONS") {
     return new NextResponse(null, { status: 204, headers: corsHeaders(origin) });
   }
 
+  // Requête normale : ajoute CORS à la réponse Next.js
   const response = NextResponse.next();
   Object.entries(corsHeaders(origin)).forEach(([key, value]) => {
     response.headers.set(key, value);
@@ -47,5 +60,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/api/:path*",
+  matcher: "/api/:path*", // S'applique uniquement aux routes API
 };

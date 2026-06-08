@@ -1,4 +1,9 @@
-﻿import { eq, desc } from "drizzle-orm";
+﻿// =============================================================================
+// SERVICE ADMIN — CRUD ressources (avec audit)
+// Consommé par : /api/admin/resources, page /admin/ressources
+// =============================================================================
+
+import { eq, desc } from "drizzle-orm";
 import { db } from "@/models_M/db";
 import { resources, authUser, type Domaine } from "@/models_M/schema";
 import { logAudit } from "@/lib/services_M/audit";

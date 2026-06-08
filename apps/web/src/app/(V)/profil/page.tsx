@@ -1,3 +1,8 @@
+// =============================================================================
+// VUE — Profil utilisateur (déconnexion, suppression de compte)
+// Appels : signOut(), authClient.deleteUser() → /api/auth/*
+// =============================================================================
+
 "use client";
 
 import { useState } from "react";

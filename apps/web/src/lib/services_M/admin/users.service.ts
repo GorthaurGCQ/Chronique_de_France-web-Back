@@ -1,4 +1,9 @@
-﻿import { eq } from "drizzle-orm";
+﻿// =============================================================================
+// SERVICE ADMIN — Gestion des utilisateurs (rôles, ban, permissions)
+// Consommé par : /api/admin/users, page /admin/utilisateurs
+// =============================================================================
+
+import { eq } from "drizzle-orm";
 import { db } from "@/models_M/db";
 import { authUser } from "@/models_M/schema";
 import { logAudit } from "@/lib/services_M/audit";

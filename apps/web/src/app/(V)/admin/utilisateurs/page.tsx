@@ -1,3 +1,8 @@
+// =============================================================================
+// VUE ADMIN — Gestion utilisateurs + permissions granulaires (customPermissions)
+// Appels : GET/PATCH /api/admin/users
+// =============================================================================
+
 "use client";
 
 import { useEffect, useState } from "react";

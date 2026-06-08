@@ -1,3 +1,8 @@
+// =============================================================================
+// VUE ADMIN — Journal d'audit (filtre par catégorie)
+// Appel : GET /api/admin/audit?category=
+// =============================================================================
+
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
