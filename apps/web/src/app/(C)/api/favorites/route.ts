@@ -7,7 +7,7 @@ import {
   addFavorite,
   updateFavoriteNote,
   removeFavorite,
-} from "@/lib/services/favorites.service";
+} from "@/lib/services_M/favorites.service";
 
 export async function GET() {
   try {

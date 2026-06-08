@@ -1,28 +1,17 @@
 // GET    /api/events/[id] — Détail d'un événement (public)
-// PUT    /api/events/[id] — Modification (ADMIN / SCIENTIFIQUE)
-// DELETE /api/events/[id] — Suppression (ADMIN uniquement)
+// PUT    /api/events/[id] — Modification (admin)
+// DELETE /api/events/[id] — Suppression (admin)
 
-import { verifyJWT, requireRole, handleAuthError } from "@/lib/auth/jwt";
+import { getAdminSessionOr403 } from "@/lib/auth/require-session";
 import { parseBody, updateEventSchema } from "@/models_M/schemas/validation";
 import {
   getEventById,
+  eventExists,
   updateEvent,
   deleteEvent,
-} from "@/lib/services/events.service";
-import { db } from "@/models_M/db";
-import { events } from "@/models_M/schema";
-import { eq } from "drizzle-orm";
+} from "@/lib/services_M/events.service";
 
 type RouteParams = { params: Promise<{ id: string }> };
-
-async function eventExists(id: string) {
-  const [existing] = await db
-    .select({ id: events.id })
-    .from(events)
-    .where(eq(events.id, id))
-    .limit(1);
-  return existing ?? null;
-}
 
 export async function GET(_req: Request, { params }: RouteParams) {
   try {
@@ -47,8 +36,8 @@ export async function GET(_req: Request, { params }: RouteParams) {
 
 export async function PUT(req: Request, { params }: RouteParams) {
   try {
-    const jwtPayload = verifyJWT(req);
-    requireRole(["ADMIN", "SCIENTIFIQUE"])(jwtPayload);
+    const authResult = await getAdminSessionOr403();
+    if (!authResult.ok) return authResult.response;
 
     const { id } = await params;
 
@@ -77,14 +66,18 @@ export async function PUT(req: Request, { params }: RouteParams) {
       message: "Événement mis à jour avec succès.",
     });
   } catch (error) {
-    return handleAuthError(error);
+    console.error("[PUT /api/events/[id]]", error);
+    return Response.json(
+      { success: false, message: "Erreur interne du serveur." },
+      { status: 500 },
+    );
   }
 }
 
-export async function DELETE(req: Request, { params }: RouteParams) {
+export async function DELETE(_req: Request, { params }: RouteParams) {
   try {
-    const jwtPayload = verifyJWT(req);
-    requireRole(["ADMIN"])(jwtPayload);
+    const authResult = await getAdminSessionOr403();
+    if (!authResult.ok) return authResult.response;
 
     const { id } = await params;
 
@@ -99,6 +92,10 @@ export async function DELETE(req: Request, { params }: RouteParams) {
 
     return Response.json({ success: true, message: "Événement supprimé avec succès." });
   } catch (error) {
-    return handleAuthError(error);
+    console.error("[DELETE /api/events/[id]]", error);
+    return Response.json(
+      { success: false, message: "Erreur interne du serveur." },
+      { status: 500 },
+    );
   }
 }

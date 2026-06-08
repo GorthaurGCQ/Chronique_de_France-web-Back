@@ -1,9 +1,9 @@
 ﻿// GET  /api/resources — Liste paginée des ressources (public)
-// POST /api/resources — Création d'une ressource (ADMIN / SCIENTIFIQUE)
+// POST /api/resources — Création d'une ressource (admin)
 
-import { verifyJWT, requireRole, handleAuthError } from "@/lib/auth/jwt";
+import { getAdminSessionOr403 } from "@/lib/auth/require-session";
 import { parseBody, createResourceSchema, resourceQuerySchema } from "@/models_M/schemas/validation";
-import { listResources, createResource } from "@/lib/services/resources.service";
+import { listResources, createResource } from "@/lib/services_M/resources.service";
 
 export async function GET(req: Request) {
   try {
@@ -36,8 +36,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const jwtPayload = verifyJWT(req);
-    requireRole(["ADMIN", "SCIENTIFIQUE"])(jwtPayload);
+    const authResult = await getAdminSessionOr403();
+    if (!authResult.ok) return authResult.response;
 
     const body = await req.json();
     const parsed = parseBody(createResourceSchema, body);
@@ -49,13 +49,17 @@ export async function POST(req: Request) {
       );
     }
 
-    const resource = await createResource(parsed.data, jwtPayload.userId);
+    const resource = await createResource(parsed.data, authResult.session.user.id);
 
     return Response.json(
       { success: true, data: resource, message: "Ressource créée avec succès." },
       { status: 201 },
     );
   } catch (error) {
-    return handleAuthError(error);
+    console.error("[POST /api/resources]", error);
+    return Response.json(
+      { success: false, message: "Erreur interne du serveur." },
+      { status: 500 },
+    );
   }
 }

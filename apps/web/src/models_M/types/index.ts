@@ -1,18 +1,6 @@
 ﻿// Types TypeScript partagés — Fondation Chroniques de France
 
-import type { Role, ResourceType } from "@/models_M/schema";
-
-// ---------------------------------------------------------------------------
-// JWT
-// ---------------------------------------------------------------------------
-
-export interface JwtPayload {
-  userId: string;
-  email: string;
-  role: Role;
-  iat?: number;
-  exp?: number;
-}
+import type { ResourceType } from "@/models_M/schema";
 
 // ---------------------------------------------------------------------------
 // Réponses API standardisées
@@ -53,17 +41,4 @@ export interface ResourceQueryParams extends PaginationParams {
 
 export interface EventQueryParams extends PaginationParams {
   search?: string;
-}
-
-// ---------------------------------------------------------------------------
-// Utilisateur (sans le mot de passe pour les réponses)
-// ---------------------------------------------------------------------------
-
-export interface SafeUser {
-  id: string;
-  nom: string;
-  email: string;
-  role: Role;
-  createdAt: Date;
-  updatedAt: Date;
 }

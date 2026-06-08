@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { Region } from "@/models_M/schema";
-import { listResourcesByRegion } from "@/lib/services/resources.service";
+import { listResourcesByRegion } from "@/lib/services_M/resources.service";
 import { REGIONS_CONTENT } from "@/models_M/data/regionsContent";
 import type { RegionCard, RegionContent } from "@/models_M/data/regionsContent";
 import RegionPageLayout from "@/components_V/regions/RegionPageLayout";

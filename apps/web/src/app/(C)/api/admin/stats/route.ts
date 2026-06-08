@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
-import { isAdminRole } from "@/lib/services/admin/auth";
-import { getAdminStats } from "@/lib/services/admin/stats.service";
+import { isAdminRole } from "@/lib/services_M/admin/auth";
+import { getAdminStats } from "@/lib/services_M/admin/stats.service";
 
 export async function GET() {
   const session = await auth.api.getSession({ headers: await headers() });

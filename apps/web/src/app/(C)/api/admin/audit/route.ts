@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
-import { isAdminRole } from "@/lib/services/admin/auth";
-import { listAuditLogs } from "@/lib/services/admin/audit.service";
+import { isAdminRole } from "@/lib/services_M/admin/auth";
+import { listAuditLogs } from "@/lib/services_M/admin/audit.service";
 
 export async function GET(req: Request) {
   try {

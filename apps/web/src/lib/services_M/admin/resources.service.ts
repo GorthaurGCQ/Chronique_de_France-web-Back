@@ -1,7 +1,7 @@
 ﻿import { eq, desc } from "drizzle-orm";
 import { db } from "@/models_M/db";
 import { resources, authUser, type Domaine } from "@/models_M/schema";
-import { logAudit } from "@/lib/audit";
+import { logAudit } from "@/lib/services_M/audit";
 
 export async function listAdminResources() {
   // SELECT — resources + authUser : liste toutes les ressources pour le panel admin, triées par date de publication

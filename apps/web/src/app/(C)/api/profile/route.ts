@@ -4,7 +4,7 @@ import {
   getUserPreferences,
   updateProfile,
   uploadAvatar,
-} from "@/lib/services/profile.service";
+} from "@/lib/services_M/profile.service";
 
 export async function GET() {
   try {

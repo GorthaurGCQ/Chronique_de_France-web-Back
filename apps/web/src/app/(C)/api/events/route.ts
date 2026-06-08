@@ -1,9 +1,9 @@
 ﻿// GET  /api/events — Liste paginée des événements (public)
-// POST /api/events — Création d'un événement (ADMIN / SCIENTIFIQUE)
+// POST /api/events — Création d'un événement (admin)
 
-import { verifyJWT, requireRole, handleAuthError } from "@/lib/auth/jwt";
+import { getAdminSessionOr403 } from "@/lib/auth/require-session";
 import { parseBody, createEventSchema, eventQuerySchema } from "@/models_M/schemas/validation";
-import { listEvents, createEvent } from "@/lib/services/events.service";
+import { listEvents, createEvent } from "@/lib/services_M/events.service";
 
 export async function GET(req: Request) {
   try {
@@ -34,8 +34,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const jwtPayload = verifyJWT(req);
-    requireRole(["ADMIN", "SCIENTIFIQUE"])(jwtPayload);
+    const authResult = await getAdminSessionOr403();
+    if (!authResult.ok) return authResult.response;
 
     const body = await req.json();
     const parsed = parseBody(createEventSchema, body);
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const event = await createEvent(parsed.data, jwtPayload.userId);
+    const event = await createEvent(parsed.data, authResult.session.user.id);
 
     return Response.json(
       {
@@ -58,6 +58,10 @@ export async function POST(req: Request) {
       { status: 201 },
     );
   } catch (error) {
-    return handleAuthError(error);
+    console.error("[POST /api/events]", error);
+    return Response.json(
+      { success: false, message: "Erreur interne du serveur." },
+      { status: 500 },
+    );
   }
 }

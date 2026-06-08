@@ -1,7 +1,7 @@
 ﻿import { eq } from "drizzle-orm";
 import { db } from "@/models_M/db";
 import { authUser } from "@/models_M/schema";
-import { logAudit } from "@/lib/audit";
+import { logAudit } from "@/lib/services_M/audit";
 
 export async function listAdminUsers() {
   // SELECT — authUser : liste tous les utilisateurs pour le panel admin, triés par date de création

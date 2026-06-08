@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import MediaPlayer from "@/components_V/bibliotheque/MediaPlayer";
 import ViewTracker from "@/components_V/bibliotheque/ViewTracker";
-import { getResourceForPage } from "@/lib/services/resources.service";
+import { getResourceForPage } from "@/lib/services_M/resources.service";
 import styles from "./ressource.module.css";
 
 type Props = { params: Promise<{ id: string }> };

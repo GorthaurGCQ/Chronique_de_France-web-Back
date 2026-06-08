@@ -1,100 +1,11 @@
 ﻿import { describe, it, expect } from "vitest";
 
 import {
-  registerSchema,
-  loginSchema,
   createResourceSchema,
   createEventSchema,
   paginationSchema,
   parseBody,
 } from "@/models_M/schemas/validation";
-
-// ---------------------------------------------------------------------------
-// registerSchema
-// ---------------------------------------------------------------------------
-
-describe("registerSchema", () => {
-  it("accepte des données valides", () => {
-    const result = registerSchema.safeParse({
-      nom: "Jean Dupont",
-      email: "jean@example.com",
-      password: "Motdepasse1",
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it("rejette un email invalide", () => {
-    const result = registerSchema.safeParse({
-      nom: "Jean Dupont",
-      email: "pas-un-email",
-      password: "Motdepasse1",
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it("rejette un mot de passe trop court (< 8 caractères)", () => {
-    const result = registerSchema.safeParse({
-      nom: "Jean Dupont",
-      email: "jean@example.com",
-      password: "Abc1",
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it("rejette un mot de passe sans majuscule", () => {
-    const result = registerSchema.safeParse({
-      nom: "Jean Dupont",
-      email: "jean@example.com",
-      password: "motdepasse1",
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it("rejette un mot de passe sans chiffre", () => {
-    const result = registerSchema.safeParse({
-      nom: "Jean Dupont",
-      email: "jean@example.com",
-      password: "Motdepasse",
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it("rejette un nom trop court (< 2 caractères)", () => {
-    const result = registerSchema.safeParse({
-      nom: "J",
-      email: "jean@example.com",
-      password: "Motdepasse1",
-    });
-    expect(result.success).toBe(false);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// loginSchema
-// ---------------------------------------------------------------------------
-
-describe("loginSchema", () => {
-  it("accepte des données valides", () => {
-    const result = loginSchema.safeParse({
-      email: "jean@example.com",
-      password: "nimportequoi",
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it("rejette si email manquant", () => {
-    const result = loginSchema.safeParse({ password: "nimportequoi" });
-    expect(result.success).toBe(false);
-  });
-
-  it("rejette si mot de passe vide", () => {
-    const result = loginSchema.safeParse({
-      email: "jean@example.com",
-      password: "",
-    });
-    expect(result.success).toBe(false);
-  });
-});
 
 // ---------------------------------------------------------------------------
 // createResourceSchema
@@ -198,16 +109,20 @@ describe("paginationSchema", () => {
 // ---------------------------------------------------------------------------
 
 describe("parseBody", () => {
+  const resourcePayload = {
+    titre: "Un titre valide",
+    description: "Une description suffisamment longue.",
+    contenu: "A".repeat(50),
+    type: "CHRONOLOGIE" as const,
+  };
+
   it("retourne success:true avec des données valides", () => {
-    const result = parseBody(loginSchema, {
-      email: "jean@example.com",
-      password: "monmotdepasse",
-    });
+    const result = parseBody(createResourceSchema, resourcePayload);
     expect(result.success).toBe(true);
   });
 
   it("retourne success:false avec des données invalides", () => {
-    const result = parseBody(loginSchema, { email: "invalide", password: "" });
+    const result = parseBody(createResourceSchema, { ...resourcePayload, titre: "AB" });
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.errors).toBeDefined();
@@ -215,16 +130,17 @@ describe("parseBody", () => {
   });
 
   it("retourne les erreurs indexées par champ", () => {
-    const result = parseBody(registerSchema, {
-      nom: "J",
-      email: "invalide",
-      password: "abc",
+    const result = parseBody(createResourceSchema, {
+      titre: "AB",
+      description: "Court",
+      contenu: "Court",
+      type: "INCONNU",
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.errors).toHaveProperty("nom");
-      expect(result.errors).toHaveProperty("email");
-      expect(result.errors).toHaveProperty("password");
+      expect(result.errors).toHaveProperty("titre");
+      expect(result.errors).toHaveProperty("description");
+      expect(result.errors).toHaveProperty("contenu");
     }
   });
 });

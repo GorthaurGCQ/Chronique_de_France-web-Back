@@ -8,7 +8,7 @@ import {
   type Region,
   type Timeline,
 } from "@/models_M/schema";
-import { logAudit } from "@/lib/audit";
+import { logAudit } from "@/lib/services_M/audit";
 
 export async function listAdminEvents() {
   // SELECT — events + authUser : liste tous les événements pour le panel admin, triés par date décroissante

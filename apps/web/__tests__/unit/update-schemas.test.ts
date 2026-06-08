@@ -2,7 +2,6 @@
 
 import {
   updateResourceSchema,
-  updateUserSchema,
   resourceQuerySchema,
   eventQuerySchema,
   parseBody,
@@ -20,20 +19,6 @@ describe("updateResourceSchema", () => {
 
   it("rejette un titre trop court même en mise à jour partielle", () => {
     expect(updateResourceSchema.safeParse({ titre: "AB" }).success).toBe(false);
-  });
-});
-
-describe("updateUserSchema", () => {
-  it("accepte une mise à jour du rôle ADMIN", () => {
-    expect(updateUserSchema.safeParse({ role: "ADMIN" }).success).toBe(true);
-  });
-
-  it("rejette un rôle inconnu", () => {
-    expect(updateUserSchema.safeParse({ role: "SUPERUSER" }).success).toBe(false);
-  });
-
-  it("rejette un email invalide", () => {
-    expect(updateUserSchema.safeParse({ email: "pas-email" }).success).toBe(false);
   });
 });
 

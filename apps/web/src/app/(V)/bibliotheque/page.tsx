@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 import CarteInteractive from "@/components_V/CarteInteractive/CarteInteractive";
 import type { ResourceCardData } from "@/components_V/ResourceCard";
-import { listNationalResources } from "@/lib/services/resources.service";
+import { listNationalResources } from "@/lib/services_M/resources.service";
 import BibliothequeContent from "@/components_V/bibliotheque/BibliothequeContent";
 import styles from "./bibliotheque.module.css";
 

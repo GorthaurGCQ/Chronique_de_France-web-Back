@@ -1,10 +1,10 @@
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
-import { isAdminRole } from "@/lib/services/admin/auth";
+import { isAdminRole } from "@/lib/services_M/admin/auth";
 import {
   listEventRegistrations,
   deleteEventRegistration,
-} from "@/lib/services/admin/events.service";
+} from "@/lib/services_M/admin/events.service";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {

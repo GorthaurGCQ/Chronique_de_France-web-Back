@@ -7,7 +7,7 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 // Driver bas niveau qui parle au serveur PostgreSQL (ici Supabase)
 import postgres from "postgres";
-// Schéma des tables (users, resources, favorites…) — défini dans ./schema.ts
+// Schéma des tables (auth_user, resources, favorites…) — défini dans ./schema.ts
 import * as schema from "./schema";
 
 // Type TypeScript exporté : instance Drizzle typée avec notre schéma

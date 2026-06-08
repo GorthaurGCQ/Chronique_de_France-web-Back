@@ -122,33 +122,33 @@ export default function AdminJournal() {
       </div>
 
       {/* ── Résumé visuel ── */}
-      <div className={journalStyles.summaryGrid}>
-        <div className={`${journalStyles.summaryCard} ${journalStyles.summarySuccess}`}>
-          <span className={journalStyles.summaryIcon}>➕</span>
+      <div className={journalStyles.metricGrid}>
+        <div className={`${journalStyles.metricCard} ${journalStyles.metricSuccess}`}>
+          <span className={journalStyles.metricIcon}>➕</span>
           <div>
-            <p className={journalStyles.summaryValue}>{bySeverity.success}</p>
-            <p className={journalStyles.summaryLabel}>Créations</p>
+            <p className={journalStyles.metricValue}>{bySeverity.success}</p>
+            <p className={journalStyles.metricLabel}>Créations</p>
           </div>
         </div>
-        <div className={`${journalStyles.summaryCard} ${journalStyles.summaryInfo}`}>
-          <span className={journalStyles.summaryIcon}>✏️</span>
+        <div className={`${journalStyles.metricCard} ${journalStyles.metricInfo}`}>
+          <span className={journalStyles.metricIcon}>✏️</span>
           <div>
-            <p className={journalStyles.summaryValue}>{bySeverity.info}</p>
-            <p className={journalStyles.summaryLabel}>Modifications</p>
+            <p className={journalStyles.metricValue}>{bySeverity.info}</p>
+            <p className={journalStyles.metricLabel}>Modifications</p>
           </div>
         </div>
-        <div className={`${journalStyles.summaryCard} ${journalStyles.summaryWarning}`}>
-          <span className={journalStyles.summaryIcon}>🔑</span>
+        <div className={`${journalStyles.metricCard} ${journalStyles.metricWarning}`}>
+          <span className={journalStyles.metricIcon}>🔑</span>
           <div>
-            <p className={journalStyles.summaryValue}>{bySeverity.warning}</p>
-            <p className={journalStyles.summaryLabel}>Permissions</p>
+            <p className={journalStyles.metricValue}>{bySeverity.warning}</p>
+            <p className={journalStyles.metricLabel}>Permissions</p>
           </div>
         </div>
-        <div className={`${journalStyles.summaryCard} ${journalStyles.summaryDanger}`}>
-          <span className={journalStyles.summaryIcon}>🗑️</span>
+        <div className={`${journalStyles.metricCard} ${journalStyles.metricDanger}`}>
+          <span className={journalStyles.metricIcon}>🗑️</span>
           <div>
-            <p className={journalStyles.summaryValue}>{bySeverity.danger}</p>
-            <p className={journalStyles.summaryLabel}>Suppressions</p>
+            <p className={journalStyles.metricValue}>{bySeverity.danger}</p>
+            <p className={journalStyles.metricLabel}>Suppressions</p>
           </div>
         </div>
       </div>
@@ -163,10 +163,14 @@ export default function AdminJournal() {
           >
             {tab.icon} {tab.label}
             {tab.key && counts[tab.key] !== undefined && (
-              <span className={journalStyles.tabCount}>{counts[tab.key]}</span>
+              <span className={`${journalStyles.tabCount} ${activeTab === tab.key ? journalStyles.tabActiveCount : ""}`}>
+                {counts[tab.key]}
+              </span>
             )}
             {!tab.key && (
-              <span className={journalStyles.tabCount}>{logs.length}</span>
+              <span className={`${journalStyles.tabCount} ${activeTab === tab.key ? journalStyles.tabActiveCount : ""}`}>
+                {logs.length}
+              </span>
             )}
           </button>
         ))}

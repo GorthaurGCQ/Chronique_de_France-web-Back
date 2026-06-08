@@ -1,5 +1,5 @@
 ﻿import type { Metadata } from "next";
-import { listUpcomingAndPastEvents } from "@/lib/services/events.service";
+import { listUpcomingAndPastEvents } from "@/lib/services_M/events.service";
 import styles from "./evenement.module.css";
 import { UpcomingGrid } from "@/components_V/evenement/EventsClient";
 

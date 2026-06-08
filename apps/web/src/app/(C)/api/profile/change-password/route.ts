@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
-import { changePassword } from "@/lib/services/profile.service";
+import { changePassword } from "@/lib/services_M/profile.service";
 
 export async function POST(req: Request) {
   try {

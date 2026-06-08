@@ -1,4 +1,4 @@
-import { eventExists, registerForEvent } from "@/lib/services/events.service";
+import { eventExists, registerForEvent } from "@/lib/services_M/events.service";
 
 export async function POST(req: Request) {
   try {

@@ -1,12 +1,12 @@
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
-import { isAdminRole } from "@/lib/services/admin/auth";
+import { isAdminRole } from "@/lib/services_M/admin/auth";
 import {
   listAdminEvents,
   createAdminEvent,
   updateAdminEvent,
   deleteAdminEvent,
-} from "@/lib/services/admin/events.service";
+} from "@/lib/services_M/admin/events.service";
 
 export async function GET() {
   try {

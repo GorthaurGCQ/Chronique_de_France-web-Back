@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
-import { isAdminRole } from "@/lib/services/admin/auth";
-import { uploadAdminImage } from "@/lib/services/admin/upload.service";
+import { isAdminRole } from "@/lib/services_M/admin/auth";
+import { uploadAdminImage } from "@/lib/services_M/admin/upload.service";
 
 export async function POST(req: Request) {
   try {

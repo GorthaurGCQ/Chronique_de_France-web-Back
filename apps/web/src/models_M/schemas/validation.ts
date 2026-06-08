@@ -6,25 +6,6 @@
 import { z } from "zod";
 
 // ---------------------------------------------------------------------------
-// Authentification
-// ---------------------------------------------------------------------------
-
-export const registerSchema = z.object({
-  nom: z.string().min(2, "Le nom doit comporter au moins 2 caractères.").max(100),
-  email: z.string().email("Adresse e-mail invalide."),
-  password: z
-    .string()
-    .min(8, "Le mot de passe doit comporter au moins 8 caractères.")
-    .regex(/[A-Z]/, "Le mot de passe doit contenir au moins une majuscule.")
-    .regex(/[0-9]/, "Le mot de passe doit contenir au moins un chiffre."),
-});
-
-export const loginSchema = z.object({
-  email: z.string().email("Adresse e-mail invalide."),
-  password: z.string().min(1, "Le mot de passe est requis."),
-});
-
-// ---------------------------------------------------------------------------
 // Ressources pédagogiques
 // ---------------------------------------------------------------------------
 
@@ -56,16 +37,6 @@ export const createEventSchema = z.object({
 });
 
 export const updateEventSchema = createEventSchema.partial();
-
-// ---------------------------------------------------------------------------
-// Utilisateurs (mise à jour par un admin)
-// ---------------------------------------------------------------------------
-
-export const updateUserSchema = z.object({
-  nom: z.string().min(2).max(100).optional(),
-  email: z.string().email().optional(),
-  role: z.enum(["USER", "ADMIN", "SCIENTIFIQUE"]).optional(),
-});
 
 // ---------------------------------------------------------------------------
 // Paramètres de requête (pagination, recherche, filtrage)

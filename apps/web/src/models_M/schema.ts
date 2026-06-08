@@ -20,7 +20,6 @@ import { relations } from "drizzle-orm"; // liens entre tables (optionnel, requ�
 // Enums — valeurs autorisées en base (cohérence métier)
 // ---------------------------------------------------------------------------
 
-export const roleEnum = pgEnum("role", ["USER", "ADMIN", "SCIENTIFIQUE"]);
 export const resourceTypeEnum = pgEnum("resource_type", [
   "CHRONOLOGIE",
   "FICHE_THEMATIQUE",
@@ -62,7 +61,6 @@ export const domaineEnum = pgEnum("domaine", [
 ]);
 
 // Types TS inférés depuis les enums (autocomplétion dans le code back)
-export type Role = (typeof roleEnum.enumValues)[number];
 export type ResourceType = (typeof resourceTypeEnum.enumValues)[number];
 export type Region = (typeof regionEnum.enumValues)[number];
 export type Timeline = (typeof timelineEnum.enumValues)[number];
@@ -129,29 +127,6 @@ export const authVerification = pgTable("auth_verification", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
-
-// ---------------------------------------------------------------------------
-// Table : users (profils métier — données applicatives)
-// ---------------------------------------------------------------------------
-
-export const users = pgTable(
-  "users",
-  {
-    id: varchar("id", { length: 36 })
-      .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
-    nom: varchar("nom", { length: 100 }).notNull(),
-    email: varchar("email", { length: 255 }).notNull(),
-    password: varchar("password", { length: 255 }).notNull(),
-    role: roleEnum().notNull().default("USER"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .notNull()
-      .$onUpdate(() => new Date()),
-  },
-  (table) => [uniqueIndex("users_email_idx").on(table.email)],
-);
 
 // ---------------------------------------------------------------------------
 // Table : resources — contenus pédagogiques (bibliothèque, admin CRUD)
@@ -329,8 +304,6 @@ export const eventsRelations = relations(events, ({ one }) => ({
 // Types inférés depuis les tables
 // ---------------------------------------------------------------------------
 
-export type User = typeof users.$inferSelect;
-export type NewUser = typeof users.$inferInsert;
 export type Resource = typeof resources.$inferSelect;
 export type NewResource = typeof resources.$inferInsert;
 export type Event = typeof events.$inferSelect;
