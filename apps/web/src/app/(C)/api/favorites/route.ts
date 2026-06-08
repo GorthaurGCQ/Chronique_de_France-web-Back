@@ -1,4 +1,7 @@
-// ROUTE API BACK — URL : /api/favorites
+// GET    /api/favorites — Liste des favoris (user authentifié)
+// POST   /api/favorites — Ajouter un favori { resourceId } (user authentifié)
+// PATCH  /api/favorites — Modifier la note { resourceId, note } (user authentifié)
+// DELETE /api/favorites — Supprimer un favori { resourceId } (user authentifié)
 
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";

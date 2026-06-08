@@ -1,3 +1,5 @@
+// POST /api/events/register — Inscription à un événement { eventId, nom, prenom, email } (public)
+
 import { eventExists, registerForEvent } from "@/lib/services_M/events.service";
 
 export async function POST(req: Request) {

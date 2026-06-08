@@ -1,6 +1,6 @@
 // GET    /api/events/[id] — Détail d'un événement (public)
-// PUT    /api/events/[id] — Modification (admin)
-// DELETE /api/events/[id] — Suppression (admin)
+// PUT    /api/events/[id] — Modification, body JSON validé (admin | founder)
+// DELETE /api/events/[id] — Suppression (admin | founder)
 
 import { getAdminSessionOr403 } from "@/lib/auth/require-session";
 import { parseBody, updateEventSchema } from "@/models_M/schemas/validation";

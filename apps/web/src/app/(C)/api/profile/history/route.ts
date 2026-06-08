@@ -1,3 +1,6 @@
+// GET  /api/profile/history — Historique de consultation (user authentifié)
+// POST /api/profile/history — Enregistrer une vue { resourceId } (user authentifié)
+
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { getViewHistory, recordView } from "@/lib/services_M/profile.service";

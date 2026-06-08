@@ -1,4 +1,6 @@
-// ROUTE API BACK — URL : /api/resources/:id
+// GET    /api/resources/[id] — Détail d'une ressource (public)
+// PUT    /api/resources/[id] — Modification, body JSON validé (admin | founder)
+// DELETE /api/resources/[id] — Suppression (admin | founder)
 
 import { getAdminSessionOr403 } from "@/lib/auth/require-session";
 import { parseBody, updateResourceSchema } from "@/models_M/schemas/validation";

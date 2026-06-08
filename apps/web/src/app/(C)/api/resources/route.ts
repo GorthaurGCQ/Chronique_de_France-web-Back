@@ -1,5 +1,5 @@
-﻿// GET  /api/resources — Liste paginée des ressources (public)
-// POST /api/resources — Création d'une ressource (admin)
+﻿// GET  /api/resources — Liste paginée ?page&limit&search&type (public)
+// POST /api/resources — Création ressource, body JSON validé (admin | founder)
 
 import { getAdminSessionOr403 } from "@/lib/auth/require-session";
 import { parseBody, createResourceSchema, resourceQuerySchema } from "@/models_M/schemas/validation";

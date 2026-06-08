@@ -1,5 +1,5 @@
-﻿// GET  /api/events — Liste paginée des événements (public)
-// POST /api/events — Création d'un événement (admin)
+﻿// GET  /api/events — Liste paginée ?page&limit&search (public)
+// POST /api/events — Création événement, body JSON validé (admin | founder)
 
 import { getAdminSessionOr403 } from "@/lib/auth/require-session";
 import { parseBody, createEventSchema, eventQuerySchema } from "@/models_M/schemas/validation";

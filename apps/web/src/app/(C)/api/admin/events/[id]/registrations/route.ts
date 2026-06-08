@@ -1,3 +1,6 @@
+// GET    /api/admin/events/[id]/registrations — Inscriptions d'un événement (admin | founder)
+// DELETE /api/admin/events/[id]/registrations — Supprimer une inscription { registrationId } (admin | founder)
+
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { isAdminRole } from "@/lib/services_M/admin/auth";

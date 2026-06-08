@@ -1,7 +1,7 @@
 // =============================================================================
-// POINT D'ENTRÉE BACK — Authentification Better Auth
-// URL : /api/auth/* (login, logout, session, reset password…)
-// Le front appelle via signIn.email() → requêtes HTTP vers ce handler
+// CONTRÔLEUR — /api/auth/* (Better Auth)
+// GET|POST — login, logout, session, register, reset password… (selon endpoint)
+// Rôles : gérés par Better Auth (user | admin | founder)
 // =============================================================================
 
 // Configuration serveur Better Auth (BDD, emails, rôles) — lib/auth.ts

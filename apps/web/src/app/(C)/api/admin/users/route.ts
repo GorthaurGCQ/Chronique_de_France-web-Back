@@ -1,3 +1,6 @@
+// GET   /api/admin/users — Liste des utilisateurs (admin | founder)
+// PATCH /api/admin/users — Modifier un utilisateur { userId, action, … } (admin | founder)
+
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { isAdminRole } from "@/lib/services_M/admin/auth";

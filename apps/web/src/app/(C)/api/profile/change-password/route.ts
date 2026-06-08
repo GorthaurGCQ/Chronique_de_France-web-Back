@@ -1,3 +1,5 @@
+// POST /api/profile/change-password — Changer le mot de passe { currentPassword, newPassword } (user authentifié)
+
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { changePassword } from "@/lib/services_M/profile.service";

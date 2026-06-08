@@ -1,4 +1,6 @@
-﻿import { db } from "@/models_M/db";
+﻿// POST /api/auth/forgot-password — Demande de réinitialisation { email } (public)
+
+import { db } from "@/models_M/db";
 import { authUser } from "@/models_M/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth/auth";

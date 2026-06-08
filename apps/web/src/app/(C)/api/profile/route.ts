@@ -1,3 +1,7 @@
+// GET   /api/profile — Préférences utilisateur (user authentifié)
+// PATCH /api/profile — Mise à jour profil, body JSON (user authentifié)
+// POST  /api/profile — Upload avatar, formData { file } (user authentifié)
+
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import {

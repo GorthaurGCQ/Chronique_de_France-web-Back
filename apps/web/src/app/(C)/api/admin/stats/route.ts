@@ -1,3 +1,5 @@
+// GET /api/admin/stats — Statistiques du tableau de bord (admin | founder)
+
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { isAdminRole } from "@/lib/services_M/admin/auth";

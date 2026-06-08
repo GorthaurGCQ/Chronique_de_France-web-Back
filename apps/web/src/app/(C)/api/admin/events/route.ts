@@ -1,3 +1,8 @@
+// GET    /api/admin/events — Liste complète des événements (admin | founder)
+// POST   /api/admin/events — Création événement, body JSON (admin | founder)
+// PATCH  /api/admin/events — Modification événement { eventId, … } (admin | founder)
+// DELETE /api/admin/events — Suppression événement { eventId } (admin | founder)
+
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { isAdminRole } from "@/lib/services_M/admin/auth";

@@ -1,3 +1,8 @@
+// GET    /api/admin/resources — Liste complète des ressources (admin | founder)
+// POST   /api/admin/resources — Création ressource, body JSON (admin | founder)
+// PATCH  /api/admin/resources — Modification ressource { resourceId, … } (admin | founder)
+// DELETE /api/admin/resources — Suppression ressource { resourceId } (admin | founder)
+
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { isAdminRole } from "@/lib/services_M/admin/auth";
