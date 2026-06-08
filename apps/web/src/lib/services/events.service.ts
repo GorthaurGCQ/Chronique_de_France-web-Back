@@ -27,6 +27,7 @@ export async function listEvents(params: ListEventsParams) {
   const where = conditions.length > 0 ? and(...conditions) : undefined;
 
   const [rows, [{ total }]] = await Promise.all([
+    // SELECT — events + authUser (LEFT JOIN) : liste paginée des événements avec organisateur, filtrée par recherche, triée par date croissante
     db
       .select({
         id: events.id,
@@ -49,6 +50,7 @@ export async function listEvents(params: ListEventsParams) {
       .orderBy(asc(events.date))
       .limit(limit)
       .offset(skip),
+    // SELECT — events : compte le total d'événements (pagination), avec les mêmes filtres de recherche
     db.select({ total: count() }).from(events).where(where),
   ]);
 
@@ -73,12 +75,14 @@ const pageEventFields = {
 export async function listUpcomingAndPastEvents() {
   const now = new Date();
   const [upcoming, past] = await Promise.all([
+    // SELECT — events + authUser : événements à venir (date >= maintenant), triés par date
     db
       .select(pageEventFields)
       .from(events)
       .leftJoin(authUser, eq(events.organisateurId, authUser.id))
       .where(gte(events.date, now))
       .orderBy(events.date),
+    // SELECT — events + authUser : 6 derniers événements passés (date < maintenant), du plus récent au plus ancien
     db
       .select(pageEventFields)
       .from(events)
@@ -91,6 +95,7 @@ export async function listUpcomingAndPastEvents() {
 }
 
 export async function getEventById(id: string) {
+  // SELECT — events + authUser : détail d'un événement par ID avec infos de l'organisateur
   const [event] = await db
     .select({
       id: events.id,
@@ -116,6 +121,7 @@ export async function getEventById(id: string) {
 }
 
 export async function eventExists(id: string) {
+  // SELECT — events : vérifie l'existence d'un événement (retourne id et titre uniquement)
   const [event] = await db
     .select({ id: events.id, titre: events.titre })
     .from(events)
@@ -128,11 +134,13 @@ export async function createEvent(
   data: { titre: string; description: string; lieu: string; date: Date },
   organisateurId: string,
 ) {
+  // INSERT — events : crée un nouvel événement lié à un organisateur
   const [event] = await db
     .insert(events)
     .values({ ...data, organisateurId })
     .returning();
 
+  // SELECT — authUser : récupère les infos de l'organisateur après création
   const [organisateur] = await db
     .select({ id: authUser.id, nom: authUser.name, email: authUser.email })
     .from(authUser)
@@ -146,12 +154,14 @@ export async function updateEvent(
   id: string,
   data: Partial<{ titre: string; description: string; lieu: string; date: Date }>,
 ) {
+  // UPDATE — events : met à jour les champs modifiés et updatedAt, WHERE id = événement ciblé
   const [updated] = await db
     .update(events)
     .set({ ...data, updatedAt: new Date() })
     .where(eq(events.id, id))
     .returning();
 
+  // SELECT — authUser : récupère l'organisateur de l'événement mis à jour
   const [organisateur] = await db
     .select({ id: authUser.id, nom: authUser.name, email: authUser.email })
     .from(authUser)
@@ -162,6 +172,7 @@ export async function updateEvent(
 }
 
 export async function deleteEvent(id: string) {
+  // DELETE — events : supprime un événement par son ID
   await db.delete(events).where(eq(events.id, id));
 }
 
@@ -171,6 +182,7 @@ export async function registerForEvent(
   prenom: string,
   email: string,
 ) {
+  // INSERT — eventRegistrations : enregistre une inscription (nom, prénom, email) à un événement
   await db.insert(eventRegistrations).values({
     eventId,
     nom: nom.trim(),

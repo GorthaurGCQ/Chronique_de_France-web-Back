@@ -47,6 +47,7 @@ export async function listResources(params: ListResourcesParams) {
   const where = conditions.length > 0 ? and(...conditions) : undefined;
 
   const [rows, [{ total }]] = await Promise.all([
+    // SELECT — resources + authUser (LEFT JOIN) : liste paginée des ressources avec auteur, filtrée par type/recherche, triée par date de publication
     db
       .select(listSelectFields)
       .from(resources)
@@ -55,6 +56,7 @@ export async function listResources(params: ListResourcesParams) {
       .orderBy(desc(resources.publishedAt))
       .limit(limit)
       .offset(skip),
+    // SELECT — resources : compte le total de ressources (pagination), avec les mêmes filtres
     db.select({ total: count() }).from(resources).where(where),
   ]);
 
@@ -65,6 +67,7 @@ export async function listResources(params: ListResourcesParams) {
 }
 
 export async function listNationalResources() {
+  // SELECT — resources + authUser : ressources de la région NATIONAL, triées par date de publication décroissante
   return db
     .select({
       id: resources.id,
@@ -86,6 +89,7 @@ export async function listNationalResources() {
 }
 
 export async function listResourcesByRegion(region: Region) {
+  // SELECT — resources + authUser : ressources filtrées par région donnée
   return db
     .select({
       id: resources.id,
@@ -103,6 +107,7 @@ export async function listResourcesByRegion(region: Region) {
 }
 
 export async function getResourceById(id: string) {
+  // SELECT — resources + authUser : détail complet d'une ressource par ID avec infos auteur
   const [resource] = await db
     .select({
       id: resources.id,
@@ -136,6 +141,7 @@ export async function getResourceById(id: string) {
 
 /** Détail pour la page SSR bibliothèque (sans objet author imbriqué) */
 export async function getResourceForPage(id: string) {
+  // SELECT — resources + authUser : détail ressource pour page SSR bibliothèque (sans objet author imbriqué)
   const [row] = await db
     .select({
       id: resources.id,
@@ -160,6 +166,7 @@ export async function getResourceForPage(id: string) {
 }
 
 export async function resourceExists(id: string) {
+  // SELECT — resources : vérifie l'existence d'une ressource (retourne l'ID uniquement)
   const [existing] = await db
     .select({ id: resources.id })
     .from(resources)
@@ -177,6 +184,7 @@ export async function createResource(
   },
   authorId: string,
 ) {
+  // INSERT — resources : crée une nouvelle ressource avec valeurs par défaut (timeline, région, domaine)
   const [resource] = await db
     .insert(resources)
     .values({
@@ -188,6 +196,7 @@ export async function createResource(
     })
     .returning();
 
+  // SELECT — authUser : récupère l'auteur de la ressource créée
   const [author] = await db
     .select({ id: authUser.id, name: authUser.name, email: authUser.email })
     .from(authUser)
@@ -206,12 +215,14 @@ export async function updateResource(
     type: ResourceType;
   }>,
 ) {
+  // UPDATE — resources : met à jour les champs modifiés et updatedAt, WHERE id = ressource ciblée
   const [updated] = await db
     .update(resources)
     .set({ ...data, updatedAt: new Date() })
     .where(eq(resources.id, id))
     .returning();
 
+  // SELECT — authUser : récupère l'auteur de la ressource mise à jour
   const [author] = await db
     .select({ id: authUser.id, nom: authUser.name, email: authUser.email })
     .from(authUser)
@@ -222,5 +233,6 @@ export async function updateResource(
 }
 
 export async function deleteResource(id: string) {
+  // DELETE — resources : supprime une ressource par son ID
   await db.delete(resources).where(eq(resources.id, id));
 }

@@ -11,6 +11,7 @@ import {
 import { logAudit } from "@/lib/audit";
 
 export async function listAdminEvents() {
+  // SELECT — events + authUser : liste tous les événements pour le panel admin, triés par date décroissante
   return db
     .select({
       id: events.id,
@@ -48,6 +49,7 @@ export async function createAdminEvent(
   organisateurId: string,
   audit: { actorId: string; actorName: string; actorRole?: string },
 ) {
+  // INSERT — events : crée un événement depuis le panel admin
   const [event] = await db
     .insert(events)
     .values({
@@ -82,6 +84,7 @@ export async function updateAdminEvent(
   data: AdminEventInput,
   audit: { actorId: string; actorName: string; actorRole?: string },
 ) {
+  // UPDATE — events : met à jour un événement admin, WHERE id = eventId
   const [updated] = await db
     .update(events)
     .set({
@@ -116,6 +119,7 @@ export async function deleteAdminEvent(
   eventId: string,
   audit: { actorId: string; actorName: string; actorRole?: string },
 ) {
+  // DELETE — events : supprime un événement par son ID
   await db.delete(events).where(eq(events.id, eventId));
   await logAudit({
     actorId: audit.actorId,
@@ -129,6 +133,7 @@ export async function deleteAdminEvent(
 }
 
 export async function listEventRegistrations(eventId: string) {
+  // SELECT — eventRegistrations : liste les inscriptions d'un événement, triées par date
   return db
     .select({
       id: eventRegistrations.id,
@@ -143,6 +148,7 @@ export async function listEventRegistrations(eventId: string) {
 }
 
 export async function deleteEventRegistration(registrationId: string) {
+  // DELETE — eventRegistrations : supprime une inscription par son ID
   await db
     .delete(eventRegistrations)
     .where(eq(eventRegistrations.id, registrationId));

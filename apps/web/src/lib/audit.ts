@@ -17,6 +17,7 @@ export interface AuditPayload {
 
 export async function logAudit(payload: AuditPayload): Promise<void> {
   try {
+    // INSERT — auditLogs : enregistre une action admin (création, modification, suppression…)
     await db.insert(auditLogs).values({
       actorId:   payload.actorId   ?? null,
       actorName: payload.actorName ?? "Système",

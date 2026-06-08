@@ -4,6 +4,7 @@ import { resources, authUser, type Domaine } from "@/models_M/schema";
 import { logAudit } from "@/lib/audit";
 
 export async function listAdminResources() {
+  // SELECT — resources + authUser : liste toutes les ressources pour le panel admin, triées par date de publication
   return db
     .select({
       id: resources.id,
@@ -43,6 +44,7 @@ export async function createAdminResource(
   authorId: string,
   audit: { actorId: string; actorName: string; actorRole?: string },
 ) {
+  // INSERT — resources : crée une ressource depuis le panel admin avec tous les champs métier
   const [resource] = await db
     .insert(resources)
     .values({
@@ -78,6 +80,7 @@ export async function updateAdminResource(
   data: AdminResourceInput,
   audit: { actorId: string; actorName: string; actorRole?: string },
 ) {
+  // UPDATE — resources : met à jour une ressource admin, WHERE id = resourceId
   const [updated] = await db
     .update(resources)
     .set({
@@ -113,6 +116,7 @@ export async function deleteAdminResource(
   resourceId: string,
   audit: { actorId: string; actorName: string; actorRole?: string },
 ) {
+  // DELETE — resources : supprime une ressource par son ID
   await db.delete(resources).where(eq(resources.id, resourceId));
   await logAudit({
     actorId: audit.actorId,

@@ -5,6 +5,7 @@ import { db } from "@/models_M/db";
 import { favorites, resources, authUser } from "@/models_M/schema";
 
 export async function listFavorites(userId: string) {
+  // SELECT — favorites + resources + authUser : favoris d'un utilisateur avec détails ressource et auteur, triés du plus récent
   return db
     .select({
       id: favorites.id,
@@ -27,6 +28,7 @@ export async function listFavorites(userId: string) {
 }
 
 export async function addFavorite(userId: string, resourceId: string) {
+  // INSERT — favorites : ajoute un favori (ignore silencieusement si déjà existant)
   const [fav] = await db
     .insert(favorites)
     .values({ userId, resourceId })
@@ -41,6 +43,7 @@ export async function updateFavoriteNote(
   resourceId: string,
   note: string | null,
 ) {
+  // UPDATE — favorites : modifie la note personnelle d'un favori, WHERE userId + resourceId
   await db
     .update(favorites)
     .set({ note })
@@ -48,6 +51,7 @@ export async function updateFavoriteNote(
 }
 
 export async function removeFavorite(userId: string, resourceId: string) {
+  // DELETE — favorites : supprime un favori, WHERE userId + resourceId
   await db
     .delete(favorites)
     .where(and(eq(favorites.userId, userId), eq(favorites.resourceId, resourceId)));

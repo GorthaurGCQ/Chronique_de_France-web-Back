@@ -4,6 +4,7 @@ import { authUser } from "@/models_M/schema";
 import { logAudit } from "@/lib/audit";
 
 export async function listAdminUsers() {
+  // SELECT — authUser : liste tous les utilisateurs pour le panel admin, triés par date de création
   return db
     .select({
       id: authUser.id,
@@ -33,6 +34,7 @@ export async function patchAdminUser(
   const { userId, action, role, permissions } = body;
 
   const [target] = await db
+    // SELECT — authUser : récupère le rôle de l'utilisateur ciblé (vérifie si founder)
     .select({ role: authUser.role })
     .from(authUser)
     .where(eq(authUser.id, userId))
@@ -44,11 +46,13 @@ export async function patchAdminUser(
 
   if (action === "updatePermissions") {
     const [before] = await db
+      // SELECT — authUser : récupère rôle et nom avant modification des permissions
       .select({ role: authUser.role, name: authUser.name })
       .from(authUser)
       .where(eq(authUser.id, userId))
       .limit(1);
 
+    // UPDATE — authUser : modifie le rôle et les permissions personnalisées, WHERE id = userId
     await db
       .update(authUser)
       .set({
@@ -72,6 +76,7 @@ export async function patchAdminUser(
   }
 
   const [targetUser] = await db
+    // SELECT — authUser : récupère nom et email de l'utilisateur ciblé (pour le log d'audit)
     .select({ name: authUser.name, email: authUser.email })
     .from(authUser)
     .where(eq(authUser.id, userId))
@@ -82,6 +87,7 @@ export async function patchAdminUser(
 
   switch (action) {
     case "makeAdmin":
+      // UPDATE — authUser : promeut l'utilisateur au rôle admin
       await db
         .update(authUser)
         .set({ role: "admin", updatedAt: new Date() })
@@ -97,6 +103,7 @@ export async function patchAdminUser(
       });
       break;
     case "makeUser":
+      // UPDATE — authUser : rétrograde l'utilisateur au rôle user
       await db
         .update(authUser)
         .set({ role: "user", updatedAt: new Date() })
@@ -112,6 +119,7 @@ export async function patchAdminUser(
       });
       break;
     case "ban":
+      // UPDATE — authUser : bannit l'utilisateur (banned = true)
       await db
         .update(authUser)
         .set({ banned: true, updatedAt: new Date() })
@@ -127,6 +135,7 @@ export async function patchAdminUser(
       });
       break;
     case "unban":
+      // UPDATE — authUser : débannit l'utilisateur (banned = false)
       await db
         .update(authUser)
         .set({ banned: false, updatedAt: new Date() })
@@ -142,6 +151,7 @@ export async function patchAdminUser(
       });
       break;
     case "delete":
+      // DELETE — authUser : supprime définitivement le compte utilisateur
       await db.delete(authUser).where(eq(authUser.id, userId));
       await logAudit({
         actorId,

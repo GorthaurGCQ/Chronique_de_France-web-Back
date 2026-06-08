@@ -4,6 +4,7 @@ import { auditLogs } from "@/models_M/schema";
 
 export async function listAuditLogs(category: string | null) {
   if (category) {
+    // SELECT — auditLogs : 200 derniers logs filtrés par catégorie, triés du plus récent
     return db
       .select()
       .from(auditLogs)
@@ -12,6 +13,7 @@ export async function listAuditLogs(category: string | null) {
       .limit(200);
   }
 
+  // SELECT — auditLogs : 200 derniers logs (toutes catégories), triés du plus récent
   return db
     .select()
     .from(auditLogs)

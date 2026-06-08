@@ -7,6 +7,7 @@ import { supabaseAdmin, STORAGE_BUCKET } from "@/lib/supabase";
 import { hashPassword, verifyPassword } from "@better-auth/utils/password";
 
 export async function getUserPreferences(userId: string) {
+  // SELECT — authUser : récupère les préférences JSON d'un utilisateur par son ID
   const [user] = await db
     .select({ userPreferences: authUser.userPreferences })
     .from(authUser)
@@ -40,6 +41,7 @@ export async function updateProfile(
       return { error: "Adresse e-mail invalide.", status: 400 as const };
     }
     const [existing] = await db
+      // SELECT — authUser : vérifie si l'email est déjà utilisé par un autre compte
       .select({ id: authUser.id })
       .from(authUser)
       .where(eq(authUser.email, body.email.trim().toLowerCase()))
@@ -61,6 +63,7 @@ export async function updateProfile(
         : JSON.stringify(body.userPreferences);
   }
 
+  // UPDATE — authUser : enregistre les modifications du profil (nom, email, avatar, préférences)
   await db.update(authUser).set(updates).where(eq(authUser.id, userId));
   return { success: true as const };
 }
@@ -88,6 +91,7 @@ export async function uploadAvatar(userId: string, file: File) {
     data: { publicUrl },
   } = supabaseAdmin.storage.from(STORAGE_BUCKET).getPublicUrl(path);
 
+  // UPDATE — authUser : enregistre l'URL de l'avatar uploadé sur Supabase Storage
   await db
     .update(authUser)
     .set({ image: publicUrl, updatedAt: new Date() })
@@ -124,6 +128,7 @@ export async function changePassword(
     };
   }
 
+  // SELECT — authAccount : récupère le hash du mot de passe actuel (provider credential)
   const [account] = await db
     .select({ password: authAccount.password })
     .from(authAccount)
@@ -145,6 +150,7 @@ export async function changePassword(
   }
 
   const newHash = await hashPassword(newPassword);
+  // UPDATE — authAccount : enregistre le nouveau hash de mot de passe, WHERE userId + provider credential
   await db
     .update(authAccount)
     .set({ password: newHash, updatedAt: new Date() })
@@ -156,6 +162,7 @@ export async function changePassword(
 }
 
 export async function getViewHistory(userId: string) {
+  // SELECT — resourceViews + resources : 10 dernières ressources consultées par l'utilisateur
   return db
     .select({
       resourceId: resourceViews.resourceId,
@@ -174,6 +181,7 @@ export async function getViewHistory(userId: string) {
 }
 
 export async function recordView(userId: string, resourceId: string) {
+  // INSERT/UPDATE — resourceViews : enregistre ou met à jour la date de consultation d'une ressource
   await db
     .insert(resourceViews)
     .values({ userId, resourceId, viewedAt: new Date() })

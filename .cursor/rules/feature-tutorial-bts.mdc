@@ -1,0 +1,56 @@
+---
+description: Format tutoriel BTS pour ajouter une fonctionnalité dans Chronique de France
+alwaysApply: true
+---
+
+# Ajout de fonctionnalité — format examen BTS
+
+Quand l'utilisateur demande d'ajouter/modifier une fonctionnalité (rôle, permissions, module…), répondre en **français**, concis, sans blabla.
+
+## Avant de répondre
+
+1. Analyser l'arborescence et le code existant
+2. Identifier les fichiers déjà concernés
+3. Repérer le mécanisme auth/rôle en place
+
+## Arborescence MVC de CE projet
+
+```
+apps/web/src/
+├── models_M/              # Modèle — schema.ts, db.ts, schemas/validation.ts
+├── lib/services/          # Logique métier (+ admin/)
+├── lib/auth/              # auth.ts (Better Auth), jwt.ts (Bearer legacy)
+├── app/(C)/api/           # Contrôleur HTTP — routes /api/*
+├── app/(V)/               # Vue — pages
+├── components_V/          # Composants React réutilisables
+└── proxy.ts               # CORS Expo
+```
+
+Imports : `@/` → `src/`. Config BDD : `drizzle.config.ts`.
+
+## Auth / rôles — deux systèmes coexistent
+
+| Système | Fichiers | Rôles |
+|---------|----------|-------|
+| Better Auth (session web) | `lib/auth/auth.ts`, `lib/services/admin/auth.ts` | `user`, `admin`, `founder` |
+| JWT legacy (Bearer) | `lib/auth/jwt.ts`, `requireRole()` | `USER`, `ADMIN`, `SCIENTIFIQUE` (enum `models_M/schema.ts`) |
+
+Permissions granulaires : colonne `customPermissions` sur `authUser` + page `app/(V)/admin/utilisateurs/page.tsx`.
+
+## Format de réponse obligatoire
+
+**① Schéma de la solution** — ce qui change et où
+
+**② Étapes ordonnées** — BDD → Modèle → Service → Contrôleur → Vue
+
+**③ Code à modifier ou créer** — chemin exact fichier par fichier
+
+**④ Points d'attention** — imports, migration BDD, effets de bord
+
+**⑤ Comment tester** — commandes et vérifications manuelles
+
+## Règles
+
+- Toujours partir du code existant, jamais from scratch
+- Signaler si migration Drizzle nécessaire (`drizzle.config.ts` → `models_M/`)
+- Stack : Next.js App Router, TypeScript, Drizzle, Supabase, CSS modules (pas Tailwind principal)
