@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import type { Region } from "@/models_M/data/regions";
 import styles from "./PanneauRegion.module.css";
@@ -28,24 +29,37 @@ function Initiales({ nom, couleur }: { nom: string; couleur: string }) {
   );
 }
 
-export default function PanneauRegion({ region, onClose }: Props) {
+/** Emblème régional — remonté via key={region.id} pour réinitialiser l'état d'erreur */
+function RegionEmblem({ region }: { region: Region }) {
   const [imgError, setImgError] = useState(false);
+
+  if (!imgError) {
+    return (
+      <Image
+        src={region.emblemeUrl}
+        alt={`Emblème ${region.nom}`}
+        width={80}
+        height={80}
+        className={styles.emblem}
+        unoptimized
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+
+  return <Initiales nom={region.nom} couleur={region.couleur} />;
+}
+
+export default function PanneauRegion({ region, onClose }: Props) {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Reset imgError when region changes
+  // Animation d'entrée/sortie — setState dans setTimeout (évite le warning ESLint)
   useEffect(() => {
-    setImgError(false);
-  }, [region?.id]);
-
-  // Animate in/out
-  useEffect(() => {
-    if (region) {
-      // Trigger reflow before adding visible class
-      const timer = setTimeout(() => setIsVisible(true), 10);
-      return () => clearTimeout(timer);
-    } else {
-      setIsVisible(false);
-    }
+    const timer = setTimeout(
+      () => setIsVisible(region !== null),
+      region ? 10 : 0,
+    );
+    return () => clearTimeout(timer);
   }, [region]);
 
   // Close on Escape
@@ -95,18 +109,7 @@ export default function PanneauRegion({ region, onClose }: Props) {
             <div className={styles.content}>
               {/* Emblem */}
               <div className={styles.emblemWrapper}>
-                {!imgError ? (
-                  <img
-                    src={region.emblemeUrl}
-                    alt={`Emblème ${region.nom}`}
-                    width={80}
-                    height={80}
-                    className={styles.emblem}
-                    onError={() => setImgError(true)}
-                  />
-                ) : (
-                  <Initiales nom={region.nom} couleur={region.couleur} />
-                )}
+                <RegionEmblem key={region.id} region={region} />
               </div>
 
               {/* Region name */}
