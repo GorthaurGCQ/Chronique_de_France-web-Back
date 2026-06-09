@@ -4,6 +4,8 @@
 
 // Module : node_modules/next/link
 import Link from "next/link";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 // Style : src/components_V/accessScreens.module.css
 import styles from "./accessScreens.module.css";
 
@@ -18,7 +20,7 @@ export default function AccessDeniedScreen({ sectionTitle }: Props) {
     <main className={styles.main}>
       <div className={styles.card}>
         <div className={`${styles.icon} ${styles.iconDenied}`} aria-hidden="true">
-          ⛔
+          <AppIcon name="denied" size={32} />
         </div>
         <span className={styles.badge}>Permissions</span>
         <h1 className={styles.title}>{title}</h1>

@@ -285,8 +285,6 @@
 
 .banderoleOrnament {
   flex-shrink: 0;
-  font-size: 1.1rem;
-  color: var(--color-gold);
   opacity: 0.9;
   animation: ornamentPulse 3s ease-in-out infinite;
 }
@@ -344,7 +342,9 @@
 }
 
 .btnOutlineGold {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   padding: 0.7rem 1.6rem;
   border: 2px solid var(--color-gold);
   color: var(--color-gold);
@@ -352,6 +352,10 @@
   font-weight: 600;
   border-radius: 6px;
   transition: background 0.2s, color 0.2s;
+}
+
+.btnIcon {
+  flex-shrink: 0;
 }
 
 .btnOutlineGold:hover {

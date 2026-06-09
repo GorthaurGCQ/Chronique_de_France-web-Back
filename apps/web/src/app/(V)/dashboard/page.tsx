@@ -19,8 +19,20 @@ import { useSession, signOut, authClient } from "@/lib/auth/auth-client";
 import LoginRequiredScreen from "@/components_V/LoginRequiredScreen";
 // Module : src/lib/permissions.shared.ts
 import { hasAdminPanelAccess } from "@/lib/permissions.shared";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
+import type { IconName } from "@/components_V/icons/types";
 // Style : src/app/(V)/dashboard/dashboard.module.css
 import styles from "./dashboard.module.css";
+
+function CardTitle({ icon, children }: { icon: IconName; children: React.ReactNode }) {
+  return (
+    <h2 className={styles.cardTitle}>
+      <AppIcon name={icon} size={20} className={styles.cardIcon} />
+      {children}
+    </h2>
+  );
+}
 
 // ── Modal Avatar ──────────────────────────────────────────────────────────────
 
@@ -419,14 +431,14 @@ export default function DashboardPage() {
   favorites.forEach((f) => { if (f.timeline) timelineCount[f.timeline] = (timelineCount[f.timeline] ?? 0) + 1; });
   const maxTimelineCount = Math.max(1, ...Object.values(timelineCount));
 
-  const TABS = [
-    { id: "profil",      icon: "👤", label: "Profil" },
-    { id: "securite",    icon: "🔑", label: "Sécurité" },
-    { id: "stats",       icon: "📊", label: "Statistiques" },
-    { id: "favoris",     icon: "🔖", label: `Favoris (${favorites.length})` },
-    { id: "historique",  icon: "🕐", label: "Historique" },
-    { id: "preferences", icon: "⚙️", label: "Préférences" },
-  ] as const;
+  const TABS: { id: typeof activeTab; icon: IconName; label: string }[] = [
+    { id: "profil",      icon: "user",     label: "Profil" },
+    { id: "securite",    icon: "key",      label: "Sécurité" },
+    { id: "stats",       icon: "chart",    label: "Statistiques" },
+    { id: "favoris",     icon: "bookmark", label: `Favoris (${favorites.length})` },
+    { id: "historique",  icon: "clock",    label: "Historique" },
+    { id: "preferences", icon: "settings", label: "Préférences" },
+  ];
 
   return (
     <main className={styles.page}>
@@ -451,7 +463,9 @@ export default function DashboardPage() {
             ) : (
               <div className={styles.avatarLg}>{initial}</div>
             )}
-            <div className={styles.avatarOverlay}>📷</div>
+            <div className={styles.avatarOverlay}>
+              <AppIcon name="camera" size={20} tone="inherit" />
+            </div>
           </div>
           <div className={styles.heroInfo}>
             <h1 className={styles.heroName}>{user.name}</h1>
@@ -460,7 +474,10 @@ export default function DashboardPage() {
           </div>
           <div className={styles.heroRole}>
             {userRole === "founder" ? (
-              <span className={`${styles.roleBadge} ${styles.roleBadgeFounder}`}>👑 Fondateur</span>
+              <span className={`${styles.roleBadge} ${styles.roleBadgeFounder}`}>
+                <AppIcon name="crown" size={14} className={styles.roleBadgeIcon} />
+                Fondateur
+              </span>
             ) : userRole === "admin" ? (
               <span className={`${styles.roleBadge} ${styles.roleBadgeAdmin}`}>Administrateur</span>
             ) : (
@@ -477,7 +494,7 @@ export default function DashboardPage() {
               className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ""}`}
               onClick={() => setActiveTab(t.id)}
             >
-              <span>{t.icon}</span>
+              <AppIcon name={t.icon} size={18} className={styles.tabIcon} />
               <span className={styles.tabLabel}>{t.label}</span>
             </button>
           ))}
@@ -489,7 +506,7 @@ export default function DashboardPage() {
           {activeTab === "profil" && (
             <div className={styles.sectionGrid}>
               <section className={styles.card}>
-                <h2 className={styles.cardTitle}><span className={styles.cardIcon}>👤</span> Informations personnelles</h2>
+                <CardTitle icon="user">Informations personnelles</CardTitle>
 
                 {/* Nom */}
                 <div className={styles.fieldRow}>
@@ -506,7 +523,10 @@ export default function DashboardPage() {
                   ) : (
                     <div className={styles.fieldValue}>
                       <span>{user.name}</span>
-                      <button className={styles.btnEdit} onClick={() => setEditingName(true)}>✏️ Modifier</button>
+                      <button className={styles.btnEdit} onClick={() => setEditingName(true)}>
+                        <AppIcon name="pencil" size={14} className={styles.btnEditIcon} />
+                        Modifier
+                      </button>
                     </div>
                   )}
                   {nameMsg && <p className={styles.nameMsg}>{nameMsg}</p>}
@@ -527,7 +547,10 @@ export default function DashboardPage() {
                   ) : (
                     <div className={styles.fieldValue}>
                       <span>{user.email}</span>
-                      <button className={styles.btnEdit} onClick={() => setEditingEmail(true)}>✏️ Modifier</button>
+                      <button className={styles.btnEdit} onClick={() => setEditingEmail(true)}>
+                        <AppIcon name="pencil" size={14} className={styles.btnEditIcon} />
+                        Modifier
+                      </button>
                     </div>
                   )}
                   {emailMsg && <p className={styles.nameMsg}>{emailMsg}</p>}
@@ -538,7 +561,10 @@ export default function DashboardPage() {
                   <label className={styles.fieldLabel}>Rôle</label>
                   <div className={styles.fieldValue}>
                     {userRole === "founder" ? (
-                      <span className={`${styles.roleBadge} ${styles.roleBadgeFounder}`}>👑 Fondateur</span>
+                      <span className={`${styles.roleBadge} ${styles.roleBadgeFounder}`}>
+                <AppIcon name="crown" size={14} className={styles.roleBadgeIcon} />
+                Fondateur
+              </span>
                     ) : userRole === "admin" ? (
                       <span className={`${styles.roleBadge} ${styles.roleBadgeAdmin}`}>Administrateur</span>
                     ) : (
@@ -550,14 +576,21 @@ export default function DashboardPage() {
 
               {/* Actions compte */}
               <section className={styles.card}>
-                <h2 className={styles.cardTitle}><span className={styles.cardIcon}>⚙️</span> Mon compte</h2>
+                <CardTitle icon="settings">Mon compte</CardTitle>
                 <div className={styles.accountActions}>
                   {canAccessAdminPanel && (
-                    <Link href="/admin" className={styles.btnAccount}>🛡️ Accéder au panneau admin</Link>
+                    <Link href="/admin" className={styles.btnAccount}>
+                      <AppIcon name="shield" size={16} className={styles.btnAccountIcon} />
+                      Accéder au panneau admin
+                    </Link>
                   )}
-                  <button className={styles.btnAccount} onClick={handleSignOut}>🚪 Se déconnecter</button>
+                  <button className={styles.btnAccount} onClick={handleSignOut}>
+                    <AppIcon name="logout" size={16} className={styles.btnAccountIcon} />
+                    Se déconnecter
+                  </button>
                   <button className={`${styles.btnAccount} ${styles.btnAccountDanger}`} onClick={handleDeleteAccount}>
-                    🗑️ Supprimer mon compte
+                    <AppIcon name="trash" size={16} className={styles.btnAccountIcon} />
+                    Supprimer mon compte
                   </button>
                 </div>
               </section>
@@ -567,7 +600,7 @@ export default function DashboardPage() {
           {/* ══════════════ ONGLET SÉCURITÉ ══════════════ */}
           {activeTab === "securite" && (
             <section className={styles.card}>
-              <h2 className={styles.cardTitle}><span className={styles.cardIcon}>🔑</span> Changer le mot de passe</h2>
+              <CardTitle icon="key">Changer le mot de passe</CardTitle>
               <p className={styles.sectionHint}>
                 Pour des raisons de sécurité, votre mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un symbole.
               </p>
@@ -583,7 +616,7 @@ export default function DashboardPage() {
                       value={currentPwd} onChange={(e) => setCurrentPwd(e.target.value)}
                       placeholder="Votre mot de passe actuel" required />
                     <button type="button" className={styles.eyeBtn} onClick={() => setShowPwds((v) => !v)}>
-                      {showPwds ? "🙈" : "👁"}
+                      <AppIcon name={showPwds ? "eyeOff" : "eye"} size={18} tone="inherit" />
                     </button>
                   </div>
                 </div>
@@ -647,7 +680,7 @@ export default function DashboardPage() {
             <div className={styles.sectionGrid}>
               {/* Compteurs */}
               <section className={styles.card}>
-                <h2 className={styles.cardTitle}><span className={styles.cardIcon}>📊</span> Vue d&apos;ensemble</h2>
+                <CardTitle icon="chart">Vue d&apos;ensemble</CardTitle>
                 <div className={styles.statsGrid}>
                   <div className={styles.statItem}>
                     <span className={styles.statValue}>{favorites.length}</span>
@@ -672,7 +705,7 @@ export default function DashboardPage() {
 
               {/* Répartition par époque */}
               <section className={styles.card}>
-                <h2 className={styles.cardTitle}><span className={styles.cardIcon}>📅</span> Favoris par époque</h2>
+                <CardTitle icon="calendar">Favoris par époque</CardTitle>
                 {Object.keys(timelineCount).length === 0 ? (
                   <p className={styles.emptyMsg}>Aucun favori pour l&apos;instant.</p>
                 ) : (
@@ -699,7 +732,8 @@ export default function DashboardPage() {
           {activeTab === "favoris" && (
             <section className={styles.card}>
               <h2 className={styles.cardTitle}>
-                <span className={styles.cardIcon}>🔖</span> Ressources sauvegardées
+                <AppIcon name="bookmark" size={20} className={styles.cardIcon} />
+                Ressources sauvegardées
                 <span className={styles.countBadge}>{favorites.length}</span>
               </h2>
               {favsLoading ? (
@@ -707,8 +741,13 @@ export default function DashboardPage() {
               ) : favorites.length === 0 ? (
                 <div className={styles.emptyState}>
                   <p className={styles.emptyMsg}>Aucune ressource sauvegardée pour l&apos;instant.</p>
-                  <p className={styles.emptyHint}>Cliquez sur l&apos;icône 🔖 sur les cards pour sauvegarder des ressources.</p>
-                  <Link href="/bibliotheque" className={styles.btnBrowse}>Explorer la bibliothèque →</Link>
+                  <p className={styles.emptyHint}>
+                    Cliquez sur l&apos;icône favori sur les cards pour sauvegarder des ressources.
+                  </p>
+                  <Link href="/bibliotheque" className={styles.btnBrowse}>
+                    Explorer la bibliothèque
+                    <AppIcon name="arrowRight" size={14} tone="inherit" className={styles.btnBrowseIcon} />
+                  </Link>
                 </div>
               ) : (
                 <ul className={styles.favList}>
@@ -744,7 +783,7 @@ export default function DashboardPage() {
                               </div>
                             ) : fav.note ? (
                               <div className={styles.favNoteDisplay} onClick={() => startEditNote(fav)}>
-                                <span className={styles.favNoteIcon}>📝</span>
+                                <AppIcon name="note" size={14} className={styles.favNoteIcon} />
                                 <span className={styles.favNoteText}>{fav.note}</span>
                               </div>
                             ) : (
@@ -753,7 +792,9 @@ export default function DashboardPage() {
                           </div>
                           <div className={styles.favFooter}>
                             <span className={styles.favDate}>Sauvegardé le {new Date(fav.savedAt).toLocaleDateString("fr-FR")}</span>
-                            <button className={styles.favRemove} onClick={() => removeFavorite(fav.resourceId)} aria-label="Retirer des favoris">✕</button>
+                            <button className={styles.favRemove} onClick={() => removeFavorite(fav.resourceId)} aria-label="Retirer des favoris">
+                              <AppIcon name="close" size={14} tone="inherit" />
+                            </button>
                           </div>
                         </div>
                       </li>
@@ -767,14 +808,17 @@ export default function DashboardPage() {
           {/* ══════════════ ONGLET HISTORIQUE ══════════════ */}
           {activeTab === "historique" && (
             <section className={styles.card}>
-              <h2 className={styles.cardTitle}><span className={styles.cardIcon}>🕐</span> Dernières ressources consultées</h2>
+              <CardTitle icon="clock">Dernières ressources consultées</CardTitle>
               {historyLoading ? (
                 <p className={styles.emptyMsg}>Chargement…</p>
               ) : history.length === 0 ? (
                 <div className={styles.emptyState}>
                   <p className={styles.emptyMsg}>Aucune ressource consultée pour l&apos;instant.</p>
                   <p className={styles.emptyHint}>Les ressources que vous consultez apparaîtront ici.</p>
-                  <Link href="/bibliotheque" className={styles.btnBrowse}>Explorer la bibliothèque →</Link>
+                  <Link href="/bibliotheque" className={styles.btnBrowse}>
+                    Explorer la bibliothèque
+                    <AppIcon name="arrowRight" size={14} tone="inherit" className={styles.btnBrowseIcon} />
+                  </Link>
                 </div>
               ) : (
                 <ul className={styles.historyList}>
@@ -804,7 +848,7 @@ export default function DashboardPage() {
           {/* ══════════════ ONGLET PRÉFÉRENCES ══════════════ */}
           {activeTab === "preferences" && (
             <section className={styles.card}>
-              <h2 className={styles.cardTitle}><span className={styles.cardIcon}>⚙️</span> Préférences</h2>
+              <CardTitle icon="settings">Préférences</CardTitle>
               <p className={styles.sectionHint}>Ces paramètres personnalisent votre expérience sur le site.</p>
 
               {prefsMsg && <p className={prefsMsg.includes("✓") ? styles.msgOk : styles.msgError}>{prefsMsg}</p>}

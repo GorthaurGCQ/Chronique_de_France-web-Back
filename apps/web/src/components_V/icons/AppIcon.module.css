@@ -1,0 +1,41 @@
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.gold {
+  color: var(--color-gold, #b8933a);
+}
+
+.navy {
+  color: var(--color-navy, #1a2744);
+}
+
+.muted {
+  color: #7a8499;
+}
+
+.inherit {
+  color: inherit;
+}
+
+.sm {
+  width: 16px;
+  height: 16px;
+}
+
+.md {
+  width: 20px;
+  height: 20px;
+}
+
+.lg {
+  width: 24px;
+  height: 24px;
+}
+
+.xl {
+  width: 32px;
+  height: 32px;
+}

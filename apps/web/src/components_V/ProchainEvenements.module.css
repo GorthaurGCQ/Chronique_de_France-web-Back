@@ -178,3 +178,19 @@
     text-align: center;
   }
 }
+
+.inlineIcon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+}
+
+.seeAll,
+.cta,
+.lieu {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}

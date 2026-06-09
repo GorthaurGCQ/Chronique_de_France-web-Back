@@ -18,17 +18,18 @@ import {
   type Permission,
   parsePermissions,
 } from "@/lib/permissions.shared";
-
-// ── Définition des permissions ───────────────────────────────────────────────
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
+import type { IconName } from "@/components_V/icons/types";
 
 const PERMISSION_GROUPS: {
   label: string;
-  icon: string;
+  icon: IconName;
   items: { key: Permission; label: string; desc: string }[];
 }[] = [
   {
     label: "Ressources",
-    icon: "📄",
+    icon: "file",
     items: [
       { key: "CREER_RESSOURCES",       label: "Créer des ressources",      desc: "Peut publier de nouvelles fiches dans la bibliothèque" },
       { key: "MODIFIER_RESSOURCES",    label: "Modifier des ressources",   desc: "Peut éditer les ressources existantes" },
@@ -38,7 +39,7 @@ const PERMISSION_GROUPS: {
   },
   {
     label: "Panneau d'administration",
-    icon: "🛡️",
+    icon: "shield",
     items: [
       { key: "VOIR_TABLEAU_BORD",      label: "Tableau de bord",           desc: "Accès aux statistiques du panneau admin" },
       { key: "GERER_UTILISATEURS",     label: "Gérer les utilisateurs",    desc: "Peut consulter, bannir et modifier les membres" },
@@ -47,7 +48,7 @@ const PERMISSION_GROUPS: {
   },
   {
     label: "Accès aux pages",
-    icon: "🗺️",
+    icon: "map",
     items: [
       { key: "ACCES_BIBLIOTHEQUE",     label: "Bibliothèque",              desc: "Accès à la page bibliothèque nationale" },
       { key: "ACCES_REGIONS",          label: "Pages régions",             desc: "Accès aux pages des 13 régions" },
@@ -211,7 +212,7 @@ export default function AdminUtilisateurs() {
                       <td>
                         {user.role === "founder" ? (
                           <span className={styles.roleAdmin} style={{ background: "#fef3c7", color: "#92400e", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
-                            👑 Fondateur
+                            <AppIcon name="crown" size={12} className={styles.inlineIcon} /> Fondateur
                           </span>
                         ) : user.role === "admin" ? (
                           <span className={styles.roleAdmin}>Administrateur</span>
@@ -242,7 +243,7 @@ export default function AdminUtilisateurs() {
                       <td>
                         {user.role === "founder" ? (
                           <span style={{ fontSize: "0.78rem", color: "#b8933a", fontWeight: 600 }}>
-                            👑 Compte verrouillé
+                            <AppIcon name="crown" size={12} className={styles.inlineIcon} /> Compte verrouillé
                           </span>
                         ) : user.id !== session?.user.id ? (
                           <div className={styles.actionsCell}>
@@ -250,7 +251,7 @@ export default function AdminUtilisateurs() {
                               className={styles.btnAction}
                               onClick={() => openEdit(user)}
                             >
-                              ✏️ Modifier
+                              <AppIcon name="pencil" size={14} className={styles.inlineIcon} /> Modifier
                             </button>
                             {!user.banned ? (
                               <button
@@ -306,12 +307,16 @@ export default function AdminUtilisateurs() {
                 <h2 className={permStyles.title}>Droits de {editingUser.name}</h2>
                 <p className={permStyles.subtitle}>{editingUser.email}</p>
               </div>
-              <button className={permStyles.closeBtn} onClick={closeEdit} aria-label="Fermer">✕</button>
+              <button className={permStyles.closeBtn} onClick={closeEdit} aria-label="Fermer">
+                <AppIcon name="close" size={16} tone="inherit" />
+              </button>
             </div>
 
             {/* Rôle */}
             <div className={permStyles.section}>
-              <h3 className={permStyles.sectionTitle}>👤 Rôle principal</h3>
+              <h3 className={permStyles.sectionTitle}>
+                <AppIcon name="user" size={18} className={permStyles.sectionIcon} /> Rôle principal
+              </h3>
               <div className={permStyles.roleRow}>
                 <label className={`${permStyles.roleOption} ${editRole === "user" ? permStyles.roleOptionActive : ""}`}>
                   <input
@@ -346,14 +351,18 @@ export default function AdminUtilisateurs() {
 
             {/* Permissions granulaires */}
             <div className={permStyles.section}>
-              <h3 className={permStyles.sectionTitle}>🔑 Droits spécifiques</h3>
+              <h3 className={permStyles.sectionTitle}>
+                <AppIcon name="key" size={18} className={permStyles.sectionIcon} /> Droits spécifiques
+              </h3>
               <p className={permStyles.sectionHint}>
                 Ces droits sont enregistrés en base. Le rôle Administrateur donne accès au panneau admin ;
                 les droits spécifiques affinent les accès (application progressive).
               </p>
               {PERMISSION_GROUPS.map((group) => (
                 <div key={group.label} className={permStyles.group}>
-                  <p className={permStyles.groupTitle}>{group.icon} {group.label}</p>
+                  <p className={permStyles.groupTitle}>
+                    <AppIcon name={group.icon} size={16} className={permStyles.groupIcon} /> {group.label}
+                  </p>
                   <div className={permStyles.checkList}>
                     {group.items.map((item) => (
                       <label key={item.key} className={`${permStyles.checkItem} ${editPerms.includes(item.key) ? permStyles.checkItemActive : ""}`}>

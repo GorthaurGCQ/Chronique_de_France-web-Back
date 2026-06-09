@@ -4,6 +4,10 @@
 import { useState } from "react";
 // Module : node_modules/react-simple-maps
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
+// Composant : src/components_V/icons/RegionIcon.tsx
+import RegionIcon from "@/components_V/icons/RegionIcon";
 // Style : src/components_V/FranceMap.module.css
 import styles from "./FranceMap.module.css";
 
@@ -41,20 +45,20 @@ function darken(hex: string): string {
 }
 
 // Infos affichées dans le panneau latéral
-const REGION_INFO: Record<string, { emoji: string; description: string }> = {
-  "Île-de-France":             { emoji: "🏰", description: "Berceau de la monarchie française, foyer des arts et des lumières, Île-de-France abrite Versailles, le Louvre et des siècles d'histoire royale." },
-  "Centre-Val de Loire":       { emoji: "🏯", description: "La « Vallée des Rois » avec ses châteaux de la Renaissance — Chambord, Chenonceau, Amboise — témoins du faste de la cour de France." },
-  "Bourgogne-Franche-Comté":   { emoji: "🍷", description: "Terre de ducs puissants et de vignobles légendaires, la Bourgogne a façonné la culture et la gastronomie françaises depuis le Moyen Âge." },
-  "Normandie":                  { emoji: "⚓", description: "Des Vikings aux plages du Débarquement, la Normandie porte en elle mille ans d'histoire maritime et militaire, entre cathédrales et falaises." },
-  "Hauts-de-France":            { emoji: "🌾", description: "Carrefour de l'Europe du Nord, cette région a été le théâtre de batailles décisives et d'une riche culture textile et industrielle." },
-  "Grand Est":                  { emoji: "🦅", description: "L'Alsace, la Champagne et la Lorraine forment un creuset unique où se mêlent influences françaises et germaniques depuis des siècles." },
-  "Pays de la Loire":           { emoji: "🌊", description: "Entre Loire royale et Atlantique, cette région abrite un patrimoine Renaissance exceptionnel et une tradition maritime ancestrale." },
-  "Bretagne":                   { emoji: "🗿", description: "Terre celtique aux menhirs millénaires et aux pardons colorés, la Bretagne conserve une identité culturelle et linguistique unique en France." },
-  "Nouvelle-Aquitaine":         { emoji: "🍇", description: "La plus grande région de France, des vignes de Bordeaux aux falaises du Pays basque, riche d'une préhistoire exceptionnelle à Lascaux." },
-  "Occitanie":                  { emoji: "☀️", description: "Langue d'oc, cathares, troubadours — l'Occitanie est une civilisation à part entière, marquée par ses châteaux médiévaux et la mer Méditerranée." },
-  "Auvergne-Rhône-Alpes":       { emoji: "🏔️", description: "Des volcans d'Auvergne aux Alpes majestueuses, cette région unit nature grandiose et cités antiques comme Lyon, ancienne capitale des Gaules." },
-  "Provence-Alpes-Côte d'Azur": { emoji: "🌿", description: "Lumière méditerranéenne, lavandes de Haute-Provence, cités romaines — la Provence a inspiré peintres, poètes et philosophes depuis l'Antiquité." },
-  "Corse":                      { emoji: "🏝️", description: "Île de Beauté, berceau de Napoléon Bonaparte, la Corse offre un patrimoine naturel et culturel unique entre maquis odorant et citadelles génoises." },
+const REGION_INFO: Record<string, { description: string }> = {
+  "Île-de-France":             { description: "Berceau de la monarchie française, foyer des arts et des lumières, Île-de-France abrite Versailles, le Louvre et des siècles d'histoire royale." },
+  "Centre-Val de Loire":       { description: "La « Vallée des Rois » avec ses châteaux de la Renaissance — Chambord, Chenonceau, Amboise — témoins du faste de la cour de France." },
+  "Bourgogne-Franche-Comté":   { description: "Terre de ducs puissants et de vignobles légendaires, la Bourgogne a façonné la culture et la gastronomie françaises depuis le Moyen Âge." },
+  "Normandie":                  { description: "Des Vikings aux plages du Débarquement, la Normandie porte en elle mille ans d'histoire maritime et militaire, entre cathédrales et falaises." },
+  "Hauts-de-France":            { description: "Carrefour de l'Europe du Nord, cette région a été le théâtre de batailles décisives et d'une riche culture textile et industrielle." },
+  "Grand Est":                  { description: "L'Alsace, la Champagne et la Lorraine forment un creuset unique où se mêlent influences françaises et germaniques depuis des siècles." },
+  "Pays de la Loire":           { description: "Entre Loire royale et Atlantique, cette région abrite un patrimoine Renaissance exceptionnel et une tradition maritime ancestrale." },
+  "Bretagne":                   { description: "Terre celtique aux menhirs millénaires et aux pardons colorés, la Bretagne conserve une identité culturelle et linguistique unique en France." },
+  "Nouvelle-Aquitaine":         { description: "La plus grande région de France, des vignes de Bordeaux aux falaises du Pays basque, riche d'une préhistoire exceptionnelle à Lascaux." },
+  "Occitanie":                  { description: "Langue d'oc, cathares, troubadours — l'Occitanie est une civilisation à part entière, marquée par ses châteaux médiévaux et la mer Méditerranée." },
+  "Auvergne-Rhône-Alpes":       { description: "Des volcans d'Auvergne aux Alpes majestueuses, cette région unit nature grandiose et cités antiques comme Lyon, ancienne capitale des Gaules." },
+  "Provence-Alpes-Côte d'Azur": { description: "Lumière méditerranéenne, lavandes de Haute-Provence, cités romaines — la Provence a inspiré peintres, poètes et philosophes depuis l'Antiquité." },
+  "Corse":                      { description: "Île de Beauté, berceau de Napoléon Bonaparte, la Corse offre un patrimoine naturel et culturel unique entre maquis odorant et citadelles génoises." },
 };
 
 export default function FranceMap() {
@@ -146,7 +150,7 @@ export default function FranceMap() {
         {selected && regionInfo ? (
           <>
             <div className={styles.regionHeader}>
-              <span className={styles.regionEmoji}>{regionInfo.emoji}</span>
+              <RegionIcon region={selected} size={36} className={styles.regionIcon} tone="inherit" />
               <h3 className={styles.regionName}>{selected}</h3>
             </div>
             <span
@@ -162,7 +166,8 @@ export default function FranceMap() {
                 className={styles.btnPrimary}
                 style={{ background: accentColor }}
               >
-                Voir les ressources →
+                Voir les ressources
+                <AppIcon name="arrowRight" size={14} tone="inherit" className={styles.btnIcon} />
               </a>
               <button
                 className={styles.btnSecondary}
@@ -174,7 +179,7 @@ export default function FranceMap() {
           </>
         ) : (
           <div className={styles.placeholder}>
-            <span className={styles.placeholderIcon}>🗺️</span>
+            <AppIcon name="map" size={40} className={styles.placeholderIcon} />
             <p className={styles.placeholderTitle}>Explorez par région</p>
             <p className={styles.placeholderSub}>
               Cliquez sur une région de France pour découvrir son histoire et ses ressources.
@@ -184,7 +189,7 @@ export default function FranceMap() {
 
         {/* Compteur régions */}
         <div className={styles.regionCount}>
-          <span>🇫🇷</span>
+          <AppIcon name="flag" size={16} className={styles.regionCountIcon} />
           <span>13 régions métropolitaines</span>
         </div>
       </div>

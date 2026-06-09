@@ -7,6 +7,8 @@
 
 // Module : node_modules/react
 import { useState } from "react";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 // Style : src/app/(V)/evenement/evenement.module.css
 import styles from "@/app/(V)/evenement/evenement.module.css";
 
@@ -104,12 +106,20 @@ function RegisterModal({ event, onClose }: { event: EventItem; onClose: () => vo
             <h2 className={styles.modalTitle}>S&apos;inscrire</h2>
             <p className={styles.modalSubtitle}>{event.titre}</p>
           </div>
-          <button className={styles.modalClose} onClick={onClose} aria-label="Fermer">✕</button>
+          <button className={styles.modalClose} onClick={onClose} aria-label="Fermer">
+            <AppIcon name="close" size={18} tone="inherit" />
+          </button>
         </div>
 
         {success ? (
           <div className={styles.successBox}>
-            <div className={styles.successIcon}>{registrationStatut === "LISTE_ATTENTE" ? "⏳" : "✓"}</div>
+            <div className={styles.successIcon}>
+              <AppIcon
+                name={registrationStatut === "LISTE_ATTENTE" ? "clock" : "check"}
+                size={28}
+                tone="inherit"
+              />
+            </div>
             <p className={styles.successTitle}>
               {registrationStatut === "LISTE_ATTENTE" ? "Liste d'attente" : "Inscription confirmée !"}
             </p>
@@ -140,11 +150,18 @@ function RegisterModal({ event, onClose }: { event: EventItem; onClose: () => vo
         ) : (
           <form className={styles.modalForm} onSubmit={handleSubmit}>
             <div className={styles.modalEventInfo}>
-              <span>📅 {formatDate(new Date(event.date))} · {formatTime(new Date(event.date))}</span>
-              <span>📍 {event.lieu}</span>
+              <span className={styles.modalMetaRow}>
+                <AppIcon name="calendar" size={14} className={styles.modalMetaIcon} />
+                {formatDate(new Date(event.date))} · {formatTime(new Date(event.date))}
+              </span>
+              <span className={styles.modalMetaRow}>
+                <AppIcon name="pin" size={14} className={styles.modalMetaIcon} />
+                {event.lieu}
+              </span>
               {event.capaciteMax != null && (
-                <span>
-                  👥 {event.complet ? "Complet" : `${event.placesRestantes ?? 0} place(s) restante(s)`}
+                <span className={styles.modalMetaRow}>
+                  <AppIcon name="users" size={14} className={styles.modalMetaIcon} />
+                  {event.complet ? "Complet" : `${event.placesRestantes ?? 0} place(s) restante(s)`}
                   {event.listeAttenteCount ? ` · ${event.listeAttenteCount} en attente` : ""}
                 </span>
               )}
@@ -269,7 +286,8 @@ export function UpcomingGrid({ events: list }: { events: EventItem[] }) {
                   )}
                   {ev.capaciteMax != null && (
                     <span className={styles.cardMetaItem}>
-                      👥 {ev.complet ? "Complet — liste d'attente" : `${ev.placesRestantes ?? 0} place(s) restante(s)`}
+                      <AppIcon name="users" size={13} className={styles.cardMetaIcon} />
+                      {ev.complet ? "Complet — liste d'attente" : `${ev.placesRestantes ?? 0} place(s) restante(s)`}
                     </span>
                   )}
                 </div>
@@ -277,7 +295,8 @@ export function UpcomingGrid({ events: list }: { events: EventItem[] }) {
                   className={styles.btnRegister}
                   onClick={() => setSelected(ev)}
                 >
-                  {ev.complet ? "Liste d'attente →" : "S'inscrire →"}
+                  {ev.complet ? "Liste d'attente" : "S'inscrire"}
+                  <AppIcon name="arrowRight" size={14} tone="inherit" className={styles.btnRegisterIcon} />
                 </button>
               </div>
             </article>

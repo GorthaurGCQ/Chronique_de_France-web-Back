@@ -23,6 +23,8 @@ import Link from "@tiptap/extension-link";
 import { useEffect, useCallback } from "react";
 // Style : src/components_V/RichTextEditor.module.css
 import styles from "./RichTextEditor.module.css";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -188,8 +190,15 @@ export default function RichTextEditor({ value, onChange, placeholder }: Props) 
         <Sep />
 
         {/* Lien */}
-        <ToolBtn title="Insérer un lien" active={editor.isActive("link")} onClick={setLink}>🔗</ToolBtn>
-        <ToolBtn title="Supprimer le lien" disabled={!editor.isActive("link")} onClick={() => editor.chain().focus().unsetLink().run()}>🔗✕</ToolBtn>
+        <ToolBtn title="Insérer un lien" active={editor.isActive("link")} onClick={setLink}>
+          <AppIcon name="link" size={14} tone="inherit" />
+        </ToolBtn>
+        <ToolBtn title="Supprimer le lien" disabled={!editor.isActive("link")} onClick={() => editor.chain().focus().unsetLink().run()}>
+          <span className={styles.toolIconPair}>
+            <AppIcon name="link" size={14} tone="inherit" />
+            <AppIcon name="close" size={12} tone="inherit" />
+          </span>
+        </ToolBtn>
 
         <Sep />
 
@@ -221,7 +230,12 @@ export default function RichTextEditor({ value, onChange, placeholder }: Props) 
         {/* Historique */}
         <ToolBtn title="Annuler (Ctrl+Z)" disabled={!editor.can().undo()} onClick={() => editor.chain().focus().undo().run()}>↩</ToolBtn>
         <ToolBtn title="Rétablir (Ctrl+Y)" disabled={!editor.can().redo()} onClick={() => editor.chain().focus().redo().run()}>↪</ToolBtn>
-        <ToolBtn title="Effacer le formatage" onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}>✕ fmt</ToolBtn>
+        <ToolBtn title="Effacer le formatage" onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}>
+          <span className={styles.toolIconPair}>
+            <AppIcon name="close" size={12} tone="inherit" />
+            <span>fmt</span>
+          </span>
+        </ToolBtn>
       </div>
 
       {/* ── Zone d'édition ── */}

@@ -10,6 +10,8 @@ import type { RegionCategorie } from "@/models_M/data/regionsContent";
 import styles from "./region.module.css";
 // Composant : src/components_V/BookmarkButton.tsx
 import BookmarkButton from "@/components_V/BookmarkButton";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 
 const EPOQUES = [
   { id: "ANTIQUITÉ",     label: "Antiquité",    date: "av. J.-C. – Ve s." },
@@ -93,7 +95,7 @@ export default function RegionFriseEtCards({
             onClick={prevCat}
             aria-label="Catégorie précédente"
           >
-            ←
+            <AppIcon name="chevronLeft" size={20} tone="inherit" />
           </button>
 
           <div className={styles.catCenter} ref={dropdownRef}>
@@ -135,7 +137,7 @@ export default function RegionFriseEtCards({
             onClick={nextCat}
             aria-label="Catégorie suivante"
           >
-            →
+            <AppIcon name="chevronRight" size={20} tone="inherit" />
           </button>
         </div>
 
@@ -191,7 +193,7 @@ export default function RegionFriseEtCards({
       {/* ── GRILLE DE CARDS ── */}
       {currentCat.cards.length === 0 ? (
         <div className={styles.catEmpty}>
-          <span className={styles.catEmptyIcon}>🏛️</span>
+          <AppIcon name="monument" size={40} className={styles.catEmptyIcon} />
           <p className={styles.catEmptyText}>
             Les ressources pour cette catégorie sont en cours de préparation.
           </p>
@@ -241,7 +243,7 @@ export default function RegionFriseEtCards({
                     className={styles.cardArrow}
                     aria-label={`Lire : ${card.titre}`}
                   >
-                    →
+                    <AppIcon name="arrowRight" size={16} tone="inherit" />
                   </Link>
                 </div>
               </div>

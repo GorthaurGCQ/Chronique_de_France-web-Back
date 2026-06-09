@@ -2,10 +2,21 @@
 
 // Module : node_modules/react
 import { useRef, useState } from "react";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
+import type { IconName } from "@/components_V/icons/types";
 // Style : src/app/(V)/bibliotheque/[id]/ressource.module.css
 import styles from "@/app/(V)/bibliotheque/[id]/ressource.module.css";
 
 type MediaKind = "youtube" | "vimeo" | "video" | "audio" | "iframe" | "external";
+
+const KIND_LABELS: Record<Exclude<MediaKind, "external">, { icon: IconName; label: string }> = {
+  youtube: { icon: "play", label: "YouTube" },
+  vimeo: { icon: "play", label: "Vimeo" },
+  video: { icon: "play", label: "Vidéo" },
+  audio: { icon: "music", label: "Audio" },
+  iframe: { icon: "link", label: "Document" },
+};
 
 function detectKind(url: string): MediaKind {
   if (/youtube\.com|youtu\.be/i.test(url))   return "youtube";
@@ -56,25 +67,20 @@ export default function MediaPlayer({ url }: { url: string }) {
         rel="noopener noreferrer"
         className={styles.mediaBtn}
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-          <polyline points="15 3 21 3 21 9" />
-          <line x1="10" y1="14" x2="21" y2="3" />
-        </svg>
+        <AppIcon name="external" size={18} tone="inherit" />
         Ouvrir le média dans un nouvel onglet
       </a>
     );
   }
 
+  const kindInfo = KIND_LABELS[kind];
+
   return (
     <div className={styles.mediaBlock}>
       <div className={styles.mediaBar}>
         <span className={styles.mediaBarTitle}>
-          {kind === "youtube" && "▶ YouTube"}
-          {kind === "vimeo"   && "▶ Vimeo"}
-          {kind === "video"   && "▶ Vidéo"}
-          {kind === "audio"   && "🎵 Audio"}
-          {kind === "iframe"  && "🔗 Document"}
+          <AppIcon name={kindInfo.icon} size={16} className={styles.mediaBarIcon} />
+          {kindInfo.label}
         </span>
         <div className={styles.mediaBarActions}>
           <button
@@ -83,7 +89,8 @@ export default function MediaPlayer({ url }: { url: string }) {
             onClick={() => setExpanded((v) => !v)}
             aria-label={expanded ? "Réduire" : "Afficher"}
           >
-            {expanded ? "▲ Réduire" : "▼ Afficher"}
+            <AppIcon name={expanded ? "chevronUp" : "chevronDown"} size={14} tone="inherit" className={styles.mediaBarBtnIcon} />
+            {expanded ? "Réduire" : "Afficher"}
           </button>
           {kind !== "audio" && (
             <button
@@ -92,7 +99,8 @@ export default function MediaPlayer({ url }: { url: string }) {
               onClick={requestFullscreen}
               aria-label="Plein écran"
             >
-              ⛶ Plein écran
+              <AppIcon name="fullscreen" size={14} tone="inherit" className={styles.mediaBarBtnIcon} />
+              Plein écran
             </button>
           )}
           <a
@@ -102,7 +110,8 @@ export default function MediaPlayer({ url }: { url: string }) {
             className={styles.mediaBarBtn}
             aria-label="Ouvrir dans un nouvel onglet"
           >
-            ↗ Ouvrir
+            <AppIcon name="external" size={14} tone="inherit" className={styles.mediaBarBtnIcon} />
+            Ouvrir
           </a>
         </div>
       </div>

@@ -22,6 +22,8 @@ import {
 } from "@/lib/permissions.shared";
 // Style : src/app/(V)/admin/admin.module.css
 import styles from "./admin.module.css";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 
 const sidebarLinks: {
   href: string;
@@ -183,11 +185,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className={styles.sidebarHeader}>
           <span className={styles.sidebarTitle}>Administration</span>
           <span className={styles.sidebarBadge}>
-            {session.user.role === "founder"
-              ? "👑 Fondateur"
-              : isPrivileged
-                ? "Admin"
-                : "Modérateur"}
+            {session.user.role === "founder" ? (
+              <>
+                <AppIcon name="crown" size={14} className={styles.sidebarBadgeIcon} />
+                Fondateur
+              </>
+            ) : isPrivileged ? "Admin" : "Modérateur"}
           </span>
         </div>
 

@@ -76,9 +76,12 @@
   background: var(--color-gold);
 }
 
-.emoji {
-  font-size: 1.6rem;
-  line-height: 1;
+.missionIcon {
+  color: #fff;
+}
+
+.iconGold .missionIcon {
+  color: var(--color-navy);
 }
 
 .cardTitle {

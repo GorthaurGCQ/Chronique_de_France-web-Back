@@ -11,6 +11,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import styles from "../admin.module.css";
 // Composant : src/components_V/RichTextEditor.tsx
 import RichTextEditor from "@/components_V/RichTextEditor";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 
 type Registration = {
   id: string;
@@ -264,7 +266,7 @@ export default function AdminEvenements() {
           </h2>
           {editingId && (
             <button type="button" onClick={cancelEdit} className={styles.btnAction}>
-              ✕ Annuler
+              <AppIcon name="close" size={14} className={styles.inlineIcon} /> Annuler
             </button>
           )}
         </div>
@@ -423,7 +425,7 @@ export default function AdminEvenements() {
                   <span style={{ color: "#b8933a", fontSize: "0.9rem" }}>⏳ Upload en cours…</span>
                 ) : (
                   <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>
-                    🖼️ Cliquez ou déposez une image ici
+                    <AppIcon name="image" size={20} className={styles.uploadIcon} /> Cliquez ou déposez une image ici
                   </span>
                 )}
               </div>
@@ -448,7 +450,7 @@ export default function AdminEvenements() {
                       fontSize: "0.75rem", cursor: "pointer",
                     }}
                   >
-                    ✕ Supprimer
+                    <AppIcon name="close" size={14} className={styles.inlineIcon} /> Supprimer
                   </button>
                 </div>
               )}
@@ -521,7 +523,7 @@ export default function AdminEvenements() {
                         style={{ background: "#eff6ff", color: "#1d4ed8", borderColor: "#bfdbfe" }}
                         onClick={() => openRegistrations(ev)}
                       >
-                        👥 Inscrits
+                        <AppIcon name="users" size={14} className={styles.inlineIcon} /> Inscrits
                       </button>
                       <button
                         className={styles.btnAction}
@@ -567,7 +569,7 @@ export default function AdminEvenements() {
             <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid #f3f4f6", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
               <div>
                 <h2 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 700, color: "#1a1a2e" }}>
-                  👥 Inscrits — {viewingRegs.titre}
+                  <AppIcon name="users" size={16} className={styles.inlineIcon} /> Inscrits — {viewingRegs.titre}
                 </h2>
                 <p style={{ margin: "0.25rem 0 0", fontSize: "0.82rem", color: "#6b7280" }}>
                   {registrations.length} inscription{registrations.length !== 1 ? "s" : ""}
@@ -577,7 +579,7 @@ export default function AdminEvenements() {
               <button
                 onClick={() => setViewingRegs(null)}
                 style={{ background: "#f3f4f6", border: "none", borderRadius: "8px", width: "32px", height: "32px", cursor: "pointer", color: "#6b7280", fontSize: "0.9rem" }}
-              >✕</button>
+              ><AppIcon name="close" size={16} tone="inherit" /></button>
             </div>
 
             {/* Corps */}
@@ -625,7 +627,7 @@ export default function AdminEvenements() {
                             style={{ background: "none", border: "none", color: "#dc2626", cursor: "pointer", fontSize: "0.8rem", padding: "2px 6px", borderRadius: "4px" }}
                             title="Supprimer cet inscrit"
                           >
-                            ✕
+                            <AppIcon name="close" size={14} tone="inherit" />
                           </button>
                         </td>
                       </tr>

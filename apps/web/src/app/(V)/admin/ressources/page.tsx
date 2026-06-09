@@ -21,6 +21,8 @@ import {
 import styles from "../admin.module.css";
 // Composant : src/components_V/RichTextEditor.tsx
 import RichTextEditor from "@/components_V/RichTextEditor";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 
 type Resource = {
   id: string;
@@ -313,7 +315,7 @@ export default function AdminRessources() {
           </h2>
           {editingId && (
             <button type="button" onClick={cancelEdit} className={styles.btnAction}>
-              ✕ Annuler
+              <AppIcon name="close" size={14} className={styles.inlineIcon} /> Annuler
             </button>
           )}
         </div>
@@ -451,7 +453,7 @@ export default function AdminRessources() {
                   <span style={{ color: "#b8933a", fontSize: "0.9rem" }}>⏳ Upload en cours…</span>
                 ) : (
                   <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>
-                    🖼️ Cliquez ou déposez une image ici
+                    <AppIcon name="image" size={20} className={styles.uploadIcon} /> Cliquez ou déposez une image ici
                   </span>
                 )}
               </div>
@@ -478,7 +480,7 @@ export default function AdminRessources() {
                       fontSize: "0.75rem", cursor: "pointer",
                     }}
                   >
-                    ✕ Supprimer
+                    <AppIcon name="close" size={14} className={styles.inlineIcon} /> Supprimer
                   </button>
                 </div>
               )}
@@ -528,7 +530,7 @@ export default function AdminRessources() {
                   <span style={{ color: "#b8933a", fontSize: "0.9rem" }}>⏳ Upload en cours…</span>
                 ) : (
                   <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>
-                    📁 Cliquez ou déposez une image ici
+                    <AppIcon name="folder" size={20} className={styles.uploadIcon} /> Cliquez ou déposez une image ici
                   </span>
                 )}
               </div>
@@ -556,7 +558,7 @@ export default function AdminRessources() {
                       fontSize: "0.75rem", cursor: "pointer",
                     }}
                   >
-                    ✕ Supprimer
+                    <AppIcon name="close" size={14} className={styles.inlineIcon} /> Supprimer
                   </button>
                 </div>
               )}
@@ -617,7 +619,7 @@ export default function AdminRessources() {
                     <td style={{ fontWeight: 600 }}>
                       {r.titre}
                       {r.mediaUrl && (
-                        <span title="Contient un lien média" style={{ marginLeft: "0.4rem", fontSize: "0.8rem" }}>🎬</span>
+                        <AppIcon name="film" size={14} aria-label="Contient un lien média" className={styles.inlineIcon} />
                       )}
                     </td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{REGION_LABELS[r.region ?? ""] ?? r.region ?? "—"}</td>

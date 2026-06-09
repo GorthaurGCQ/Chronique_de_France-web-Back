@@ -61,9 +61,8 @@
   gap: 0.75rem;
 }
 
-.regionEmoji {
-  font-size: 2rem;
-  line-height: 1;
+.regionIcon {
+  flex-shrink: 0;
 }
 
 .regionName {
@@ -101,7 +100,10 @@
 }
 
 .btnPrimary {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   text-align: center;
   padding: 0.6rem 1rem;
   color: #ffffff;
@@ -109,6 +111,10 @@
   font-weight: 600;
   border-radius: 8px;
   transition: filter 0.2s;
+}
+
+.btnIcon {
+  flex-shrink: 0;
 }
 
 .btnPrimary:hover {
@@ -148,8 +154,10 @@
 }
 
 .placeholderIcon {
-  font-size: 3rem;
-  opacity: 0.45;
+  display: block;
+  margin: 0 auto;
+  color: var(--color-gold, #b8933a);
+  opacity: 0.85;
 }
 
 .placeholderTitle {
@@ -166,7 +174,6 @@
   max-width: 200px;
 }
 
-/* Compteur */
 .regionCount {
   display: flex;
   align-items: center;
@@ -175,6 +182,11 @@
   color: #aaa;
   padding-top: 0.75rem;
   border-top: 1px solid #f0ede6;
+}
+
+.regionCountIcon {
+  flex-shrink: 0;
+  color: var(--color-gold, #b8933a);
 }
 
 /* ─── Responsive ─────────────────────────────────── */

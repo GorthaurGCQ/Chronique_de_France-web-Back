@@ -76,7 +76,7 @@ export default function BookmarkButton({ resourceId, initialSaved = false, class
       </button>
       {showTip && (
         <span className={styles.tip}>
-          {saved ? "Ajouté aux favoris ★" : "Retiré"}
+          {saved ? "Ajouté aux favoris" : "Retiré"}
         </span>
       )}
     </div>

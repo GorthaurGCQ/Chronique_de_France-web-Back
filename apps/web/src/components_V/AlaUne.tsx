@@ -1,5 +1,7 @@
 // Module : node_modules/next/link
 import Link from "next/link";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 // Style : src/components_V/AlaUne.module.css
 import styles from "./AlaUne.module.css";
 
@@ -53,7 +55,8 @@ export default function AlaUne() {
             <span className={styles.underline} aria-hidden="true" />
           </div>
           <Link href="/bibliotheque" className={styles.seeAll}>
-            Voir toutes les actualités →
+            Voir toutes les actualités
+            <AppIcon name="arrowRight" size={16} tone="inherit" className={styles.inlineIcon} />
           </Link>
         </div>
 

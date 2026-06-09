@@ -2,6 +2,8 @@
 
 // Modèle : src/models_M/data/territoires/types.ts
 import type { TerritoireInfo } from "@/models_M/data/territoires/types";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 // Style : src/components_V/TimelineHistorique/TooltipTerritoire.module.css
 import styles from "./TooltipTerritoire.module.css";
 
@@ -63,7 +65,10 @@ export default function TooltipTerritoire({ territoire, regionNom, x, y, visible
         <div className={styles.meta}>
           <span className={styles.nom}>{territoire.nom}</span>
           {territoire.seigneur && (
-            <span className={styles.seigneur}>👑 {territoire.seigneur}</span>
+            <span className={styles.seigneur}>
+              <AppIcon name="crown" size={12} className={styles.seigneurIcon} />
+              {territoire.seigneur}
+            </span>
           )}
         </div>
       </div>

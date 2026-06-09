@@ -13,6 +13,8 @@ import type { Permission } from "@/lib/permissions.shared";
 import { canAccessPage, isPrivilegedRole } from "@/lib/permissions.shared";
 // Modèle : src/models_M/data/regions.ts
 import type { Region } from "@/models_M/data/regions";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 // Style : src/components_V/CarteInteractive/PanneauRegion.module.css
 import styles from "./PanneauRegion.module.css";
 
@@ -137,7 +139,7 @@ export default function PanneauRegion({ region, onClose }: Props) {
               onClick={onClose}
               aria-label="Fermer le panneau"
             >
-              ✕
+              <AppIcon name="close" size={16} tone="inherit" />
             </button>
 
             {/* Colored top bar */}
@@ -164,14 +166,14 @@ export default function PanneauRegion({ region, onClose }: Props) {
               {/* Stats */}
               <div className={styles.stats}>
                 <div className={styles.stat}>
-                  <span className={styles.statIcon}>📍</span>
+                  <AppIcon name="pin" size={18} className={styles.statIcon} />
                   <div>
                     <span className={styles.statLabel}>Chef-lieu</span>
                     <span className={styles.statValue}>{region.chefLieu}</span>
                   </div>
                 </div>
                 <div className={styles.stat}>
-                  <span className={styles.statIcon}>🗂️</span>
+                  <AppIcon name="folder" size={18} className={styles.statIcon} />
                   <div>
                     <span className={styles.statLabel}>Départements</span>
                     <span className={styles.statValue}>
@@ -192,7 +194,8 @@ export default function PanneauRegion({ region, onClose }: Props) {
                   style={{ background: "var(--color-gold, #b8933a)" }}
                   onClick={onClose}
                 >
-                  Se connecter pour explorer →
+                  Se connecter pour explorer
+                  <AppIcon name="arrowRight" size={14} tone="inherit" className={styles.btnExploreIcon} />
                 </Link>
               ) : canExploreRegions === false ? (
                 <p className={styles.accessHint}>
@@ -205,7 +208,8 @@ export default function PanneauRegion({ region, onClose }: Props) {
                   style={{ background: "var(--color-gold, #b8933a)" }}
                   onClick={onClose}
                 >
-                  Explorer cette région →
+                  Explorer cette région
+                  <AppIcon name="arrowRight" size={14} tone="inherit" className={styles.btnExploreIcon} />
                 </Link>
               )}
             </div>

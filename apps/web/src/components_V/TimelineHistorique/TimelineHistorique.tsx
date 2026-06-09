@@ -13,6 +13,8 @@ import { EPOQUES } from "@/models_M/data/epoques";
 import CarteHistorique from "./CarteHistorique";
 // Style : src/components_V/TimelineHistorique/TimelineHistorique.module.css
 import styles from "./TimelineHistorique.module.css";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 
 const SVG_W = 700;
 const SVG_H = 80;
@@ -178,7 +180,8 @@ export default function TimelineHistorique() {
                 disabled={activeIndex === 0}
                 aria-label="Époque précédente"
               >
-                ← Précédent
+                <AppIcon name="chevronLeft" size={14} tone="inherit" className={styles.navIcon} />
+                Précédent
               </button>
               <span className={styles.navCounter}>
                 {activeIndex + 1} / {EPOQUES.length}
@@ -189,7 +192,8 @@ export default function TimelineHistorique() {
                 disabled={activeIndex === EPOQUES.length - 1}
                 aria-label="Époque suivante"
               >
-                Suivant →
+                Suivant
+                <AppIcon name="chevronRight" size={14} tone="inherit" className={styles.navIcon} />
               </button>
             </div>
           </div>

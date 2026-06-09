@@ -4,6 +4,8 @@
 
 // Module : node_modules/next/link
 import Link from "next/link";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 // Style : src/components_V/accessScreens.module.css
 import styles from "./accessScreens.module.css";
 
@@ -18,7 +20,7 @@ export default function LoginRequiredScreen({ sectionTitle }: Props) {
     <main className={styles.main}>
       <div className={styles.card}>
         <div className={styles.icon} aria-hidden="true">
-          🔒
+          <AppIcon name="lock" size={32} />
         </div>
         <span className={styles.badge}>Accès membres</span>
         <h1 className={styles.title}>{title}</h1>
@@ -35,7 +37,8 @@ export default function LoginRequiredScreen({ sectionTitle }: Props) {
           </Link>
         </div>
         <Link href="/" className={styles.backLink}>
-          ← Retour à l&apos;accueil
+          <AppIcon name="chevronLeft" size={14} tone="inherit" className={styles.backLinkIcon} />
+          Retour à l&apos;accueil
         </Link>
       </div>
     </main>

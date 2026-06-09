@@ -161,7 +161,39 @@
   gap: 8px;
 }
 
-.cardIcon  { font-size: 1.1rem; }
+.cardIcon  {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.tabIcon {
+  flex-shrink: 0;
+}
+
+.btnBrowseIcon,
+.btnEditIcon,
+.btnAccountIcon,
+.roleBadgeIcon {
+  flex-shrink: 0;
+  margin-right: 0.35rem;
+}
+
+.btnAccount,
+.btnEdit,
+.btnBrowse {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
 .countBadge {
   margin-left: auto;
   background: #f0eee8;

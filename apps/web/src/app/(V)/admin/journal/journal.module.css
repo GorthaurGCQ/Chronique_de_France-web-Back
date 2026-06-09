@@ -128,3 +128,26 @@
 @media (max-width: 500px) {
   .metricGrid { grid-template-columns: 1fr 1fr; }
 }
+
+.metricIcon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.tabIcon,
+.actionBadgeIcon,
+.emptyIcon {
+  flex-shrink: 0;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.actionBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}

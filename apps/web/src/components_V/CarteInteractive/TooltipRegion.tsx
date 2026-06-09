@@ -4,6 +4,8 @@
 import { useState } from "react";
 // Modèle : src/models_M/data/regions.ts
 import type { Region } from "@/models_M/data/regions";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 // Style : src/components_V/CarteInteractive/TooltipRegion.module.css
 import styles from "./TooltipRegion.module.css";
 
@@ -76,7 +78,10 @@ export default function TooltipRegion({ region, x, y, visible }: Props) {
         )}
         <div className={styles.meta}>
           <span className={styles.regionName}>{region.nom}</span>
-          <span className={styles.chefLieu}>📍 {region.chefLieu}</span>
+          <span className={styles.chefLieu}>
+            <AppIcon name="pin" size={12} className={styles.chefLieuIcon} />
+            {region.chefLieu}
+          </span>
         </div>
       </div>
       <div className={styles.footer}>

@@ -2,6 +2,10 @@
 import Link from "next/link";
 // Module : node_modules/next/image
 import Image from "next/image";
+// Composant : src/components_V/icons/FleurDeLys.tsx
+import FleurDeLys from "@/components_V/icons/FleurDeLys";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 // Style : src/components_V/Hero.module.css
 import styles from "./Hero.module.css";
 
@@ -50,18 +54,14 @@ export default function Hero() {
       <div className={styles.below}>
         <div className={styles.banderoleWrap}>
           <div className={styles.banderole}>
-            <span className={styles.banderoleOrnament} aria-hidden="true">
-              ⚜
-            </span>
+            <FleurDeLys size={18} className={styles.banderoleOrnament} />
             <div className={styles.banderoleShine} aria-hidden="true" />
             <p className={styles.tagline}>
               La Fondation Chroniques de France met à disposition des ressources
               pédagogiques, des archives historiques et des événements culturels
               pour valoriser le patrimoine français.
             </p>
-            <span className={styles.banderoleOrnament} aria-hidden="true">
-              ⚜
-            </span>
+            <FleurDeLys size={18} className={styles.banderoleOrnament} />
           </div>
           <span className={styles.banderoleTailLeft} aria-hidden="true" />
           <span className={styles.banderoleTailRight} aria-hidden="true" />
@@ -69,7 +69,8 @@ export default function Hero() {
 
         <div className={styles.actions}>
           <Link href="/bibliotheque" className={styles.btnOutlineGold}>
-            Accéder aux ressources 📖
+            <AppIcon name="book" size={18} tone="inherit" className={styles.btnIcon} />
+            Accéder aux ressources
           </Link>
           <Link href="/connexion" className={styles.btnWhite}>
             Devenir membre

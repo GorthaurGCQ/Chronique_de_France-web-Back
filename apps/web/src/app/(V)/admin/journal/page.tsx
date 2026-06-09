@@ -11,6 +11,9 @@ import { useEffect, useState, useCallback } from "react";
 import styles from "../admin.module.css";
 // Style : src/app/(V)/admin/journal/journal.module.css
 import journalStyles from "./journal.module.css";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
+import type { IconName } from "@/components_V/icons/types";
 
 type AuditLog = {
   id: string;
@@ -41,12 +44,27 @@ const ACTION_LABELS: Record<string, string> = {
   MAKE_USER:              "Rétrogradation membre",
 };
 
-const ACTION_ICONS: Record<string, string> = {
-  CREATE_RESOURCE: "➕", UPDATE_RESOURCE: "✏️", DELETE_RESOURCE: "🗑️",
-  CREATE_EVENT: "📅", UPDATE_EVENT: "✏️", DELETE_EVENT: "🗑️",
-  UPDATE_USER_PERMISSIONS: "🔑", BAN_USER: "🚫", UNBAN_USER: "✅",
-  DELETE_USER: "🗑️", MAKE_ADMIN: "🛡️", MAKE_USER: "👤",
+const ACTION_ICONS: Record<string, IconName> = {
+  CREATE_RESOURCE: "plus",
+  UPDATE_RESOURCE: "pencil",
+  DELETE_RESOURCE: "trash",
+  CREATE_EVENT: "calendar",
+  UPDATE_EVENT: "pencil",
+  DELETE_EVENT: "trash",
+  UPDATE_USER_PERMISSIONS: "key",
+  BAN_USER: "ban",
+  UNBAN_USER: "check",
+  DELETE_USER: "trash",
+  MAKE_ADMIN: "shield",
+  MAKE_USER: "user",
 };
+
+const TABS: { key: string; label: string; icon: IconName }[] = [
+  { key: "",          label: "Tout",        icon: "clipboard" },
+  { key: "resources", label: "Ressources",  icon: "file" },
+  { key: "users",     label: "Comptes",     icon: "users" },
+  { key: "events",    label: "Événements",  icon: "calendar" },
+];
 
 const SEVERITY_CONFIG: Record<string, { label: string; dot: string; row: string; badge: string }> = {
   success: { label: "Création",     dot: journalStyles.dotSuccess, row: journalStyles.rowSuccess, badge: journalStyles.badgeSuccess },
@@ -54,13 +72,6 @@ const SEVERITY_CONFIG: Record<string, { label: string; dot: string; row: string;
   warning: { label: "Permission",   dot: journalStyles.dotWarning, row: journalStyles.rowWarning, badge: journalStyles.badgeWarning },
   danger:  { label: "Suppression",  dot: journalStyles.dotDanger,  row: journalStyles.rowDanger,  badge: journalStyles.badgeDanger  },
 };
-
-const TABS = [
-  { key: "",          label: "Tout",        icon: "📋" },
-  { key: "resources", label: "Ressources",  icon: "📄" },
-  { key: "users",     label: "Comptes",     icon: "👥" },
-  { key: "events",    label: "Événements",  icon: "📅" },
-];
 
 function formatDateTime(iso: string) {
   const d = new Date(iso);
@@ -74,8 +85,9 @@ function RoleBadge({ role }: { role: string | null }) {
   const color = role === "founder" ? "#b8933a" : role === "admin" ? "#1d4ed8" : "#6b7280";
   const bg    = role === "founder" ? "#fef3c7" : role === "admin" ? "#eff6ff" : "#f3f4f6";
   return (
-    <span style={{ fontSize: "0.68rem", fontWeight: 600, padding: "0.1rem 0.5rem", borderRadius: "20px", background: bg, color, marginLeft: "0.4rem" }}>
-      {role === "founder" ? "👑" : ""}{role}
+    <span style={{ fontSize: "0.68rem", fontWeight: 600, padding: "0.1rem 0.5rem", borderRadius: "20px", background: bg, color, marginLeft: "0.4rem", display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
+      {role === "founder" && <AppIcon name="crown" size={12} tone="gold" />}
+      {role}
     </span>
   );
 }
@@ -132,28 +144,28 @@ export default function AdminJournal() {
       {/* ── Résumé visuel ── */}
       <div className={journalStyles.metricGrid}>
         <div className={`${journalStyles.metricCard} ${journalStyles.metricSuccess}`}>
-          <span className={journalStyles.metricIcon}>➕</span>
+          <span className={journalStyles.metricIcon}><AppIcon name="plus" size={22} tone="inherit" /></span>
           <div>
             <p className={journalStyles.metricValue}>{bySeverity.success}</p>
             <p className={journalStyles.metricLabel}>Créations</p>
           </div>
         </div>
         <div className={`${journalStyles.metricCard} ${journalStyles.metricInfo}`}>
-          <span className={journalStyles.metricIcon}>✏️</span>
+          <span className={journalStyles.metricIcon}><AppIcon name="pencil" size={22} tone="inherit" /></span>
           <div>
             <p className={journalStyles.metricValue}>{bySeverity.info}</p>
             <p className={journalStyles.metricLabel}>Modifications</p>
           </div>
         </div>
         <div className={`${journalStyles.metricCard} ${journalStyles.metricWarning}`}>
-          <span className={journalStyles.metricIcon}>🔑</span>
+          <span className={journalStyles.metricIcon}><AppIcon name="key" size={22} tone="inherit" /></span>
           <div>
             <p className={journalStyles.metricValue}>{bySeverity.warning}</p>
             <p className={journalStyles.metricLabel}>Permissions</p>
           </div>
         </div>
         <div className={`${journalStyles.metricCard} ${journalStyles.metricDanger}`}>
-          <span className={journalStyles.metricIcon}>🗑️</span>
+          <span className={journalStyles.metricIcon}><AppIcon name="trash" size={22} tone="inherit" /></span>
           <div>
             <p className={journalStyles.metricValue}>{bySeverity.danger}</p>
             <p className={journalStyles.metricLabel}>Suppressions</p>
@@ -169,7 +181,8 @@ export default function AdminJournal() {
             className={`${journalStyles.tab} ${activeTab === tab.key ? journalStyles.tabActive : ""}`}
             onClick={() => setActiveTab(tab.key)}
           >
-            {tab.icon} {tab.label}
+            <AppIcon name={tab.icon} size={16} className={journalStyles.tabIcon} />
+            {tab.label}
             {tab.key && counts[tab.key] !== undefined && (
               <span className={`${journalStyles.tabCount} ${activeTab === tab.key ? journalStyles.tabActiveCount : ""}`}>
                 {counts[tab.key]}
@@ -207,7 +220,7 @@ export default function AdminJournal() {
           <p style={{ padding: "2rem", color: "#9ca3af", textAlign: "center" }}>Chargement…</p>
         ) : logs.length === 0 ? (
           <div style={{ padding: "3rem", textAlign: "center", color: "#9ca3af" }}>
-            <p style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>📋</p>
+            <AppIcon name="clipboard" size={40} className={journalStyles.emptyIcon} />
             <p>Aucune entrée dans le journal pour cette catégorie.</p>
           </div>
         ) : (
@@ -236,7 +249,8 @@ export default function AdminJournal() {
                       </td>
                       <td>
                         <span className={`${journalStyles.actionBadge} ${sev.badge}`}>
-                          {ACTION_ICONS[log.action] ?? "•"} {ACTION_LABELS[log.action] ?? log.action}
+                          <AppIcon name={ACTION_ICONS[log.action] ?? "document"} size={14} className={journalStyles.actionBadgeIcon} />
+                          {ACTION_LABELS[log.action] ?? log.action}
                         </span>
                       </td>
                       <td style={{ color: "#374151", fontWeight: 500 }}>

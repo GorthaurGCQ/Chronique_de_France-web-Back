@@ -1,5 +1,7 @@
 // Module : node_modules/next/link
 import Link from "next/link";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
 // Style : src/components_V/ProchainEvenements.module.css
 import styles from "./ProchainEvenements.module.css";
 
@@ -52,7 +54,8 @@ export default function ProchainEvenements() {
             <span className={styles.underline} aria-hidden="true" />
           </div>
           <Link href="/evenement" className={styles.seeAll}>
-            Voir tout l'agenda →
+            Voir tout l&apos;agenda
+            <AppIcon name="arrowRight" size={16} tone="inherit" className={styles.inlineIcon} />
           </Link>
         </div>
 
@@ -66,11 +69,15 @@ export default function ProchainEvenements() {
               <div className={styles.cardBody}>
                 <span className={styles.tag}>{ev.type}</span>
                 <h3 className={styles.cardTitle}>{ev.titre}</h3>
-                <p className={styles.lieu}>📍 {ev.lieu}</p>
+                <p className={styles.lieu}>
+                  <AppIcon name="pin" size={14} className={styles.inlineIcon} />
+                  {ev.lieu}
+                </p>
                 <p className={styles.cardDesc}>{ev.description}</p>
               </div>
               <Link href={ev.href} className={styles.cta}>
-                En savoir plus →
+                En savoir plus
+                <AppIcon name="arrowRight" size={14} tone="inherit" className={styles.inlineIcon} />
               </Link>
             </article>
           ))}

@@ -1,8 +1,11 @@
 // Style : src/components_V/NosMissions.module.css
 import styles from "./NosMissions.module.css";
+// Composant : src/components_V/icons/AppIcon.tsx
+import AppIcon from "@/components_V/icons/AppIcon";
+import type { IconName } from "@/components_V/icons/types";
 
 type Mission = {
-  emoji: string;
+  icon: IconName;
   iconBg: "navy" | "gold";
   title: string;
   description: string;
@@ -10,21 +13,21 @@ type Mission = {
 
 const missions: Mission[] = [
   {
-    emoji: "🎓",
+    icon: "graduation",
     iconBg: "navy",
     title: "Ouvrages pédagogiques",
     description:
       "Nous concevons et diffusons des ouvrages, chronologies et fiches thématiques adaptés à tous les niveaux d'enseignement.",
   },
   {
-    emoji: "📂",
+    icon: "folder",
     iconBg: "gold",
     title: "Contenus numériques",
     description:
       "Notre plateforme met à disposition des ressources numériques accessibles en ligne : archives, publications et documents inédits.",
   },
   {
-    emoji: "🏫",
+    icon: "school",
     iconBg: "navy",
     title: "Actions éducatives",
     description:
@@ -36,7 +39,6 @@ export default function NosMissions() {
   return (
     <section className={styles.section}>
       <div className={styles.container}>
-        {/* Header */}
         <div className={styles.header}>
           <h2 className={styles.title}>NOS MISSIONS</h2>
           <span className={styles.underline} aria-hidden="true" />
@@ -48,7 +50,6 @@ export default function NosMissions() {
           </p>
         </div>
 
-        {/* Grid */}
         <div className={styles.grid}>
           {missions.map((mission) => (
             <div key={mission.title} className={styles.card}>
@@ -58,7 +59,12 @@ export default function NosMissions() {
                 }`}
                 aria-hidden="true"
               >
-                <span className={styles.emoji}>{mission.emoji}</span>
+                <AppIcon
+                  name={mission.icon}
+                  size={28}
+                  tone={mission.iconBg === "navy" ? "inherit" : "gold"}
+                  className={styles.missionIcon}
+                />
               </div>
               <h3 className={styles.cardTitle}>{mission.title}</h3>
               <p className={styles.cardDesc}>{mission.description}</p>
