@@ -1,8 +1,12 @@
 // GET /api/admin/stats — Statistiques du tableau de bord (admin | founder)
 
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
+// Module : node_modules/next/headers
 import { headers } from "next/headers";
+// Service : src/lib/services_M/admin/auth.ts
 import { isAdminRole } from "@/lib/services_M/admin/auth";
+// Service : src/lib/services_M/admin/stats.service.ts
 import { getAdminStats } from "@/lib/services_M/admin/stats.service";
 
 /** Handler GET — retourne les statistiques agrégées du tableau de bord admin */

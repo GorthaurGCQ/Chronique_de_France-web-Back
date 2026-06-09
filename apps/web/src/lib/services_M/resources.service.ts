@@ -1,11 +1,15 @@
-﻿// =============================================================================
+// =============================================================================
 // COUCHE MODÈLE — Logique métier ressources pédagogiques
 // Consommé par : /api/resources/*, pages SSR bibliothèque/régions
 // =============================================================================
 
+// Module : node_modules/drizzle-orm
 import { eq, and, or, ilike, desc, count, SQL } from "drizzle-orm";
+// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
+// Modèle : src/models_M/schema.ts
 import { resources, authUser } from "@/models_M/schema";
+// Modèle : src/models_M/schema.ts
 import type { Region, ResourceType } from "@/models_M/schema";
 
 const listSelectFields = {

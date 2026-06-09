@@ -5,8 +5,11 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useEffect, useState, useCallback } from "react";
+// Style : src/app/(V)/admin/admin.module.css
 import styles from "../admin.module.css";
+// Style : src/app/(V)/admin/journal/journal.module.css
 import journalStyles from "./journal.module.css";
 
 type AuditLog = {

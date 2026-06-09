@@ -1,10 +1,13 @@
-﻿// =============================================================================
+// =============================================================================
 // COUCHE MODÈLE — Logique métier événements (requêtes BDD)
 // Consommé par : /api/events/*, pages SSR événements, admin/events
 // =============================================================================
 
+// Module : node_modules/drizzle-orm
 import { eq, or, ilike, and, asc, desc, gte, lt, count, SQL } from "drizzle-orm";
+// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
+// Modèle : src/models_M/schema.ts
 import { events, authUser, eventRegistrations } from "@/models_M/schema";
 
 export type ListEventsParams = {

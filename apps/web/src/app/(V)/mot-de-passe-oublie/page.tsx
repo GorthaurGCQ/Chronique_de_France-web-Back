@@ -5,9 +5,13 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useState } from "react";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Module : node_modules/next/image
 import Image from "next/image";
+// Style : src/app/(V)/mot-de-passe-oublie/forgot.module.css
 import styles from "./forgot.module.css";
 
 export default function ForgotPasswordPage() {

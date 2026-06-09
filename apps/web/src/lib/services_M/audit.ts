@@ -3,7 +3,9 @@
 // Consommé par : services admin (users, events, resources)
 // =============================================================================
 
+// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
+// Modèle : src/models_M/schema.ts
 import { auditLogs } from "@/models_M/schema";
 
 export type AuditCategory = "resources" | "users" | "events";

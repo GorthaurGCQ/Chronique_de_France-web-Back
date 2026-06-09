@@ -3,8 +3,11 @@
 // Utilisé par les routes /api/events, /api/resources (POST/PUT/DELETE)
 // =============================================================================
 
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
+// Module : node_modules/next/headers
 import { headers } from "next/headers";
+// Service : src/lib/services_M/admin/auth.ts
 import { isAdminRole } from "@/lib/services_M/admin/auth";
 
 type Session = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;

@@ -5,9 +5,13 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useEffect, useState } from "react";
+// Auth : src/lib/auth/auth-client.ts
 import { useSession } from "@/lib/auth/auth-client";
+// Style : src/app/(V)/admin/admin.module.css
 import styles from "../admin.module.css";
+// Style : src/app/(V)/admin/utilisateurs/permissions.module.css
 import permStyles from "./permissions.module.css";
 
 // ── Définition des permissions ───────────────────────────────────────────────

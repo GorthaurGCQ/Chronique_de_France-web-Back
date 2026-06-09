@@ -1,4 +1,6 @@
+// Module : node_modules/next/link
 import Link from "next/link";
+// Style : src/components_V/AlaUne.module.css
 import styles from "./AlaUne.module.css";
 
 type Card = {

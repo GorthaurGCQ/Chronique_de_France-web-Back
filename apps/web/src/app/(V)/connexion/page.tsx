@@ -5,11 +5,17 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useState } from "react";
+// Module : node_modules/next/navigation
 import { useRouter } from "next/navigation";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Module : node_modules/next/image
 import Image from "next/image";
+// Auth : src/lib/auth/auth-client.ts
 import { signIn, signUp } from "@/lib/auth/auth-client";
+// Style : src/app/(V)/connexion/connexion.module.css
 import styles from "./connexion.module.css";
 
 type Tab = "connexion" | "inscription";

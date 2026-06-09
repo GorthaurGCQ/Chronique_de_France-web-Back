@@ -1,13 +1,17 @@
-﻿"use client";
+"use client";
 
+// Module : node_modules/react
 import {
   useState,
   useRef,
   useEffect,
   useCallback,
 } from "react";
+// Modèle : src/models_M/data/epoques.ts
 import { EPOQUES } from "@/models_M/data/epoques";
+// Composant : src/components_V/TimelineHistorique/CarteHistorique.tsx
 import CarteHistorique from "./CarteHistorique";
+// Style : src/components_V/TimelineHistorique/TimelineHistorique.module.css
 import styles from "./TimelineHistorique.module.css";
 
 const SVG_W = 700;

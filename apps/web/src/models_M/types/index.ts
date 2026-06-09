@@ -1,8 +1,9 @@
-﻿// =============================================================================
+// =============================================================================
 // TYPES PARTAGÉS — Réponses API standardisées (ApiResponse, pagination)
 // Utilisés par les services et potentiellement le front
 // =============================================================================
 
+// Modèle : src/models_M/schema.ts
 import type { ResourceType } from "@/models_M/schema";
 
 // ---------------------------------------------------------------------------

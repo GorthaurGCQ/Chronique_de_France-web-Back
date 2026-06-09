@@ -1,10 +1,12 @@
-﻿// =============================================================================
+// =============================================================================
 // CONFIGURATION Drizzle Kit — migrations et introspection BDD
 // Commandes : npx drizzle-kit generate | migrate | push | studio
 // Variables : DATABASE_URL dans .env.local
 // =============================================================================
 
+// Module : node_modules/drizzle-kit
 import { defineConfig } from "drizzle-kit";
+// Module : node_modules/dotenv
 import * as dotenv from "dotenv";
 
 // Charge les variables d'environnement depuis .env.local (non versionné)

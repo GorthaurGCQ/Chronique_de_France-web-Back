@@ -4,8 +4,11 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useEffect, useState } from "react";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Style : src/app/(V)/admin/admin.module.css
 import styles from "./admin.module.css";
 
 type Stats = {

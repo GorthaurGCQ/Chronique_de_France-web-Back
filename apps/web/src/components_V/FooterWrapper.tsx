@@ -4,7 +4,9 @@
 
 "use client";
 
+// Module : node_modules/next/navigation
 import { usePathname } from "next/navigation";
+// Composant : src/components_V/Footer.tsx
 import Footer from "./Footer";
 
 export default function FooterWrapper() {

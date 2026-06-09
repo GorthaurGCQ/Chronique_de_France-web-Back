@@ -1,9 +1,14 @@
-﻿"use client";
+"use client";
 
+// Module : node_modules/react
 import { useState, useCallback } from "react";
+// Modèle : src/models_M/data/epoques.ts
 import type { Epoque } from "@/models_M/data/epoques";
+// Modèle : src/models_M/data/territoires/types.ts
 import type { TerritoireInfo } from "@/models_M/data/territoires/types";
+// Modèle : src/models_M/data/france-svg-paths.ts
 import { FRANCE_SVG_PATHS } from "@/models_M/data/france-svg-paths";
+// Modèle : src/models_M/data/territoires/index.ts
 import {
   CARTE_ANTIQUITE,
   CARTE_MOYEN_AGE,
@@ -14,9 +19,13 @@ import {
   CARTE_GUERRES_MONDIALES,
   CARTE_CONTEMPORAINE,
 } from "@/models_M/data/territoires";
+// Modèle : src/models_M/data/territoires/index.ts
 import type { CarteEpoqueData } from "@/models_M/data/territoires";
+// Composant : src/components_V/TimelineHistorique/TooltipTerritoire.tsx
 import TooltipTerritoire from "./TooltipTerritoire";
+// Composant : src/components_V/TimelineHistorique/LegendeEpoque.tsx
 import LegendeEpoque from "./LegendeEpoque";
+// Style : src/components_V/TimelineHistorique/CarteHistorique.module.css
 import styles from "./CarteHistorique.module.css";
 
 const CARTE_MAP: Record<string, CarteEpoqueData> = {

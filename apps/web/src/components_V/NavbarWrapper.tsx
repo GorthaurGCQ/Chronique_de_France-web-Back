@@ -4,7 +4,9 @@
 
 "use client";
 
+// Module : node_modules/next/navigation
 import { usePathname } from "next/navigation";
+// Composant : src/components_V/Navbar.tsx
 import Navbar from "./Navbar";
 
 export default function NavbarWrapper() {

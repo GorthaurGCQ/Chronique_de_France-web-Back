@@ -2,8 +2,11 @@
 // PATCH /api/profile — Mise à jour profil, body JSON (user authentifié)
 // POST  /api/profile — Upload avatar, formData { file } (user authentifié)
 
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
+// Module : node_modules/next/headers
 import { headers } from "next/headers";
+// Service : src/lib/services_M/profile.service.ts
 import {
   getUserPreferences,
   updateProfile,

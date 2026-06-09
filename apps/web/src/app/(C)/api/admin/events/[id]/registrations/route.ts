@@ -1,9 +1,13 @@
 // GET    /api/admin/events/[id]/registrations — Inscriptions d'un événement (admin | founder)
 // DELETE /api/admin/events/[id]/registrations — Supprimer une inscription { registrationId } (admin | founder)
 
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
+// Module : node_modules/next/headers
 import { headers } from "next/headers";
+// Service : src/lib/services_M/admin/auth.ts
 import { isAdminRole } from "@/lib/services_M/admin/auth";
+// Service : src/lib/services_M/admin/events.service.ts
 import {
   listEventRegistrations,
   deleteEventRegistration,

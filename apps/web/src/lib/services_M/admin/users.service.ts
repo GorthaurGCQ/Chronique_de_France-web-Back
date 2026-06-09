@@ -1,11 +1,15 @@
-﻿// =============================================================================
+// =============================================================================
 // SERVICE ADMIN — Gestion des utilisateurs (rôles, ban, permissions)
 // Consommé par : /api/admin/users, page /admin/utilisateurs
 // =============================================================================
 
+// Module : node_modules/drizzle-orm
 import { eq } from "drizzle-orm";
+// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
+// Modèle : src/models_M/schema.ts
 import { authUser } from "@/models_M/schema";
+// Service : src/lib/services_M/audit.ts
 import { logAudit } from "@/lib/services_M/audit";
 
 export async function listAdminUsers() {

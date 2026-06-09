@@ -1,5 +1,7 @@
+// Module : node_modules/vitest
 import { describe, it, expect } from "vitest";
 
+// Auth : src/lib/auth/auth-client.ts
 import { authClient, signIn, signUp, signOut, useSession } from "@/lib/auth/auth-client";
 
 describe("auth-client", () => {

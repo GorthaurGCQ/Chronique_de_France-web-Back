@@ -1,8 +1,11 @@
 // GET  /api/profile/history — Historique de consultation (user authentifié)
 // POST /api/profile/history — Enregistrer une vue { resourceId } (user authentifié)
 
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
+// Module : node_modules/next/headers
 import { headers } from "next/headers";
+// Service : src/lib/services_M/profile.service.ts
 import { getViewHistory, recordView } from "@/lib/services_M/profile.service";
 
 /** Handler GET — retourne l'historique des ressources consultées par l'utilisateur */

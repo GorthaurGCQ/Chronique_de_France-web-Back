@@ -2,7 +2,9 @@
 // CONFIGURATION Next.js — build, déploiement, Turbopack
 // =============================================================================
 
+// Module : node_modules/next
 import type { NextConfig } from "next";
+// Module : node_modules/path
 import path from "path";
 
 const nextConfig: NextConfig = {

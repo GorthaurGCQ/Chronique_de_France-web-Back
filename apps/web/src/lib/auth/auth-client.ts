@@ -4,8 +4,10 @@
 // =============================================================================
 
 // Factory Better Auth pour React (hooks + méthodes signIn, signUp…)
+// Module : node_modules/better-auth/react
 import { createAuthClient } from "better-auth/react";
 // Plugin admin côté client (gestion des rôles dans l'UI admin)
+// Module : node_modules/better-auth/client/plugins
 import { adminClient } from "better-auth/client/plugins";
 
 // Instance unique du client auth, partagée dans toute l'app front

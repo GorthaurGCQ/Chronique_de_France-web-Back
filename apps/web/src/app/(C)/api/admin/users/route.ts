@@ -1,9 +1,13 @@
 // GET   /api/admin/users — Liste des utilisateurs (admin | founder)
 // PATCH /api/admin/users — Modifier un utilisateur { userId, action, … } (admin | founder)
 
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
+// Module : node_modules/next/headers
 import { headers } from "next/headers";
+// Service : src/lib/services_M/admin/auth.ts
 import { isAdminRole } from "@/lib/services_M/admin/auth";
+// Service : src/lib/services_M/admin/users.service.ts
 import { listAdminUsers, patchAdminUser } from "@/lib/services_M/admin/users.service";
 
 /** Handler GET — retourne la liste complète des utilisateurs (admin panel) */

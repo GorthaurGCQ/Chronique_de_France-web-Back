@@ -3,7 +3,9 @@
 // Scripts : npm run test | test:unit | test:integration | test:perf
 // =============================================================================
 
+// Module : node_modules/vitest/config
 import { defineConfig } from "vitest/config";
+// Module : node_modules/path
 import path from "path";
 
 export default defineConfig({

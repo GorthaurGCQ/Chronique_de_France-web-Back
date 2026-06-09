@@ -5,6 +5,7 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useEffect } from "react";
 
 export default function ViewTracker({ resourceId }: { resourceId: string }) {

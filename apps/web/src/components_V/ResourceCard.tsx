@@ -1,5 +1,8 @@
+// Module : node_modules/next/link
 import Link from "next/link";
+// Style : src/components_V/ResourceCard.module.css
 import styles from "./ResourceCard.module.css";
+// Composant : src/components_V/BookmarkButton.tsx
 import BookmarkButton from "./BookmarkButton";
 
 export type ResourceCardData = {

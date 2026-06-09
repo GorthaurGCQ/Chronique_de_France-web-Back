@@ -1,13 +1,17 @@
-﻿// =============================================================================
+// =============================================================================
 // COMPOSANT — Filtrage client des ressources (type, époque, recherche)
 // Reçoit les données SSR de bibliotheque/page.tsx
 // =============================================================================
 
 "use client";
 
+// Module : node_modules/react
 import { useMemo } from "react";
+// Composant : src/components_V/ResourceCard.tsx
 import type { ResourceCardData } from "@/components_V/ResourceCard";
+// Composant : src/components_V/regions/RegionFriseEtCards.tsx
 import RegionFriseEtCards from "@/components_V/regions/RegionFriseEtCards";
+// Modèle : src/models_M/data/regionsContent.ts
 import type { RegionCategorie, RegionCard } from "@/models_M/data/regionsContent";
 
 // ── Correspondances ──────────────────────────────────────────────────────────

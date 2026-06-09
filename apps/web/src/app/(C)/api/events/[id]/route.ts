@@ -2,8 +2,11 @@
 // PUT    /api/events/[id] — Modification, body JSON validé (admin | founder)
 // DELETE /api/events/[id] — Suppression (admin | founder)
 
+// Auth : src/lib/auth/require-session.ts
 import { getAdminSessionOr403 } from "@/lib/auth/require-session";
+// Modèle : src/models_M/schemas/validation.ts
 import { parseBody, updateEventSchema } from "@/models_M/schemas/validation";
+// Service : src/lib/services_M/events.service.ts
 import {
   getEventById,
   eventExists,

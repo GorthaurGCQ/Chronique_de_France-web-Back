@@ -1,13 +1,16 @@
-﻿// =============================================================================
+// =============================================================================
 // COUCHE DONNÉES (BACK) — Connexion PostgreSQL via Drizzle ORM
 // Utilisé par toutes les routes API : import { db } from "@/models_M/db"
 // =============================================================================
 
 // Import du constructeur Drizzle pour PostgreSQL
+// Module : node_modules/drizzle-orm/postgres-js
 import { drizzle } from "drizzle-orm/postgres-js";
 // Driver bas niveau qui parle au serveur PostgreSQL (ici Supabase)
+// Module : node_modules/postgres
 import postgres from "postgres";
 // Schéma des tables (auth_user, resources, favorites…) — défini dans ./schema.ts
+// Modèle : src/models_M/schema.ts
 import * as schema from "./schema";
 
 // Type TypeScript exporté : instance Drizzle typée avec notre schéma

@@ -1,4 +1,6 @@
+// Module : node_modules/next/link
 import Link from "next/link";
+// Style : src/components_V/Footer.module.css
 import styles from "./Footer.module.css";
 
 export default function Footer() {

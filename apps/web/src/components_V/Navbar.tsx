@@ -5,18 +5,26 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useState, useEffect, useRef } from "react";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Module : node_modules/next/image
 import Image from "next/image";
+// Module : node_modules/next/navigation
 import { usePathname, useRouter } from "next/navigation";
+// Auth : src/lib/auth/auth-client.ts
 import { useSession, signOut } from "@/lib/auth/auth-client";
+// Composant : src/components_V/NavbarSearch.tsx
 import NavbarSearch from "./NavbarSearch";
+// Style : src/components_V/Navbar.module.css
 import styles from "./Navbar.module.css";
 
 const navLinks = [
   { href: "/", label: "Accueil" },
   { href: "/bibliotheque", label: "Bibliothèque" },
   { href: "/evenement", label: "Événements" },
+  { href: "/Test", label: "page Test" },
   { href: "/a-propos", label: "À propos" },
 ];
 

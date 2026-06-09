@@ -1,10 +1,13 @@
-﻿// =============================================================================
+// =============================================================================
 // SERVICE ADMIN — Statistiques agrégées du tableau de bord
 // Consommé par : GET /api/admin/stats, page /admin
 // =============================================================================
 
+// Module : node_modules/drizzle-orm
 import { count, gte } from "drizzle-orm";
+// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
+// Modèle : src/models_M/schema.ts
 import { authUser, resources, events } from "@/models_M/schema";
 
 /** Compte users, ressources et événements à venir en parallèle */

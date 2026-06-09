@@ -1,7 +1,10 @@
 "use client";
 
+// Module : node_modules/react
 import { useState } from "react";
+// Module : node_modules/react-simple-maps
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+// Style : src/components_V/FranceMap.module.css
 import styles from "./FranceMap.module.css";
 
 const GEO_URL = "/france-regions.geojson";

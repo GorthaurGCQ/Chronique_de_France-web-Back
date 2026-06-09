@@ -1,12 +1,17 @@
-﻿// =============================================================================
+// =============================================================================
 // COUCHE MODÈLE — Profil utilisateur, avatar, mot de passe, historique
 // Consommé par : /api/profile/*, dashboard
 // =============================================================================
 
+// Module : node_modules/drizzle-orm
 import { eq, and, desc } from "drizzle-orm";
+// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
+// Modèle : src/models_M/schema.ts
 import { authUser, authAccount, resourceViews, resources } from "@/models_M/schema";
+// Lib : src/lib/supabase.ts
 import { supabaseAdmin, STORAGE_BUCKET } from "@/lib/supabase";
+// Module : node_modules/@better-auth/utils/password
 import { hashPassword, verifyPassword } from "@better-auth/utils/password";
 
 export async function getUserPreferences(userId: string) {

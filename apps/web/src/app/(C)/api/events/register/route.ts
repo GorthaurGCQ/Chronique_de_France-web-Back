@@ -1,5 +1,6 @@
 // POST /api/events/register — Inscription à un événement { eventId, nom, prenom, email } (public)
 
+// Service : src/lib/services_M/events.service.ts
 import { eventExists, registerForEvent } from "@/lib/services_M/events.service";
 
 /** Handler POST — inscrit un visiteur à un événement (accès public, sans session) */

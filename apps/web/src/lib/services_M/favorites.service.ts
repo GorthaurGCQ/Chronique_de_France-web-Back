@@ -1,10 +1,13 @@
-﻿// =============================================================================
+// =============================================================================
 // COUCHE MODÈLE — Favoris utilisateur (lien user ↔ ressource)
 // Consommé par : /api/favorites, dashboard utilisateur
 // =============================================================================
 
+// Module : node_modules/drizzle-orm
 import { eq, and, desc } from "drizzle-orm";
+// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
+// Modèle : src/models_M/schema.ts
 import { favorites, resources, authUser } from "@/models_M/schema";
 
 /** Retourne les favoris d'un utilisateur avec détails ressource */

@@ -4,6 +4,7 @@
 // Variables : Supabase_URL, SUPABASE_SERVICE_ROLE_KEY dans .env.local
 // =============================================================================
 
+// Module : node_modules/@supabase/supabase-js
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.Supabase_URL!;

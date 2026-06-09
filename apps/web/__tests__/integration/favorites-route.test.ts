@@ -1,4 +1,5 @@
-﻿import { describe, it, expect, vi, beforeEach } from "vitest";
+// Module : node_modules/vitest
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 /**
  * Tests d'intégration — route /api/favorites

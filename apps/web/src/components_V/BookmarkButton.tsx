@@ -4,10 +4,14 @@
 
 "use client"; // Ce composant s'exécute dans le navigateur (pas sur le serveur)
 
+// Module : node_modules/react
 import { useState, useEffect } from "react";
 // Hook session : sait si l'utilisateur est connecté (via cookies /api/auth)
+// Auth : src/lib/auth/auth-client.ts
 import { useSession } from "@/lib/auth/auth-client";
+// Module : node_modules/next/navigation
 import { useRouter } from "next/navigation";
+// Style : src/components_V/BookmarkButton.module.css
 import styles from "./BookmarkButton.module.css";
 
 // Props typées reçues du composant parent (page ressource)

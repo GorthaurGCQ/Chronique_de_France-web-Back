@@ -1,11 +1,15 @@
-﻿// =============================================================================
+// =============================================================================
 // VUE SSR — Événements à venir et passés
 // Données : listUpcomingAndPastEvents() | Inscription : EventsClient
 // =============================================================================
 
+// Module : node_modules/next
 import type { Metadata } from "next";
+// Service : src/lib/services_M/events.service.ts
 import { listUpcomingAndPastEvents } from "@/lib/services_M/events.service";
+// Style : src/app/(V)/evenement/evenement.module.css
 import styles from "./evenement.module.css";
+// Composant : src/components_V/evenement/EventsClient.tsx
 import { UpcomingGrid } from "@/components_V/evenement/EventsClient";
 
 export const dynamic = "force-dynamic";

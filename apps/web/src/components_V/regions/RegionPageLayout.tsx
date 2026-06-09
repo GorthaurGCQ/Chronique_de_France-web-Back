@@ -1,7 +1,12 @@
-﻿import Link from "next/link";
+// Module : node_modules/next/link
+import Link from "next/link";
+// Modèle : src/models_M/data/france-svg-paths.ts
 import { FRANCE_SVG_PATHS } from "@/models_M/data/france-svg-paths";
+// Modèle : src/models_M/data/regionsContent.ts
 import type { RegionContent } from "@/models_M/data/regionsContent";
+// Composant : src/components_V/regions/RegionFriseEtCards.tsx
 import RegionFriseEtCards from "./RegionFriseEtCards";
+// Style : src/components_V/regions/region.module.css
 import styles from "./region.module.css";
 
 function MiniCarte({ content }: { content: RegionContent }) {

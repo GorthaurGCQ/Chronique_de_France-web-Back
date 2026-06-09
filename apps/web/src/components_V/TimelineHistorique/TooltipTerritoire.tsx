@@ -1,6 +1,8 @@
-﻿"use client";
+"use client";
 
+// Modèle : src/models_M/data/territoires/types.ts
 import type { TerritoireInfo } from "@/models_M/data/territoires/types";
+// Style : src/components_V/TimelineHistorique/TooltipTerritoire.module.css
 import styles from "./TooltipTerritoire.module.css";
 
 type Props = {

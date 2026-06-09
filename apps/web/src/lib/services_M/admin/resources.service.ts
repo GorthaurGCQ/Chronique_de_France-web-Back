@@ -1,11 +1,15 @@
-﻿// =============================================================================
+// =============================================================================
 // SERVICE ADMIN — CRUD ressources (avec audit)
 // Consommé par : /api/admin/resources, page /admin/ressources
 // =============================================================================
 
+// Module : node_modules/drizzle-orm
 import { eq, desc } from "drizzle-orm";
+// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
+// Modèle : src/models_M/schema.ts
 import { resources, authUser, type Domaine } from "@/models_M/schema";
+// Service : src/lib/services_M/audit.ts
 import { logAudit } from "@/lib/services_M/audit";
 
 export async function listAdminResources() {

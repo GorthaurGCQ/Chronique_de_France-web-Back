@@ -3,12 +3,19 @@
 // Données : getResourceForPage() | Tracking : ViewTracker → POST /api/profile/history
 // =============================================================================
 
+// Module : node_modules/next
 import type { Metadata } from "next";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Module : node_modules/next/navigation
 import { notFound } from "next/navigation";
+// Composant : src/components_V/bibliotheque/MediaPlayer.tsx
 import MediaPlayer from "@/components_V/bibliotheque/MediaPlayer";
+// Composant : src/components_V/bibliotheque/ViewTracker.tsx
 import ViewTracker from "@/components_V/bibliotheque/ViewTracker";
+// Service : src/lib/services_M/resources.service.ts
 import { getResourceForPage } from "@/lib/services_M/resources.service";
+// Style : src/app/(V)/bibliotheque/[id]/ressource.module.css
 import styles from "./ressource.module.css";
 
 type Props = { params: Promise<{ id: string }> };

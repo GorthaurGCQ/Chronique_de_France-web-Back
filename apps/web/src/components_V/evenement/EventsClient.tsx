@@ -5,7 +5,9 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useState } from "react";
+// Style : src/app/(V)/evenement/evenement.module.css
 import styles from "@/app/(V)/evenement/evenement.module.css";
 
 type EventItem = {

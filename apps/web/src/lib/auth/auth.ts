@@ -1,16 +1,24 @@
-﻿// =============================================================================
+// =============================================================================
 // COUCHE BACK — Configuration serveur Better Auth (sessions, BDD, emails)
 // Utilisé par : app/api/auth/[...all]/route.ts et les route.ts qui appellent
 // auth.api.getSession()
 // =============================================================================
 
+// Module : node_modules/better-auth
 import { betterAuth } from "better-auth";
+// Module : node_modules/better-auth/adapters/drizzle
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+// Module : node_modules/better-auth/plugins
 import { admin } from "better-auth/plugins";
+// Module : node_modules/better-auth/plugins/bearer
 import { bearer } from "better-auth/plugins/bearer";
+// Module : node_modules/better-auth/plugins/admin/access
 import { adminAc, userAc } from "better-auth/plugins/admin/access";
+// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
+// Modèle : src/models_M/schema.ts
 import * as schema from "@/models_M/schema";
+// Module : node_modules/nodemailer
 import nodemailer from "nodemailer";
 
 // Transport SMTP pour envoyer les e-mails (reset mot de passe)

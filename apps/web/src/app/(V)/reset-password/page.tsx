@@ -5,11 +5,17 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useState, useEffect, Suspense } from "react";
+// Module : node_modules/next/navigation
 import { useRouter, useSearchParams } from "next/navigation";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Module : node_modules/next/image
 import Image from "next/image";
+// Auth : src/lib/auth/auth-client.ts
 import { authClient } from "@/lib/auth/auth-client";
+// Style : src/app/(V)/reset-password/reset.module.css
 import styles from "./reset.module.css";
 
 function ResetPasswordForm() {

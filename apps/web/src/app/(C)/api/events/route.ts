@@ -1,8 +1,11 @@
-﻿// GET  /api/events — Liste paginée ?page&limit&search (public)
+// GET  /api/events — Liste paginée ?page&limit&search (public)
 // POST /api/events — Création événement, body JSON validé (admin | founder)
 
+// Auth : src/lib/auth/require-session.ts
 import { getAdminSessionOr403 } from "@/lib/auth/require-session";
+// Modèle : src/models_M/schemas/validation.ts
 import { parseBody, createEventSchema, eventQuerySchema } from "@/models_M/schemas/validation";
+// Service : src/lib/services_M/events.service.ts
 import { listEvents, createEvent } from "@/lib/services_M/events.service";
 
 /** Handler GET — retourne la liste paginée des événements (accès public) */

@@ -1,10 +1,16 @@
-﻿"use client";
+"use client";
 
+// Module : node_modules/react
 import { useState, useCallback, useRef } from "react";
+// Modèle : src/models_M/data/france-svg-paths.ts
 import { FRANCE_SVG_PATHS } from "@/models_M/data/france-svg-paths";
+// Modèle : src/models_M/data/regions.ts
 import { REGIONS, getRegionByCode, type Region } from "@/models_M/data/regions";
+// Composant : src/components_V/CarteInteractive/TooltipRegion.tsx
 import TooltipRegion from "./TooltipRegion";
+// Composant : src/components_V/CarteInteractive/PanneauRegion.tsx
 import PanneauRegion from "./PanneauRegion";
+// Style : src/components_V/CarteInteractive/CarteInteractive.module.css
 import styles from "./CarteInteractive.module.css";
 
 export default function CarteInteractive() {

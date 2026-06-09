@@ -5,10 +5,15 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useEffect } from "react";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Module : node_modules/next/navigation
 import { usePathname, useRouter } from "next/navigation";
+// Auth : src/lib/auth/auth-client.ts
 import { useSession } from "@/lib/auth/auth-client";
+// Style : src/app/(V)/admin/admin.module.css
 import styles from "./admin.module.css";
 
 const sidebarLinks = [

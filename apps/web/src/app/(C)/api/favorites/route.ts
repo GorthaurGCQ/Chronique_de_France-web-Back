@@ -3,8 +3,11 @@
 // PATCH  /api/favorites — Modifier la note { resourceId, note } (user authentifié)
 // DELETE /api/favorites — Supprimer un favori { resourceId } (user authentifié)
 
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
+// Module : node_modules/next/headers
 import { headers } from "next/headers";
+// Service : src/lib/services_M/favorites.service.ts
 import {
   listFavorites,
   addFavorite,

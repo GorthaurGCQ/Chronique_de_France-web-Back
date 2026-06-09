@@ -5,8 +5,10 @@
 // =============================================================================
 
 // Configuration serveur Better Auth (BDD, emails, rôles)
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
 // Adaptateur Next.js : transforme l'objet auth en handlers GET/POST Next
+// Module : node_modules/better-auth/next-js
 import { toNextJsHandler } from "better-auth/next-js";
 
 // Délégation complète à Better Auth — chaque requête /api/auth/... est routée ici

@@ -3,9 +3,13 @@
 // PATCH  /api/admin/resources — Modification ressource { resourceId, … } (admin | founder)
 // DELETE /api/admin/resources — Suppression ressource { resourceId } (admin | founder)
 
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
+// Module : node_modules/next/headers
 import { headers } from "next/headers";
+// Service : src/lib/services_M/admin/auth.ts
 import { isAdminRole } from "@/lib/services_M/admin/auth";
+// Service : src/lib/services_M/admin/resources.service.ts
 import {
   listAdminResources,
   createAdminResource,

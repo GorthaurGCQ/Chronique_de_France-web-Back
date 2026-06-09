@@ -3,6 +3,7 @@
 // Appelé par POST /api/admin/upload (bannières, miniatures événements/ressources)
 // =============================================================================
 
+// Lib : src/lib/supabase.ts
 import { supabaseAdmin, STORAGE_BUCKET } from "@/lib/supabase";
 
 const MAX_SIZE_MB = 5;

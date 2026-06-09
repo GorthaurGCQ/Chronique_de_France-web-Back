@@ -1,8 +1,12 @@
 // POST /api/admin/upload — Upload image, formData { file } (admin | founder)
 
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
+// Module : node_modules/next/headers
 import { headers } from "next/headers";
+// Service : src/lib/services_M/admin/auth.ts
 import { isAdminRole } from "@/lib/services_M/admin/auth";
+// Service : src/lib/services_M/admin/upload.service.ts
 import { uploadAdminImage } from "@/lib/services_M/admin/upload.service";
 
 /** Handler POST — upload une image pour le panel admin (bannière, miniature…) */

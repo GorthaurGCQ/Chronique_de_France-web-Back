@@ -5,14 +5,23 @@
 
 "use client";
 
+// Module : node_modules/@tiptap/react
 import { useEditor, EditorContent } from "@tiptap/react";
+// Module : node_modules/@tiptap/starter-kit
 import StarterKit from "@tiptap/starter-kit";
+// Module : node_modules/@tiptap/extension-underline
 import Underline from "@tiptap/extension-underline";
+// Module : node_modules/@tiptap/extension-text-style
 import { TextStyle } from "@tiptap/extension-text-style";
+// Module : node_modules/@tiptap/extension-color
 import { Color } from "@tiptap/extension-color";
+// Module : node_modules/@tiptap/extension-text-align
 import TextAlign from "@tiptap/extension-text-align";
+// Module : node_modules/@tiptap/extension-link
 import Link from "@tiptap/extension-link";
+// Module : node_modules/react
 import { useEffect, useCallback } from "react";
+// Style : src/components_V/RichTextEditor.module.css
 import styles from "./RichTextEditor.module.css";
 
 // ── Types ────────────────────────────────────────────────────────────────────

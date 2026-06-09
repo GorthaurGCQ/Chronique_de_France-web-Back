@@ -1,9 +1,16 @@
+// Module : node_modules/next
 import type { Metadata } from "next";
+// Module : node_modules/next/navigation
 import { notFound } from "next/navigation";
+// Modèle : src/models_M/schema.ts
 import type { Region } from "@/models_M/schema";
+// Service : src/lib/services_M/resources.service.ts
 import { listResourcesByRegion } from "@/lib/services_M/resources.service";
+// Modèle : src/models_M/data/regionsContent.ts
 import { REGIONS_CONTENT } from "@/models_M/data/regionsContent";
+// Modèle : src/models_M/data/regionsContent.ts
 import type { RegionCard, RegionContent } from "@/models_M/data/regionsContent";
+// Composant : src/components_V/regions/RegionPageLayout.tsx
 import RegionPageLayout from "@/components_V/regions/RegionPageLayout";
 
 // Toujours rendu dynamiquement pour refléter les nouvelles ressources publiées

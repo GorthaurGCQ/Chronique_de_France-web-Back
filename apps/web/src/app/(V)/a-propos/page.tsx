@@ -1,3 +1,4 @@
+// Module : node_modules/next
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

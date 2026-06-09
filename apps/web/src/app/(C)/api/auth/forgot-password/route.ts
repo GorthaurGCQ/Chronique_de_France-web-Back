@@ -1,8 +1,12 @@
-﻿// POST /api/auth/forgot-password — Demande de réinitialisation { email } (public)
+// POST /api/auth/forgot-password — Demande de réinitialisation { email } (public)
 
+// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
+// Modèle : src/models_M/schema.ts
 import { authUser } from "@/models_M/schema";
+// Module : node_modules/drizzle-orm
 import { eq } from "drizzle-orm";
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
 
 /** Handler POST — déclenche l'envoi d'un email de réinitialisation de mot de passe */

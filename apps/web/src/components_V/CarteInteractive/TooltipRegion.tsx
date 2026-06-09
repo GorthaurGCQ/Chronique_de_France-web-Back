@@ -1,7 +1,10 @@
-﻿"use client";
+"use client";
 
+// Module : node_modules/react
 import { useState } from "react";
+// Modèle : src/models_M/data/regions.ts
 import type { Region } from "@/models_M/data/regions";
+// Style : src/components_V/CarteInteractive/TooltipRegion.module.css
 import styles from "./TooltipRegion.module.css";
 
 type Props = {

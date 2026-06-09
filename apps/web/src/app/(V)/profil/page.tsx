@@ -5,10 +5,15 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useState } from "react";
+// Module : node_modules/next/navigation
 import { useRouter } from "next/navigation";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Auth : src/lib/auth/auth-client.ts
 import { useSession, signOut, authClient } from "@/lib/auth/auth-client";
+// Style : src/app/(V)/profil/profil.module.css
 import styles from "./profil.module.css";
 
 export default function ProfilPage() {

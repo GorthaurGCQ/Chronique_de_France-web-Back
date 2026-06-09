@@ -5,11 +5,17 @@
 
 "use client";
 
+// Module : node_modules/react
 import { useEffect, useState, useRef } from "react";
+// Module : node_modules/next/navigation
 import { useRouter } from "next/navigation";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Module : node_modules/next/image
 import Image from "next/image";
+// Auth : src/lib/auth/auth-client.ts
 import { useSession, signOut, authClient } from "@/lib/auth/auth-client";
+// Style : src/app/(V)/dashboard/dashboard.module.css
 import styles from "./dashboard.module.css";
 
 // ── Modal Avatar ──────────────────────────────────────────────────────────────

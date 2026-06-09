@@ -1,8 +1,12 @@
 // GET /api/admin/audit — Journal d'audit ?category= (admin | founder)
 
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
+// Module : node_modules/next/headers
 import { headers } from "next/headers";
+// Service : src/lib/services_M/admin/auth.ts
 import { isAdminRole } from "@/lib/services_M/admin/auth";
+// Service : src/lib/services_M/admin/audit.service.ts
 import { listAuditLogs } from "@/lib/services_M/admin/audit.service";
 
 /** Handler GET — retourne le journal d'audit, filtrable par catégorie */

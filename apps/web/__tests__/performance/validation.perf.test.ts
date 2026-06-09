@@ -1,5 +1,7 @@
-﻿import { describe, it, expect } from "vitest";
+// Module : node_modules/vitest
+import { describe, it, expect } from "vitest";
 
+// Modèle : src/models_M/schemas/validation.ts
 import {
   createResourceSchema,
   parseBody,

@@ -1,5 +1,8 @@
+// Module : node_modules/next/link
 import Link from "next/link";
+// Module : node_modules/next/image
 import Image from "next/image";
+// Style : src/components_V/Hero.module.css
 import styles from "./Hero.module.css";
 
 export default function Hero() {

@@ -1,9 +1,14 @@
-﻿"use client";
+"use client";
 
+// Module : node_modules/react
 import { useState, useEffect, useRef } from "react";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Modèle : src/models_M/data/regionsContent.ts
 import type { RegionCategorie } from "@/models_M/data/regionsContent";
+// Style : src/components_V/regions/region.module.css
 import styles from "./region.module.css";
+// Composant : src/components_V/BookmarkButton.tsx
 import BookmarkButton from "@/components_V/BookmarkButton";
 
 const EPOQUES = [

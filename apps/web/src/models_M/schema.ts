@@ -4,6 +4,7 @@
 // Dialecte : PostgreSQL (hébergé sur Supabase)
 // =============================================================================
 
+// Module : node_modules/drizzle-orm/pg-core
 import {
   pgTable,      // déclare une table SQL
   pgEnum,       // colonne à valeurs fixes (enum PostgreSQL)
@@ -14,6 +15,7 @@ import {
   index,        // index non unique (perf recherche)
   uniqueIndex,  // contrainte d'unicité
 } from "drizzle-orm/pg-core";
+// Module : node_modules/drizzle-orm
 import { relations } from "drizzle-orm"; // liens entre tables (optionnel, requêtes relationnelles)
 
 // ---------------------------------------------------------------------------

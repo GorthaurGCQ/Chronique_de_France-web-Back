@@ -1,7 +1,10 @@
 // POST /api/profile/change-password — Changer le mot de passe { currentPassword, newPassword } (user authentifié)
 
+// Auth : src/lib/auth/auth.ts
 import { auth } from "@/lib/auth/auth";
+// Module : node_modules/next/headers
 import { headers } from "next/headers";
+// Service : src/lib/services_M/profile.service.ts
 import { changePassword } from "@/lib/services_M/profile.service";
 
 /** Handler POST — change le mot de passe de l'utilisateur connecté */

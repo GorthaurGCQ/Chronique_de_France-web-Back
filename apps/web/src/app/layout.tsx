@@ -1,11 +1,16 @@
-﻿// =============================================================================
+// =============================================================================
 // LAYOUT RACINE — Polices, Navbar, Footer (toutes les pages sauf /admin)
 // =============================================================================
 
+// Module : node_modules/next
 import type { Metadata } from "next";
+// Module : node_modules/next/font/google
 import { Cinzel_Decorative, MedievalSharp, Source_Sans_3 } from "next/font/google";
+// Composant : src/components_V/NavbarWrapper.tsx
 import NavbarWrapper from "@/components_V/NavbarWrapper";
+// Composant : src/components_V/FooterWrapper.tsx
 import FooterWrapper from "@/components_V/FooterWrapper";
+// Module : src/app/globals.css
 import "./globals.css";
 
 /** Titres et accents — inspiration médiévale / patrimoniale */

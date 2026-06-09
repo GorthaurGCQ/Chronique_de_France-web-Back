@@ -1,8 +1,12 @@
 "use client";
 
+// Module : node_modules/react
 import { useState, useEffect, useRef, useCallback } from "react";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Module : node_modules/next/navigation
 import { useRouter } from "next/navigation";
+// Style : src/components_V/Navbar.module.css
 import styles from "./Navbar.module.css";
 
 type SearchResult = {

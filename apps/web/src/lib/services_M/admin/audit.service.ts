@@ -1,10 +1,13 @@
-﻿// =============================================================================
+// =============================================================================
 // SERVICE ADMIN — Lecture du journal d'audit
 // Consommé par : GET /api/admin/audit, page /admin/journal
 // =============================================================================
 
+// Module : node_modules/drizzle-orm
 import { eq, desc } from "drizzle-orm";
+// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
+// Modèle : src/models_M/schema.ts
 import { auditLogs } from "@/models_M/schema";
 
 export async function listAuditLogs(category: string | null) {

@@ -1,5 +1,7 @@
-﻿import { bench, describe } from "vitest";
+// Module : node_modules/vitest
+import { bench, describe } from "vitest";
 
+// Modèle : src/models_M/schemas/validation.ts
 import { createResourceSchema, parseBody } from "@/models_M/schemas/validation";
 
 /**

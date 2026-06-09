@@ -1,6 +1,8 @@
 "use client";
 
+// Module : node_modules/react
 import { useRef, useState } from "react";
+// Style : src/app/(V)/bibliotheque/[id]/ressource.module.css
 import styles from "@/app/(V)/bibliotheque/[id]/ressource.module.css";
 
 type MediaKind = "youtube" | "vimeo" | "video" | "audio" | "iframe" | "external";

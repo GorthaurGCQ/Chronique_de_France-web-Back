@@ -4,7 +4,9 @@
 // Cible : toutes les routes /api/* (matcher ci-dessous)
 // =============================================================================
 
+// Module : node_modules/next/server
 import { NextResponse } from "next/server";
+// Module : node_modules/next/server
 import type { NextRequest } from "next/server";
 
 // Origines autorisées en développement (Next.js + Expo)

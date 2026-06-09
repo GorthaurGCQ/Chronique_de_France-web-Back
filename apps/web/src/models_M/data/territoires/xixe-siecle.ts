@@ -1,3 +1,4 @@
+// Modèle : src/models_M/data/territoires/types.ts
 import type { TerritoireInfo, CarteEpoqueData } from "./types";
 
 const FRANCE_MET: TerritoireInfo = {

@@ -1,8 +1,11 @@
-﻿// GET  /api/resources — Liste paginée ?page&limit&search&type (public)
+// GET  /api/resources — Liste paginée ?page&limit&search&type (public)
 // POST /api/resources — Création ressource, body JSON validé (admin | founder)
 
+// Auth : src/lib/auth/require-session.ts
 import { getAdminSessionOr403 } from "@/lib/auth/require-session";
+// Modèle : src/models_M/schemas/validation.ts
 import { parseBody, createResourceSchema, resourceQuerySchema } from "@/models_M/schemas/validation";
+// Service : src/lib/services_M/resources.service.ts
 import { listResources, createResource } from "@/lib/services_M/resources.service";
 
 /** Handler GET — retourne la liste paginée des ressources (accès public) */

@@ -1,11 +1,14 @@
-﻿// =============================================================================
+// =============================================================================
 // COUCHE FRONT — Page admin ressources
 // Communique avec le back via fetch("/api/admin/resources") — voir fetchResources / handleSubmit
 // =============================================================================
 "use client";
 
+// Module : node_modules/react
 import { useEffect, useRef, useState, useCallback } from "react";
+// Style : src/app/(V)/admin/admin.module.css
 import styles from "../admin.module.css";
+// Composant : src/components_V/RichTextEditor.tsx
 import RichTextEditor from "@/components_V/RichTextEditor";
 
 type Resource = {

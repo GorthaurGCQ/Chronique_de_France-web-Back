@@ -1,9 +1,14 @@
-﻿"use client";
+"use client";
 
+// Module : node_modules/react
 import { useEffect, useState } from "react";
+// Module : node_modules/next/image
 import Image from "next/image";
+// Module : node_modules/next/link
 import Link from "next/link";
+// Modèle : src/models_M/data/regions.ts
 import type { Region } from "@/models_M/data/regions";
+// Style : src/components_V/CarteInteractive/PanneauRegion.module.css
 import styles from "./PanneauRegion.module.css";
 
 type Props = {

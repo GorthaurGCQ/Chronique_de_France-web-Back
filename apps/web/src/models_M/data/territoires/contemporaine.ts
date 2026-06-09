@@ -1,4 +1,6 @@
-﻿import { REGIONS } from "@/models_M/data/regions";
+// Modèle : src/models_M/data/regions.ts
+import { REGIONS } from "@/models_M/data/regions";
+// Modèle : src/models_M/data/territoires/types.ts
 import type { TerritoireInfo, CarteEpoqueData } from "./types";
 
 // For the contemporary era, we reuse the REGIONS data (colors + descriptions)

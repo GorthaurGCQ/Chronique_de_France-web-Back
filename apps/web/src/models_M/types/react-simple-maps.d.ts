@@ -1,4 +1,5 @@
 declare module "react-simple-maps" {
+// Module : node_modules/react
   import type { ComponentProps, CSSProperties, ReactNode } from "react";
 
   export function ComposableMap(props: {

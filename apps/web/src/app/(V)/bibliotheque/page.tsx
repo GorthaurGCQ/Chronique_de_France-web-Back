@@ -1,13 +1,19 @@
-﻿// =============================================================================
+// =============================================================================
 // VUE SSR — Bibliothèque nationale (carte interactive + ressources)
 // Données : listNationalResources() — filtrage côté client via BibliothequeContent
 // =============================================================================
 
+// Module : node_modules/next
 import type { Metadata } from "next";
+// Composant : src/components_V/CarteInteractive/CarteInteractive.tsx
 import CarteInteractive from "@/components_V/CarteInteractive/CarteInteractive";
+// Composant : src/components_V/ResourceCard.tsx
 import type { ResourceCardData } from "@/components_V/ResourceCard";
+// Service : src/lib/services_M/resources.service.ts
 import { listNationalResources } from "@/lib/services_M/resources.service";
+// Composant : src/components_V/bibliotheque/BibliothequeContent.tsx
 import BibliothequeContent from "@/components_V/bibliotheque/BibliothequeContent";
+// Style : src/app/(V)/bibliotheque/bibliotheque.module.css
 import styles from "./bibliotheque.module.css";
 
 export const metadata: Metadata = {
