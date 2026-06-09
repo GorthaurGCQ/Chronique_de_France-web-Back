@@ -15,6 +15,8 @@ import Link from "next/link";
 import Image from "next/image";
 // Auth : src/lib/auth/auth-client.ts
 import { useSession, signOut, authClient } from "@/lib/auth/auth-client";
+// Module : src/lib/permissions.shared.ts
+import { hasAdminPanelAccess } from "@/lib/permissions.shared";
 // Style : src/app/(V)/dashboard/dashboard.module.css
 import styles from "./dashboard.module.css";
 
@@ -202,6 +204,8 @@ export default function DashboardPage() {
   const [nameValue, setNameValue]     = useState("");
   const [nameSaving, setNameSaving]   = useState(false);
   const [nameMsg, setNameMsg]         = useState<string | null>(null);
+
+  const [canAccessAdminPanel, setCanAccessAdminPanel] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   // ── Édition email ────────────────────────────────────────────────────────
@@ -243,6 +247,22 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!isPending && !session) router.replace("/connexion");
   }, [isPending, session, router]);
+
+  useEffect(() => {
+    if (!session?.user) return;
+    const role = (session.user as { role?: string }).role;
+    if (role === "admin" || role === "founder") {
+      setCanAccessAdminPanel(true);
+      return;
+    }
+    fetch("/api/profile/access")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) {
+          setCanAccessAdminPanel(hasAdminPanelAccess(d.data.role, d.data.permissions ?? []));
+        }
+      });
+  }, [session?.user?.id, session?.user]);
 
   // ── Chargement données ────────────────────────────────────────────────────
   useEffect(() => {
@@ -530,7 +550,7 @@ export default function DashboardPage() {
               <section className={styles.card}>
                 <h2 className={styles.cardTitle}><span className={styles.cardIcon}>⚙️</span> Mon compte</h2>
                 <div className={styles.accountActions}>
-                  {(userRole === "admin" || userRole === "founder") && (
+                  {canAccessAdminPanel && (
                     <Link href="/admin" className={styles.btnAccount}>🛡️ Accéder au panneau admin</Link>
                   )}
                   <button className={styles.btnAccount} onClick={handleSignOut}>🚪 Se déconnecter</button>

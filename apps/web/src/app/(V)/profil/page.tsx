@@ -8,7 +8,7 @@
 // Module : node_modules/react
 import { useState } from "react";
 // Module : node_modules/next/navigation
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 // Module : node_modules/next/link
 import Link from "next/link";
 // Auth : src/lib/auth/auth-client.ts
@@ -18,6 +18,8 @@ import styles from "./profil.module.css";
 
 export default function ProfilPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const accessDenied = searchParams.get("erreur") === "acces";
   const { data: session, isPending } = useSession();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -72,6 +74,13 @@ export default function ProfilPage() {
     <main className={styles.main}>
       <div className={styles.container}>
         <h1 className={styles.title}>Mon profil</h1>
+
+        {accessDenied && (
+          <p className={styles.errorMsg}>
+            Vous n&apos;avez pas les droits nécessaires pour accéder à cette page.
+            Contactez un administrateur si vous pensez qu&apos;il s&apos;agit d&apos;une erreur.
+          </p>
+        )}
 
         {/* Carte infos */}
         <div className={styles.card}>

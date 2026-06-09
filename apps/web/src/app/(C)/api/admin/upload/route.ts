@@ -1,24 +1,19 @@
-// POST /api/admin/upload — Upload image, formData { file } (admin | founder)
+// POST /api/admin/upload — Upload image, formData { file }
 
-// Auth : src/lib/auth/auth.ts
-import { auth } from "@/lib/auth/auth";
-// Module : node_modules/next/headers
-import { headers } from "next/headers";
 // Service : src/lib/services_M/admin/auth.ts
-import { isAdminRole } from "@/lib/services_M/admin/auth";
+import { getAdminSessionOr403 } from "@/lib/services_M/admin/auth";
 // Service : src/lib/services_M/admin/upload.service.ts
 import { uploadAdminImage } from "@/lib/services_M/admin/upload.service";
 
 /** Handler POST — upload une image pour le panel admin (bannière, miniature…) */
 export async function POST(req: Request) {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getAdminSessionOr403([
+      "GERER_RESSOURCES_ADMIN",
+      "IMPORTER_MEDIAS",
+    ]);
+    if (!authResult.ok) return authResult.response;
 
-    // Extraction du fichier depuis le formData
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
 
@@ -26,7 +21,6 @@ export async function POST(req: Request) {
       return Response.json({ success: false, message: "Aucun fichier reçu." }, { status: 400 });
     }
 
-    // Upload vers le stockage (Supabase) + retour de l'URL publique
     const result = await uploadAdminImage(file);
 
     if ("error" in result) {

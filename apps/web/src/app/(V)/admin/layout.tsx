@@ -1,25 +1,39 @@
 // =============================================================================
-// LAYOUT ADMIN — Sidebar + garde d'accès (admin | founder uniquement)
-// Redirige vers / si l'utilisateur n'a pas les droits
+// LAYOUT ADMIN — Sidebar + garde d'accès (admin | founder | droits granulaires)
+// Redirige si l'utilisateur n'a pas les droits requis
 // =============================================================================
 
 "use client";
 
 // Module : node_modules/react
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 // Module : node_modules/next/link
 import Link from "next/link";
 // Module : node_modules/next/navigation
 import { usePathname, useRouter } from "next/navigation";
 // Auth : src/lib/auth/auth-client.ts
 import { useSession } from "@/lib/auth/auth-client";
+// Module : src/lib/permissions.shared.ts
+import {
+  type Permission,
+  isPrivilegedRole,
+  hasAdminPanelAccess,
+  canAccessAdminRoute,
+} from "@/lib/permissions.shared";
 // Style : src/app/(V)/admin/admin.module.css
 import styles from "./admin.module.css";
 
-const sidebarLinks = [
+const sidebarLinks: {
+  href: string;
+  label: string;
+  permission?: Permission;
+  adminOnly?: boolean;
+  icon: React.ReactNode;
+}[] = [
   {
     href: "/admin",
     label: "Tableau de bord",
+    permission: "VOIR_TABLEAU_BORD",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -32,6 +46,7 @@ const sidebarLinks = [
   {
     href: "/admin/utilisateurs",
     label: "Utilisateurs",
+    permission: "GERER_UTILISATEURS",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -44,6 +59,7 @@ const sidebarLinks = [
   {
     href: "/admin/ressources",
     label: "Ressources",
+    permission: "GERER_RESSOURCES_ADMIN",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -54,6 +70,7 @@ const sidebarLinks = [
   {
     href: "/admin/evenements",
     label: "Événements",
+    adminOnly: true,
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -66,6 +83,7 @@ const sidebarLinks = [
   {
     href: "/admin/journal",
     label: "Journal d'audit",
+    adminOnly: true,
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -82,18 +100,72 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { data: session, isPending } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [accessLoaded, setAccessLoaded] = useState(false);
 
-  // Vérifie le rôle admin | founder côté client
-  const isAdmin = session?.user.role === "admin" || session?.user.role === "founder";
+  const role = session?.user.role;
+  const isPrivileged = isPrivilegedRole(role);
 
-  // Redirection si non connecté ou rôle insuffisant
   useEffect(() => {
-    if (!isPending && (!session || !isAdmin)) {
-      router.replace("/");
-    }
-  }, [session, isPending, isAdmin, router]);
+    if (!session?.user || isPrivileged) return;
 
-  if (isPending) {
+    let cancelled = false;
+    fetch("/api/profile/access")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!cancelled && d.success) setPermissions(d.data.permissions ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setPermissions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setAccessLoaded(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user?.id, isPrivileged]);
+
+  const permissionsReady = isPrivileged || accessLoaded;
+
+  const hasPanelAccess =
+    isPrivileged || (permissionsReady && hasAdminPanelAccess(role, permissions));
+
+  const visibleLinks = sidebarLinks.filter((link) => {
+    if (isPrivileged) return true;
+    if (link.adminOnly) return false;
+    return canAccessAdminRoute(role, permissions, link.href);
+  });
+
+  const canViewCurrentPage =
+    isPrivileged || canAccessAdminRoute(role, permissions, pathname);
+
+  useEffect(() => {
+    if (isPending || !permissionsReady) return;
+    if (!session) {
+      router.replace("/connexion");
+      return;
+    }
+    if (!hasPanelAccess) {
+      router.replace("/profil?erreur=acces");
+      return;
+    }
+    if (!canViewCurrentPage && visibleLinks.length > 0) {
+      router.replace(visibleLinks[0].href);
+    }
+  }, [
+    session,
+    isPending,
+    accessLoaded,
+    permissionsReady,
+    hasPanelAccess,
+    canViewCurrentPage,
+    visibleLinks,
+    router,
+  ]);
+
+  if (isPending || (session && !isPrivileged && !permissionsReady)) {
     return (
       <div className={styles.loadingScreen}>
         <p>Vérification des droits…</p>
@@ -101,23 +173,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!session || !isAdmin) {
+  if (!session || !hasPanelAccess) {
     return null;
   }
 
   return (
     <div className={styles.adminLayout}>
-      {/* Sidebar */}
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
           <span className={styles.sidebarTitle}>Administration</span>
           <span className={styles.sidebarBadge}>
-            {session?.user.role === "founder" ? "👑 Fondateur" : "Admin"}
+            {session.user.role === "founder"
+              ? "👑 Fondateur"
+              : isPrivileged
+                ? "Admin"
+                : "Modérateur"}
           </span>
         </div>
 
         <nav className={styles.sidebarNav}>
-          {sidebarLinks.map(({ href, label, icon }) => (
+          {visibleLinks.map(({ href, label, icon }) => (
             <Link
               key={href}
               href={href}
@@ -139,7 +214,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      {/* Contenu principal */}
       <main className={styles.adminMain}>{children}</main>
     </div>
   );

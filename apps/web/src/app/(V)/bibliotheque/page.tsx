@@ -11,6 +11,8 @@ import CarteInteractive from "@/components_V/CarteInteractive/CarteInteractive";
 import type { ResourceCardData } from "@/components_V/ResourceCard";
 // Service : src/lib/services_M/resources.service.ts
 import { listNationalResources } from "@/lib/services_M/resources.service";
+// Service : src/lib/services_M/permissions.service.ts
+import { requirePermission } from "@/lib/services_M/permissions.service";
 // Composant : src/components_V/bibliotheque/BibliothequeContent.tsx
 import BibliothequeContent from "@/components_V/bibliotheque/BibliothequeContent";
 // Style : src/app/(V)/bibliotheque/bibliotheque.module.css
@@ -35,6 +37,8 @@ async function getResources(): Promise<ResourceCardData[]> {
 }
 
 export default async function BibliothequePage() {
+  await requirePermission("ACCES_BIBLIOTHEQUE");
+
   const resourceList = await getResources();
 
   return (

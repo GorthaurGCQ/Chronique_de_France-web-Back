@@ -20,6 +20,11 @@ type EventItem = {
   region: string | null;
   domaine: string | null;
   authorName: string | null;
+  capaciteMax?: number | null;
+  inscriptionsConfirmees?: number;
+  placesRestantes?: number | null;
+  complet?: boolean;
+  listeAttenteCount?: number;
 };
 
 const REGION_LABELS: Record<string, string> = {
@@ -57,19 +62,33 @@ function RegisterModal({ event, onClose }: { event: EventItem; onClose: () => vo
   const [form, setForm]     = useState({ nom: "", prenom: "", email: "" });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [registrationStatut, setRegistrationStatut] = useState<"CONFIRME" | "LISTE_ATTENTE">("CONFIRME");
+  const [waitlistPosition, setWaitlistPosition] = useState<number | null>(null);
+  const [submittedEmail, setSubmittedEmail] = useState("");
   const [error, setError]   = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    const payload = {
+      eventId: event.id,
+      nom: form.nom.trim(),
+      prenom: form.prenom.trim(),
+      email: form.email.trim().toLowerCase(),
+    };
     const res = await fetch("/api/events/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ eventId: event.id, ...form }),
+      body: JSON.stringify(payload),
     });
     const data = await res.json();
     if (data.success) {
+      setSubmittedEmail(payload.email);
+      setEmailSent(data.emailSent === true);
+      setRegistrationStatut(data.statut === "LISTE_ATTENTE" ? "LISTE_ATTENTE" : "CONFIRME");
+      setWaitlistPosition(data.listeAttentePosition ?? null);
       setSuccess(true);
     } else {
       setError(data.message ?? "Une erreur est survenue.");
@@ -90,11 +109,31 @@ function RegisterModal({ event, onClose }: { event: EventItem; onClose: () => vo
 
         {success ? (
           <div className={styles.successBox}>
-            <div className={styles.successIcon}>✓</div>
-            <p className={styles.successTitle}>Inscription confirmée !</p>
+            <div className={styles.successIcon}>{registrationStatut === "LISTE_ATTENTE" ? "⏳" : "✓"}</div>
+            <p className={styles.successTitle}>
+              {registrationStatut === "LISTE_ATTENTE" ? "Liste d'attente" : "Inscription confirmée !"}
+            </p>
             <p className={styles.successDesc}>
-              Vous êtes inscrit(e) à <strong>{event.titre}</strong>.<br />
-              Un récapitulatif vous sera envoyé à l&apos;adresse indiquée.
+              {registrationStatut === "LISTE_ATTENTE" ? (
+                <>
+                  L&apos;événement <strong>{event.titre}</strong> est complet.
+                  Vous êtes en liste d&apos;attente
+                  {waitlistPosition != null ? <> (position {waitlistPosition})</> : null}.
+                </>
+              ) : (
+                <>Vous êtes inscrit(e) à <strong>{event.titre}</strong>.</>
+              )}
+              {emailSent ? (
+                <>
+                  <br />
+                  Un récapitulatif a été envoyé à <strong>{submittedEmail}</strong>.
+                </>
+              ) : (
+                <>
+                  <br />
+                  Votre inscription est enregistrée, mais l&apos;e-mail de confirmation n&apos;a pas pu être envoyé.
+                </>
+              )}
             </p>
             <button className={styles.btnClose} onClick={onClose}>Fermer</button>
           </div>
@@ -103,6 +142,12 @@ function RegisterModal({ event, onClose }: { event: EventItem; onClose: () => vo
             <div className={styles.modalEventInfo}>
               <span>📅 {formatDate(new Date(event.date))} · {formatTime(new Date(event.date))}</span>
               <span>📍 {event.lieu}</span>
+              {event.capaciteMax != null && (
+                <span>
+                  👥 {event.complet ? "Complet" : `${event.placesRestantes ?? 0} place(s) restante(s)`}
+                  {event.listeAttenteCount ? ` · ${event.listeAttenteCount} en attente` : ""}
+                </span>
+              )}
             </div>
 
             <div className={styles.formRow}>
@@ -145,7 +190,11 @@ function RegisterModal({ event, onClose }: { event: EventItem; onClose: () => vo
             {error && <p className={styles.errorMsg}>{error}</p>}
 
             <button type="submit" className={styles.btnSubmit} disabled={loading}>
-              {loading ? "Inscription en cours…" : "Confirmer l'inscription"}
+              {loading
+                ? "Inscription en cours…"
+                : event.complet
+                  ? "Rejoindre la liste d'attente"
+                  : "Confirmer l'inscription"}
             </button>
           </form>
         )}
@@ -218,12 +267,17 @@ export function UpcomingGrid({ events: list }: { events: EventItem[] }) {
                       {REGION_LABELS[ev.region] ?? ev.region}
                     </span>
                   )}
+                  {ev.capaciteMax != null && (
+                    <span className={styles.cardMetaItem}>
+                      👥 {ev.complet ? "Complet — liste d'attente" : `${ev.placesRestantes ?? 0} place(s) restante(s)`}
+                    </span>
+                  )}
                 </div>
                 <button
                   className={styles.btnRegister}
                   onClick={() => setSelected(ev)}
                 >
-                  S&apos;inscrire →
+                  {ev.complet ? "Liste d'attente →" : "S'inscrire →"}
                 </button>
               </div>
             </article>

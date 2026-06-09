@@ -13,20 +13,13 @@ import { useSession } from "@/lib/auth/auth-client";
 import styles from "../admin.module.css";
 // Style : src/app/(V)/admin/utilisateurs/permissions.module.css
 import permStyles from "./permissions.module.css";
+// Module : src/lib/permissions.shared.ts
+import {
+  type Permission,
+  parsePermissions,
+} from "@/lib/permissions.shared";
 
 // ── Définition des permissions ───────────────────────────────────────────────
-
-export type Permission =
-  | "CREER_RESSOURCES"
-  | "MODIFIER_RESSOURCES"
-  | "SUPPRIMER_RESSOURCES"
-  | "IMPORTER_MEDIAS"
-  | "VOIR_TABLEAU_BORD"
-  | "GERER_UTILISATEURS"
-  | "GERER_RESSOURCES_ADMIN"
-  | "ACCES_EVENEMENTS"
-  | "ACCES_BIBLIOTHEQUE"
-  | "ACCES_REGIONS";
 
 const PERMISSION_GROUPS: {
   label: string;
@@ -76,16 +69,6 @@ type User = {
   createdAt: string;
 };
 
-const DEFAULT_PAGE_PERMISSIONS: Permission[] = [
-  "ACCES_BIBLIOTHEQUE",
-  "ACCES_REGIONS",
-  "ACCES_EVENEMENTS",
-];
-
-function parsePermissions(raw: string | null | undefined): Permission[] {
-  try { return JSON.parse(raw ?? "[]"); } catch { return []; }
-}
-
 // ── Composant ────────────────────────────────────────────────────────────────
 
 export default function AdminUtilisateurs() {
@@ -131,10 +114,7 @@ export default function AdminUtilisateurs() {
   function openEdit(user: User) {
     setEditingUser(user);
     setEditRole(user.role ?? "user");
-    const existing = parsePermissions(user.customPermissions);
-    // Ajoute les accès aux pages par défaut s'ils ne sont pas déjà définis
-    const withDefaults = Array.from(new Set([...DEFAULT_PAGE_PERMISSIONS, ...existing]));
-    setEditPerms(withDefaults);
+    setEditPerms(parsePermissions(user.customPermissions));
     setMessage(null);
   }
 
@@ -162,13 +142,16 @@ export default function AdminUtilisateurs() {
         permissions: editPerms,
       }),
     });
-    const data = await res.json();
-    if (data.success) {
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.success) {
       setMessage({ type: "success", text: `Droits de ${editingUser.name} mis à jour.` });
       await fetchUsers();
       closeEdit();
     } else {
-      setMessage({ type: "error", text: data.message });
+      setMessage({
+        type: "error",
+        text: data.message ?? `Erreur lors de l'enregistrement (${res.status}).`,
+      });
     }
     setSavingPerms(false);
   }
@@ -238,7 +221,10 @@ export default function AdminUtilisateurs() {
                       </td>
                       <td>
                         {perms.length > 0 ? (
-                          <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>
+                          <span
+                            style={{ fontSize: "0.78rem", color: "#6b7280", cursor: "help" }}
+                            title={perms.join(", ")}
+                          >
                             {perms.length} droit{perms.length > 1 ? "s" : ""}
                           </span>
                         ) : (
@@ -362,7 +348,8 @@ export default function AdminUtilisateurs() {
             <div className={permStyles.section}>
               <h3 className={permStyles.sectionTitle}>🔑 Droits spécifiques</h3>
               <p className={permStyles.sectionHint}>
-                Ces droits s&apos;appliquent en complément du rôle. Un administrateur a tous les droits par défaut.
+                Ces droits sont enregistrés en base. Le rôle Administrateur donne accès au panneau admin ;
+                les droits spécifiques affinent les accès (application progressive).
               </p>
               {PERMISSION_GROUPS.map((group) => (
                 <div key={group.label} className={permStyles.group}>

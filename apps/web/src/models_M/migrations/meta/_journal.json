@@ -8,6 +8,13 @@
       "when": 1773136147270,
       "tag": "0000_careful_wild_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1749456000000,
+      "tag": "0002_event_capacity_waitlist",
+      "breakpoints": true
     }
   ]
 }

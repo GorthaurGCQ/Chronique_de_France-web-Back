@@ -1,6 +1,6 @@
 // =============================================================================
 // PROXY CORS — Autorise les requêtes API depuis Expo (app mobile / web)
-// À brancher via middleware.ts : export { proxy as middleware } from "./proxy"
+// CORS /api/* pour Expo (Next.js 16 — convention proxy.ts, pas middleware.ts)
 // Cible : toutes les routes /api/* (matcher ci-dessous)
 // =============================================================================
 
@@ -21,8 +21,8 @@ const ALLOWED_ORIGINS = [
 /** Vérifie si l'origine de la requête est autorisée (localhost ou réseau local Expo) */
 function isAllowedOrigin(origin: string): boolean {
   if (ALLOWED_ORIGINS.includes(origin)) return true;
-  // Expo sur appareil physique : IP locale 192.168.x.x
-  return /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}:(8081|19006|3000)$/.test(origin);
+  // Expo sur appareil physique / émulateur : IP LAN (192.168.x.x ou 10.x.x.x)
+  return /^http:\/\/(192\.168|10)\.\d{1,3}\.\d{1,3}\.\d{1,3}:(8081|19006|3000)$/.test(origin);
 }
 
 /** Construit les en-têtes CORS pour la réponse */

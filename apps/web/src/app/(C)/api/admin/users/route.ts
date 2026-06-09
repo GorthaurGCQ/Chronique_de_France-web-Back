@@ -1,25 +1,17 @@
-// GET   /api/admin/users — Liste des utilisateurs (admin | founder)
-// PATCH /api/admin/users — Modifier un utilisateur { userId, action, … } (admin | founder)
+// GET   /api/admin/users — Liste des utilisateurs
+// PATCH /api/admin/users — Modifier un utilisateur { userId, action, … }
 
-// Auth : src/lib/auth/auth.ts
-import { auth } from "@/lib/auth/auth";
-// Module : node_modules/next/headers
-import { headers } from "next/headers";
 // Service : src/lib/services_M/admin/auth.ts
-import { isAdminRole } from "@/lib/services_M/admin/auth";
+import { getAdminSessionOr403 } from "@/lib/services_M/admin/auth";
 // Service : src/lib/services_M/admin/users.service.ts
 import { listAdminUsers, patchAdminUser } from "@/lib/services_M/admin/users.service";
 
 /** Handler GET — retourne la liste complète des utilisateurs (admin panel) */
 export async function GET() {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getAdminSessionOr403("GERER_UTILISATEURS");
+    if (!authResult.ok) return authResult.response;
 
-    // Lecture de tous les utilisateurs en BDD
     const users = await listAdminUsers();
     return Response.json({ success: true, data: users });
   } catch (err) {
@@ -31,20 +23,16 @@ export async function GET() {
 /** Handler PATCH — modifie le rôle ou les permissions d'un utilisateur */
 export async function PATCH(req: Request) {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getAdminSessionOr403("GERER_UTILISATEURS");
+    if (!authResult.ok) return authResult.response;
+    const session = authResult.session;
 
     const body = await req.json();
     const { userId, action } = body;
 
-    // Validation : userId obligatoire
     if (!userId) {
       return Response.json({ success: false, message: "userId manquant." }, { status: 400 });
     }
-    // Sécurité : un admin ne peut pas se modifier lui-même via cette route
     if (userId === session.user.id) {
       return Response.json(
         { success: false, message: "Vous ne pouvez pas modifier votre propre compte ici." },
@@ -52,7 +40,6 @@ export async function PATCH(req: Request) {
       );
     }
 
-    // Application de l'action (changement rôle, permissions…) + audit
     const result = await patchAdminUser(
       session.user.id,
       session.user.name,

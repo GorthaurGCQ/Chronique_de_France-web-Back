@@ -39,6 +39,20 @@ export const createEventSchema = z.object({
 
 export const updateEventSchema = createEventSchema.partial();
 
+/** Capacité max : null / absent = illimité, entier >= 1 sinon */
+export const capaciteMaxSchema = z
+  .union([z.coerce.number().int().min(1), z.literal(""), z.null()])
+  .optional()
+  .transform((v) => (v === "" || v == null ? null : v));
+
+export const adminEventBodySchema = createEventSchema.extend({
+  capaciteMax: capaciteMaxSchema,
+});
+
+export const adminEventPatchSchema = adminEventBodySchema.partial().extend({
+  eventId: z.string().min(1),
+});
+
 // ---------------------------------------------------------------------------
 // Paramètres de requête (pagination, recherche, filtrage)
 // ---------------------------------------------------------------------------

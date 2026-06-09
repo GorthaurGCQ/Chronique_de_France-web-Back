@@ -12,6 +12,8 @@ import { REGIONS_CONTENT } from "@/models_M/data/regionsContent";
 import type { RegionCard, RegionContent } from "@/models_M/data/regionsContent";
 // Composant : src/components_V/regions/RegionPageLayout.tsx
 import RegionPageLayout from "@/components_V/regions/RegionPageLayout";
+// Service : src/lib/services_M/permissions.service.ts
+import { requirePermission } from "@/lib/services_M/permissions.service";
 
 // Toujours rendu dynamiquement pour refléter les nouvelles ressources publiées
 export const dynamic = "force-dynamic";
@@ -147,6 +149,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function RegionPage({ params }: Props) {
+  await requirePermission("ACCES_REGIONS");
+
   const { id } = await params;
   const base = REGIONS_CONTENT[id];
   if (!base) notFound();

@@ -3,12 +3,8 @@
 // PATCH  /api/admin/events — Modification événement { eventId, … } (admin | founder)
 // DELETE /api/admin/events — Suppression événement { eventId } (admin | founder)
 
-// Auth : src/lib/auth/auth.ts
-import { auth } from "@/lib/auth/auth";
-// Module : node_modules/next/headers
-import { headers } from "next/headers";
 // Service : src/lib/services_M/admin/auth.ts
-import { isAdminRole } from "@/lib/services_M/admin/auth";
+import { getFullAdminSessionOr403 } from "@/lib/services_M/admin/auth";
 // Service : src/lib/services_M/admin/events.service.ts
 import {
   listAdminEvents,
@@ -17,14 +13,18 @@ import {
   deleteAdminEvent,
 } from "@/lib/services_M/admin/events.service";
 
+function parseCapaciteMax(value: unknown): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 1) return null;
+  return n;
+}
+
 /** Handler GET — retourne tous les événements pour le panel admin */
 export async function GET() {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getFullAdminSessionOr403();
+    if (!authResult.ok) return authResult.response;
 
     const list = await listAdminEvents();
     return Response.json({ success: true, data: list });
@@ -40,23 +40,26 @@ export async function GET() {
 /** Handler POST — crée un événement depuis le panel admin (avec audit) */
 export async function POST(req: Request) {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getFullAdminSessionOr403();
+    if (!authResult.ok) return authResult.response;
+    const session = authResult.session;
 
     const body = await req.json();
-    const { titre, description, contenu, lieu, date, thumbnailUrl, region, timeline, domaine } = body;
+    const { titre, description, contenu, lieu, date, thumbnailUrl, region, timeline, domaine, capaciteMax } = body;
 
     // Validation manuelle des champs obligatoires
     if (!titre || !description || !lieu || !date || !region || !timeline || !domaine) {
       return Response.json({ success: false, message: "Tous les champs sont requis." }, { status: 400 });
     }
 
+    const parsedCapacite = parseCapaciteMax(capaciteMax);
+    if (capaciteMax !== undefined && capaciteMax !== null && capaciteMax !== "" && parsedCapacite === null) {
+      return Response.json({ success: false, message: "Capacité invalide (entier ≥ 1 ou vide)." }, { status: 400 });
+    }
+
     // Insertion en BDD + journalisation audit
     const event = await createAdminEvent(
-      { titre, description, contenu, lieu, date, thumbnailUrl, region, timeline, domaine },
+      { titre, description, contenu, lieu, date, thumbnailUrl, region, timeline, domaine, capaciteMax: parsedCapacite },
       session.user.id,
       { actorId: session.user.id, actorName: session.user.name, actorRole: session.user.role ?? undefined },
     );
@@ -74,14 +77,12 @@ export async function POST(req: Request) {
 /** Handler PATCH — modifie un événement depuis le panel admin (avec audit) */
 export async function PATCH(req: Request) {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getFullAdminSessionOr403();
+    if (!authResult.ok) return authResult.response;
+    const session = authResult.session;
 
     const body = await req.json();
-    const { eventId, titre, description, contenu, lieu, date, thumbnailUrl, region, timeline, domaine } = body;
+    const { eventId, titre, description, contenu, lieu, date, thumbnailUrl, region, timeline, domaine, capaciteMax } = body;
 
     if (!eventId) {
       return Response.json({ success: false, message: "ID manquant." }, { status: 400 });
@@ -90,10 +91,15 @@ export async function PATCH(req: Request) {
       return Response.json({ success: false, message: "Tous les champs sont requis." }, { status: 400 });
     }
 
+    const parsedCapacite = parseCapaciteMax(capaciteMax);
+    if (capaciteMax !== undefined && capaciteMax !== null && capaciteMax !== "" && parsedCapacite === null) {
+      return Response.json({ success: false, message: "Capacité invalide (entier ≥ 1 ou vide)." }, { status: 400 });
+    }
+
     // Mise à jour en BDD + journalisation audit
     const updated = await updateAdminEvent(
       eventId,
-      { titre, description, contenu, lieu, date, thumbnailUrl, region, timeline, domaine },
+      { titre, description, contenu, lieu, date, thumbnailUrl, region, timeline, domaine, capaciteMax: parsedCapacite },
       { actorId: session.user.id, actorName: session.user.name, actorRole: session.user.role ?? undefined },
     );
 
@@ -110,11 +116,9 @@ export async function PATCH(req: Request) {
 /** Handler DELETE — supprime un événement depuis le panel admin (avec audit) */
 export async function DELETE(req: Request) {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getFullAdminSessionOr403();
+    if (!authResult.ok) return authResult.response;
+    const session = authResult.session;
 
     const { eventId } = await req.json();
     if (!eventId) {

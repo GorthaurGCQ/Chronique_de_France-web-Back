@@ -11,6 +11,31 @@ import { auth } from "@/lib/auth/auth";
 // Module : node_modules/better-auth/next-js
 import { toNextJsHandler } from "better-auth/next-js";
 
-// Délégation complète à Better Auth — chaque requête /api/auth/... est routée ici
-// Exemples : /api/auth/sign-in/email, /api/auth/sign-out, /api/auth/get-session
-export const { GET, POST } = toNextJsHandler(auth);
+const { GET, POST: basePOST } = toNextJsHandler(auth);
+
+export { GET };
+
+/**
+ * Better Auth parse le corps JSON même sur /sign-out (sans champs requis).
+ * Un POST avec Content-Type: application/json et corps vide provoque :
+ * SyntaxError: Unexpected end of JSON input → HTTP 500
+ * @see https://github.com/better-auth/better-auth/issues/9295
+ */
+export async function POST(req: Request) {
+  const { pathname } = new URL(req.url);
+  if (pathname.endsWith("/sign-out")) {
+    const contentType = req.headers.get("content-type") ?? "";
+    if (contentType.includes("application/json")) {
+      const text = await req.text();
+      if (!text.trim()) {
+        return basePOST(
+          new Request(req.url, { method: "POST", headers: req.headers, body: "{}" }),
+        );
+      }
+      return basePOST(
+        new Request(req.url, { method: "POST", headers: req.headers, body: text }),
+      );
+    }
+  }
+  return basePOST(req);
+}

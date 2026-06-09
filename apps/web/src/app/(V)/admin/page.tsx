@@ -8,6 +8,14 @@
 import { useEffect, useState } from "react";
 // Module : node_modules/next/link
 import Link from "next/link";
+// Auth : src/lib/auth/auth-client.ts
+import { useSession } from "@/lib/auth/auth-client";
+// Module : src/lib/permissions.shared.ts
+import {
+  type Permission,
+  isPrivilegedRole,
+  canAccessAdminRoute,
+} from "@/lib/permissions.shared";
 // Style : src/app/(V)/admin/admin.module.css
 import styles from "./admin.module.css";
 
@@ -17,9 +25,20 @@ type Stats = {
   totalEvents: number;
 };
 
+const QUICK_LINKS = [
+  { href: "/admin/utilisateurs", label: "Gérer les utilisateurs", icon: "users" },
+  { href: "/admin/ressources", label: "Gérer les ressources", icon: "resources" },
+];
+
 export default function AdminDashboard() {
+  const { data: session } = useSession();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [permsReady, setPermsReady] = useState(false);
+
+  const role = session?.user.role;
+  const isPrivileged = isPrivilegedRole(role);
 
   useEffect(() => {
     fetch("/api/admin/stats")
@@ -30,14 +49,30 @@ export default function AdminDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (!session?.user || isPrivileged) {
+      setPermsReady(true);
+      return;
+    }
+    fetch("/api/profile/access")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) setPermissions(d.data.permissions ?? []);
+      })
+      .finally(() => setPermsReady(true));
+  }, [session?.user?.id, isPrivileged]);
+
+  const visibleQuickLinks = QUICK_LINKS.filter((link) =>
+    isPrivileged || canAccessAdminRoute(role, permissions, link.href),
+  );
+
   return (
     <>
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Tableau de bord</h1>
-        <p className={styles.pageSubtitle}>Vue d'ensemble de la plateforme</p>
+        <p className={styles.pageSubtitle}>Vue d&apos;ensemble de la plateforme</p>
       </div>
 
-      {/* Cartes statistiques */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <div className={`${styles.statIcon} ${styles.statIconBlue}`}>
@@ -83,28 +118,48 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Accès rapides */}
-      <div className={styles.tableCard}>
-        <div className={styles.tableHeader}>
-          <h2 className={styles.tableTitle}>Accès rapides</h2>
+      {permsReady && visibleQuickLinks.length > 0 && (
+        <div className={styles.tableCard}>
+          <div className={styles.tableHeader}>
+            <h2 className={styles.tableTitle}>Accès rapides</h2>
+          </div>
+          <div style={{ padding: "1.25rem 1.5rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            {visibleQuickLinks.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                  padding: "0.875rem 1rem",
+                  borderRadius: "10px",
+                  border: "1px solid #e5e7eb",
+                  textDecoration: "none",
+                  color: "#374151",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  {href.includes("utilisateurs") ? (
+                    <>
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                    </>
+                  ) : (
+                    <>
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </>
+                  )}
+                </svg>
+                {label}
+              </Link>
+            ))}
+          </div>
         </div>
-        <div style={{ padding: "1.25rem 1.5rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          <Link href="/admin/utilisateurs" style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.875rem 1rem", borderRadius: "10px", border: "1px solid #e5e7eb", textDecoration: "none", color: "#374151", fontSize: "0.9rem", fontWeight: 500, transition: "background 0.15s" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-            </svg>
-            Gérer les utilisateurs
-          </Link>
-          <Link href="/admin/ressources" style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.875rem 1rem", borderRadius: "10px", border: "1px solid #e5e7eb", textDecoration: "none", color: "#374151", fontSize: "0.9rem", fontWeight: 500 }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            </svg>
-            Gérer les ressources
-          </Link>
-        </div>
-      </div>
+      )}
     </>
   );
 }

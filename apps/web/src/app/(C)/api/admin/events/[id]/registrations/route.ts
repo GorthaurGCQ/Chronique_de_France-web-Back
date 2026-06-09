@@ -1,12 +1,8 @@
 // GET    /api/admin/events/[id]/registrations — Inscriptions d'un événement (admin | founder)
 // DELETE /api/admin/events/[id]/registrations — Supprimer une inscription { registrationId } (admin | founder)
 
-// Auth : src/lib/auth/auth.ts
-import { auth } from "@/lib/auth/auth";
-// Module : node_modules/next/headers
-import { headers } from "next/headers";
 // Service : src/lib/services_M/admin/auth.ts
-import { isAdminRole } from "@/lib/services_M/admin/auth";
+import { getFullAdminSessionOr403 } from "@/lib/services_M/admin/auth";
 // Service : src/lib/services_M/admin/events.service.ts
 import {
   listEventRegistrations,
@@ -16,11 +12,8 @@ import {
 /** Handler GET — liste les inscriptions d'un événement donné */
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getFullAdminSessionOr403();
+    if (!authResult.ok) return authResult.response;
 
     const { id } = await params;
 
@@ -36,11 +29,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 /** Handler DELETE — supprime une inscription à un événement */
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getFullAdminSessionOr403();
+    if (!authResult.ok) return authResult.response;
 
     await params;
     const { registrationId } = await req.json();

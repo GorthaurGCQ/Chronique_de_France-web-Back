@@ -6,6 +6,17 @@
 
 // Module : node_modules/react
 import { useEffect, useRef, useState, useCallback } from "react";
+// Auth : src/lib/auth/auth-client.ts
+import { useSession } from "@/lib/auth/auth-client";
+// Module : src/lib/permissions.shared.ts
+import {
+  type Permission,
+  isPrivilegedRole,
+  canCreateResource,
+  canEditResource,
+  canDeleteResource,
+  canImportMedia,
+} from "@/lib/permissions.shared";
 // Style : src/app/(V)/admin/admin.module.css
 import styles from "../admin.module.css";
 // Composant : src/components_V/RichTextEditor.tsx
@@ -127,6 +138,8 @@ const TIMELINE_LABELS: Record<string, string> = {
 };
 
 export default function AdminRessources() {
+  const { data: session } = useSession();
+  const [permissions, setPermissions] = useState<Permission[]>([]);
   const [resources, setResources]     = useState<Resource[]>([]);
   const [loading, setLoading]         = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -155,8 +168,26 @@ export default function AdminRessources() {
 
   useEffect(() => { fetchResources(); }, []); // appel une fois au chargement
 
+  useEffect(() => {
+    if (!session?.user) return;
+    if (isPrivilegedRole(session.user.role)) return;
+    fetch("/api/profile/access")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) setPermissions(d.data.permissions ?? []);
+      });
+  }, [session?.user?.id, session?.user?.role]);
+
+  const role = session?.user?.role;
+  const allowCreate = canCreateResource(role, permissions);
+  const allowEdit = canEditResource(role, permissions);
+  const allowDelete = canDeleteResource(role, permissions);
+  const allowImport = canImportMedia(role, permissions);
+  const showForm = allowCreate || (editingId !== null && allowEdit);
+
   // Passer en mode édition
   function startEdit(r: Resource) {
+    if (!allowEdit) return;
     setEditingId(r.id);
     setForm({
       titre:       r.titre,
@@ -274,6 +305,7 @@ export default function AdminRessources() {
       </div>
 
       {/* ── Formulaire création / édition ── */}
+      {showForm && (
       <div className={styles.formCard} ref={formRef}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
           <h2 className={styles.formTitle} style={{ margin: 0 }}>
@@ -382,6 +414,7 @@ export default function AdminRessources() {
               />
             </div>
             {/* ── Miniature ── */}
+            {allowImport && (
             <div className={`${styles.formField} ${styles.formFieldFull}`}>
               <label className={styles.formLabel}>
                 Miniature de la carte{" "}
@@ -450,8 +483,10 @@ export default function AdminRessources() {
                 </div>
               )}
             </div>
+            )}
 
             {/* ── Bannière ── */}
+            {allowImport && (
             <div className={`${styles.formField} ${styles.formFieldFull}`}>
               <label className={styles.formLabel}>
                 Bannière{" "}
@@ -526,6 +561,7 @@ export default function AdminRessources() {
                 </div>
               )}
             </div>
+            )}
           </div>
 
           {message && (
@@ -548,6 +584,7 @@ export default function AdminRessources() {
           </div>
         </form>
       </div>
+      )}
 
       {/* ── Liste des ressources ── */}
       <div className={styles.tableCard}>
@@ -594,6 +631,7 @@ export default function AdminRessources() {
                     <td style={{ color: "#6b7280" }}>{r.authorName ?? "—"}</td>
                     <td style={{ color: "#6b7280" }}>{formatDate(r.publishedAt)}</td>
                     <td style={{ display: "flex", gap: "0.5rem" }}>
+                      {allowEdit && (
                       <button
                         className={styles.btnAction}
                         onClick={() => startEdit(r)}
@@ -601,6 +639,8 @@ export default function AdminRessources() {
                       >
                         {editingId === r.id ? "En cours…" : "Modifier"}
                       </button>
+                      )}
+                      {allowDelete && (
                       <button
                         className={`${styles.btnAction} ${styles.btnActionDanger}`}
                         disabled={deleteLoading === r.id}
@@ -608,6 +648,10 @@ export default function AdminRessources() {
                       >
                         {deleteLoading === r.id ? "…" : "Supprimer"}
                       </button>
+                      )}
+                      {!allowEdit && !allowDelete && (
+                        <span style={{ color: "#9ca3af", fontSize: "0.8rem" }}>Lecture seule</span>
+                      )}
                     </td>
                   </tr>
                 ))}

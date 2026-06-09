@@ -1,14 +1,12 @@
-// GET    /api/admin/resources — Liste complète des ressources (admin | founder)
-// POST   /api/admin/resources — Création ressource, body JSON (admin | founder)
-// PATCH  /api/admin/resources — Modification ressource { resourceId, … } (admin | founder)
-// DELETE /api/admin/resources — Suppression ressource { resourceId } (admin | founder)
+// GET    /api/admin/resources — Liste complète des ressources
+// POST   /api/admin/resources — Création ressource, body JSON
+// PATCH  /api/admin/resources — Modification ressource { resourceId, … }
+// DELETE /api/admin/resources — Suppression ressource { resourceId }
 
-// Auth : src/lib/auth/auth.ts
-import { auth } from "@/lib/auth/auth";
-// Module : node_modules/next/headers
-import { headers } from "next/headers";
+// Module : src/lib/permissions.shared.ts
+import { RESSOURCES_SECTION_PERMISSIONS } from "@/lib/permissions.shared";
 // Service : src/lib/services_M/admin/auth.ts
-import { isAdminRole } from "@/lib/services_M/admin/auth";
+import { getAdminSessionOr403 } from "@/lib/services_M/admin/auth";
 // Service : src/lib/services_M/admin/resources.service.ts
 import {
   listAdminResources,
@@ -20,11 +18,8 @@ import {
 /** Handler GET — retourne toutes les ressources pour le panel admin */
 export async function GET() {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getAdminSessionOr403(RESSOURCES_SECTION_PERMISSIONS);
+    if (!authResult.ok) return authResult.response;
 
     const list = await listAdminResources();
     return Response.json({ success: true, data: list });
@@ -40,21 +35,20 @@ export async function GET() {
 /** Handler POST — crée une ressource depuis le panel admin (avec audit) */
 export async function POST(req: Request) {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getAdminSessionOr403([
+      "GERER_RESSOURCES_ADMIN",
+      "CREER_RESSOURCES",
+    ]);
+    if (!authResult.ok) return authResult.response;
+    const session = authResult.session;
 
     const body = await req.json();
     const { titre, description, contenu, type, region, timeline, domaine, mediaUrl, bannerUrl, thumbnailUrl } = body;
 
-    // Validation manuelle des champs obligatoires
     if (!titre || !description || !contenu || !type || !region || !timeline || !domaine) {
       return Response.json({ success: false, message: "Tous les champs sont requis." }, { status: 400 });
     }
 
-    // Insertion en BDD + journalisation audit
     const resource = await createAdminResource(
       { titre, description, contenu, type, region, timeline, domaine, mediaUrl, bannerUrl, thumbnailUrl },
       session.user.id,
@@ -74,11 +68,12 @@ export async function POST(req: Request) {
 /** Handler PATCH — modifie une ressource depuis le panel admin (avec audit) */
 export async function PATCH(req: Request) {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getAdminSessionOr403([
+      "GERER_RESSOURCES_ADMIN",
+      "MODIFIER_RESSOURCES",
+    ]);
+    if (!authResult.ok) return authResult.response;
+    const session = authResult.session;
 
     const body = await req.json();
     const { resourceId, titre, description, contenu, type, region, timeline, domaine, mediaUrl, bannerUrl, thumbnailUrl } = body;
@@ -90,7 +85,6 @@ export async function PATCH(req: Request) {
       return Response.json({ success: false, message: "Tous les champs sont requis." }, { status: 400 });
     }
 
-    // Mise à jour en BDD + journalisation audit
     const updated = await updateAdminResource(
       resourceId,
       { titre, description, contenu, type, region, timeline, domaine, mediaUrl, bannerUrl, thumbnailUrl },
@@ -110,18 +104,18 @@ export async function PATCH(req: Request) {
 /** Handler DELETE — supprime une ressource depuis le panel admin (avec audit) */
 export async function DELETE(req: Request) {
   try {
-    // Vérification session + rôle admin | founder
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || !isAdminRole(session.user.role)) {
-      return Response.json({ success: false, message: "Accès refusé." }, { status: 403 });
-    }
+    const authResult = await getAdminSessionOr403([
+      "GERER_RESSOURCES_ADMIN",
+      "SUPPRIMER_RESSOURCES",
+    ]);
+    if (!authResult.ok) return authResult.response;
+    const session = authResult.session;
 
     const { resourceId } = await req.json();
     if (!resourceId) {
       return Response.json({ success: false, message: "ID manquant." }, { status: 400 });
     }
 
-    // Suppression en BDD + journalisation audit
     await deleteAdminResource(resourceId, {
       actorId: session.user.id,
       actorName: session.user.name,

@@ -12,6 +12,7 @@ import {
   text,         // chaîne longue (contenu, description…)
   timestamp,    // date/heure
   boolean,      // vrai/faux
+  integer,      // entier (capacité max événement…)
   index,        // index non unique (perf recherche)
   uniqueIndex,  // contrainte d'unicité
 } from "drizzle-orm/pg-core";
@@ -68,6 +69,13 @@ export type Region = (typeof regionEnum.enumValues)[number];
 export type Timeline = (typeof timelineEnum.enumValues)[number];
 export type Domaine = (typeof domaineEnum.enumValues)[number];
 
+export const registrationStatusEnum = pgEnum("registration_status", [
+  "CONFIRME",
+  "LISTE_ATTENTE",
+]);
+
+export type RegistrationStatus = (typeof registrationStatusEnum.enumValues)[number];
+
 // ---------------------------------------------------------------------------
 // Tables Better Auth — utilisateurs, sessions, comptes (login email/mdp)
 // Liées à /api/auth/* et auth.api.getSession() dans les route.ts
@@ -84,7 +92,7 @@ export const authUser = pgTable("auth_user", {
   banReason: varchar("ban_reason", { length: 512 }),
   banExpires: timestamp("ban_expires"),
   permissions:       text("permissions"),                       // Réservé Better Auth admin plugin (ne pas modifier)
-  customPermissions: text("custom_permissions").default("[]"), // Nos droits granulaires
+  customPermissions: text("custom_permissions").default('["ACCES_BIBLIOTHEQUE","ACCES_REGIONS","ACCES_EVENEMENTS"]'), // Droits granulaires
   userPreferences:   text("user_preferences").default('{"emailNotifications":true,"defaultRegion":"NATIONAL"}'),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -206,6 +214,7 @@ export const events = pgTable("events", {
   region: regionEnum().notNull().default("NATIONAL"),
   timeline: timelineEnum().notNull().default("CONTEMPORAIN"),
   domaine: domaineEnum().notNull().default("EVENEMENTS_MARQUANTS"),
+  capaciteMax: integer("capacite_max"), // null = places illimitées
   organisateurId: varchar("organisateur_id", { length: 36 })
     .notNull()
     .references(() => authUser.id, { onDelete: "cascade" }),
@@ -271,6 +280,7 @@ export const eventRegistrations = pgTable(
     nom:    varchar("nom",    { length: 100 }).notNull(),
     prenom: varchar("prenom", { length: 100 }).notNull(),
     email:  varchar("email",  { length: 255 }).notNull(),
+    statut: registrationStatusEnum().notNull().default("CONFIRME"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [

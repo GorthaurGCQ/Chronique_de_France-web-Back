@@ -17,6 +17,7 @@ type Registration = {
   nom: string;
   prenom: string;
   email: string;
+  statut: "CONFIRME" | "LISTE_ATTENTE";
   createdAt: string;
 };
 
@@ -31,6 +32,7 @@ type Event = {
   region: string | null;
   timeline: string | null;
   domaine: string | null;
+  capaciteMax: number | null;
   publishedAt: string;
   authorName: string | null;
 };
@@ -42,6 +44,7 @@ const EMPTY_FORM = {
   lieu:         "",
   date:         "",
   thumbnailUrl: "",
+  capaciteMax:  "",
   region:   "NATIONAL",
   timeline: "CONTEMPORAIN",
   domaine:  "EVENEMENTS_MARQUANTS",
@@ -145,6 +148,7 @@ export default function AdminEvenements() {
       lieu:         ev.lieu,
       date:         toDatetimeLocal(ev.date),
       thumbnailUrl: ev.thumbnailUrl ?? "",
+      capaciteMax:  ev.capaciteMax != null ? String(ev.capaciteMax) : "",
       region:   ev.region   ?? "NATIONAL",
       timeline: ev.timeline ?? "CONTEMPORAIN",
       domaine:  ev.domaine  ?? "EVENEMENTS_MARQUANTS",
@@ -303,6 +307,19 @@ export default function AdminEvenements() {
                 required
                 value={form.date}
                 onChange={(e) => setForm({ ...form, date: e.target.value })}
+              />
+            </div>
+
+            {/* Capacité max */}
+            <div className={styles.formField}>
+              <label className={styles.formLabel}>Capacité max (places)</label>
+              <input
+                type="number"
+                min={1}
+                className={styles.formInput}
+                placeholder="Illimité si vide"
+                value={form.capaciteMax}
+                onChange={(e) => setForm({ ...form, capaciteMax: e.target.value })}
               />
             </div>
 
@@ -477,6 +494,7 @@ export default function AdminEvenements() {
                   <th>Titre</th>
                   <th>Lieu</th>
                   <th>Date</th>
+                  <th>Capacité</th>
                   <th>Région</th>
                   <th>Période</th>
                   <th>Domaine</th>
@@ -490,6 +508,9 @@ export default function AdminEvenements() {
                     <td style={{ fontWeight: 600 }}>{ev.titre}</td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{ev.lieu}</td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{formatDate(ev.date)}</td>
+                    <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>
+                      {ev.capaciteMax != null ? `${ev.capaciteMax} places` : "Illimité"}
+                    </td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{REGION_LABELS[ev.region ?? ""] ?? "—"}</td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{TIMELINE_LABELS[ev.timeline ?? ""] ?? "—"}</td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{DOMAINE_LABELS[ev.domaine ?? ""] ?? "—"}</td>
@@ -550,6 +571,7 @@ export default function AdminEvenements() {
                 </h2>
                 <p style={{ margin: "0.25rem 0 0", fontSize: "0.82rem", color: "#6b7280" }}>
                   {registrations.length} inscription{registrations.length !== 1 ? "s" : ""}
+                  {viewingRegs.capaciteMax != null ? ` · capacité ${viewingRegs.capaciteMax}` : ""}
                 </p>
               </div>
               <button
@@ -573,6 +595,7 @@ export default function AdminEvenements() {
                       <th style={{ textAlign: "left", padding: "0.5rem 0.75rem", color: "#6b7280", fontWeight: 600, fontSize: "0.78rem", textTransform: "uppercase" }}>Prénom</th>
                       <th style={{ textAlign: "left", padding: "0.5rem 0.75rem", color: "#6b7280", fontWeight: 600, fontSize: "0.78rem", textTransform: "uppercase" }}>Nom</th>
                       <th style={{ textAlign: "left", padding: "0.5rem 0.75rem", color: "#6b7280", fontWeight: 600, fontSize: "0.78rem", textTransform: "uppercase" }}>E-mail</th>
+                      <th style={{ textAlign: "left", padding: "0.5rem 0.75rem", color: "#6b7280", fontWeight: 600, fontSize: "0.78rem", textTransform: "uppercase" }}>Statut</th>
                       <th style={{ textAlign: "left", padding: "0.5rem 0.75rem", color: "#6b7280", fontWeight: 600, fontSize: "0.78rem", textTransform: "uppercase" }}>Date</th>
                       <th />
                     </tr>
@@ -583,6 +606,16 @@ export default function AdminEvenements() {
                         <td style={{ padding: "0.6rem 0.75rem", fontWeight: 600, color: "#1a1a2e" }}>{reg.prenom}</td>
                         <td style={{ padding: "0.6rem 0.75rem", color: "#374151" }}>{reg.nom}</td>
                         <td style={{ padding: "0.6rem 0.75rem", color: "#6b7280" }}>{reg.email}</td>
+                        <td style={{ padding: "0.6rem 0.75rem", fontSize: "0.78rem" }}>
+                          <span style={{
+                            padding: "2px 8px",
+                            borderRadius: "999px",
+                            background: reg.statut === "CONFIRME" ? "#dcfce7" : "#fef3c7",
+                            color: reg.statut === "CONFIRME" ? "#166534" : "#92400e",
+                          }}>
+                            {reg.statut === "CONFIRME" ? "Confirmé" : "Liste d'attente"}
+                          </span>
+                        </td>
                         <td style={{ padding: "0.6rem 0.75rem", color: "#9ca3af", fontSize: "0.78rem" }}>
                           {new Date(reg.createdAt).toLocaleDateString("fr-FR")}
                         </td>

@@ -18,6 +18,8 @@ import {
 } from "@/models_M/schema";
 // Service : src/lib/services_M/audit.ts
 import { logAudit } from "@/lib/services_M/audit";
+// Service : src/lib/services_M/events.service.ts
+import { promoteNextFromWaitlist } from "@/lib/services_M/events.service";
 
 export async function listAdminEvents() {
   // SELECT — events + authUser : liste tous les événements pour le panel admin, triés par date décroissante
@@ -33,6 +35,7 @@ export async function listAdminEvents() {
       region: events.region,
       timeline: events.timeline,
       domaine: events.domaine,
+      capaciteMax: events.capaciteMax,
       publishedAt: events.createdAt,
       authorName: authUser.name,
     })
@@ -51,6 +54,7 @@ export type AdminEventInput = {
   region: string;
   timeline: string;
   domaine: string;
+  capaciteMax?: number | null;
 };
 
 export async function createAdminEvent(
@@ -71,6 +75,7 @@ export async function createAdminEvent(
       region: data.region as Region,
       timeline: data.timeline as Timeline,
       domaine: data.domaine as Domaine,
+      capaciteMax: data.capaciteMax ?? null,
       organisateurId,
     })
     .returning({ id: events.id, titre: events.titre });
@@ -106,6 +111,7 @@ export async function updateAdminEvent(
       region: data.region as Region,
       timeline: data.timeline as Timeline,
       domaine: data.domaine as Domaine,
+      capaciteMax: data.capaciteMax ?? null,
       updatedAt: new Date(),
     })
     .where(eq(events.id, eventId))
@@ -149,6 +155,7 @@ export async function listEventRegistrations(eventId: string) {
       nom: eventRegistrations.nom,
       prenom: eventRegistrations.prenom,
       email: eventRegistrations.email,
+      statut: eventRegistrations.statut,
       createdAt: eventRegistrations.createdAt,
     })
     .from(eventRegistrations)
@@ -157,8 +164,23 @@ export async function listEventRegistrations(eventId: string) {
 }
 
 export async function deleteEventRegistration(registrationId: string) {
-  // DELETE — eventRegistrations : supprime une inscription par son ID
+  const [reg] = await db
+    .select({
+      id: eventRegistrations.id,
+      eventId: eventRegistrations.eventId,
+      statut: eventRegistrations.statut,
+    })
+    .from(eventRegistrations)
+    .where(eq(eventRegistrations.id, registrationId))
+    .limit(1);
+
+  if (!reg) return;
+
   await db
     .delete(eventRegistrations)
     .where(eq(eventRegistrations.id, registrationId));
+
+  if (reg.statut === "CONFIRME") {
+    await promoteNextFromWaitlist(reg.eventId);
+  }
 }
