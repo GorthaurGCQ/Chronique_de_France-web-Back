@@ -15,8 +15,8 @@ import MediaPlayer from "@/components_V/bibliotheque/MediaPlayer";
 import ViewTracker from "@/components_V/bibliotheque/ViewTracker";
 // Service : src/lib/services_M/resources.service.ts
 import { getResourceForPage } from "@/lib/services_M/resources.service";
-// Service : src/lib/services_M/permissions.service.ts
-import { requirePermission } from "@/lib/services_M/permissions.service";
+// Composant : src/components_V/PageAccessGate.tsx
+import PageAccessGate from "@/components_V/PageAccessGate";
 // Style : src/app/(V)/bibliotheque/[id]/ressource.module.css
 import styles from "./ressource.module.css";
 
@@ -106,8 +106,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function RessourcePage({ params }: Props) {
-  await requirePermission("ACCES_BIBLIOTHEQUE");
-
   const { id } = await params;
   const resource = await getResource(id);
   if (!resource) notFound();
@@ -124,6 +122,7 @@ export default async function RessourcePage({ params }: Props) {
     : resource.contenu.split(/\n{1,}/).map((p) => p.trim()).filter(Boolean);
 
   return (
+    <PageAccessGate permission="ACCES_BIBLIOTHEQUE" sectionTitle="Bibliothèque">
     <main className={styles.page}>
       <ViewTracker resourceId={resource.id} />
 
@@ -214,5 +213,6 @@ export default async function RessourcePage({ params }: Props) {
       </div>
 
     </main>
+    </PageAccessGate>
   );
 }

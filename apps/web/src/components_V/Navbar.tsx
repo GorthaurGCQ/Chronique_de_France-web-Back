@@ -15,18 +15,16 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 // Auth : src/lib/auth/auth-client.ts
 import { useSession, signOut } from "@/lib/auth/auth-client";
-// Module : src/lib/permissions.shared.ts
-import type { Permission } from "@/lib/permissions.shared";
-import { isPrivilegedRole } from "@/lib/permissions.shared";
 // Composant : src/components_V/NavbarSearch.tsx
 import NavbarSearch from "./NavbarSearch";
 // Style : src/components_V/Navbar.module.css
 import styles from "./Navbar.module.css";
 
-const navLinks: { href: string; label: string; permission?: Permission }[] = [
+const navLinks = [
   { href: "/", label: "Accueil" },
-  { href: "/bibliotheque", label: "Bibliothèque", permission: "ACCES_BIBLIOTHEQUE" },
-  { href: "/evenement", label: "Événements", permission: "ACCES_EVENEMENTS" },
+  { href: "/bibliotheque", label: "Bibliothèque" },
+  { href: "/evenement", label: "Événements" },
+  { href: "/dashboard", label: "Espace membre" },
   { href: "/Test", label: "page Test" },
   { href: "/a-propos", label: "À propos" },
 ];
@@ -37,34 +35,7 @@ export default function Navbar() {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [visible, setVisible] = useState(true);
-  const [permissions, setPermissions] = useState<Permission[] | null>(null);
   const lastScrollY = useRef(0);
-
-  useEffect(() => {
-    if (!session?.user || isPrivilegedRole(session.user.role)) return;
-
-    let cancelled = false;
-    fetch("/api/profile/access")
-      .then((r) => r.json())
-      .then((d) => {
-        if (!cancelled && d.success) setPermissions(d.data.permissions ?? []);
-      })
-      .catch(() => {
-        if (!cancelled) setPermissions([]);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [session?.user?.id, session?.user?.role]);
-
-  function canShowLink(permission?: Permission): boolean {
-    if (!permission) return true;
-    if (!session?.user) return true;
-    if (isPrivilegedRole(session.user.role)) return true;
-    if (permissions === null) return false;
-    return permissions.includes(permission);
-  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -111,7 +82,7 @@ export default function Navbar() {
 
         {/* Liens centre (desktop) */}
         <ul className={`${styles.navLinks} ${isOpen ? styles.navLinksOpen : ""}`}>
-          {navLinks.filter(({ permission }) => canShowLink(permission)).map(({ href, label }) => (
+          {navLinks.map(({ href, label }) => (
             <li key={href}>
               <Link
                 href={href}

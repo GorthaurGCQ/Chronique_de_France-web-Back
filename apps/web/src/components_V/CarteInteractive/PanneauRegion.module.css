@@ -173,6 +173,17 @@
   filter: brightness(0.88);
 }
 
+.accessHint {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #5a6478;
+  background: rgba(26, 39, 68, 0.06);
+  border-radius: 8px;
+  text-align: center;
+}
+
 /* ─── Mobile — bottom sheet ─────────────────────── */
 @media (max-width: 768px) {
   .panel {

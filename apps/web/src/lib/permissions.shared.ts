@@ -151,3 +151,18 @@ export const NAV_LINK_PERMISSIONS: Partial<Record<string, Permission>> = {
   "/bibliotheque": "ACCES_BIBLIOTHEQUE",
   "/evenement": "ACCES_EVENEMENTS",
 };
+
+/**
+ * Accès à une page membre (Bibliothèque, Événements, Régions…).
+ * Visiteur non connecté → refus ; admin/founder → toujours autorisé.
+ */
+export function canAccessPage(
+  isAuthenticated: boolean,
+  role: string | null | undefined,
+  permissions: Permission[],
+  permission: Permission,
+): boolean {
+  if (!isAuthenticated) return false;
+  if (isPrivilegedRole(role)) return true;
+  return permissions.includes(permission);
+}

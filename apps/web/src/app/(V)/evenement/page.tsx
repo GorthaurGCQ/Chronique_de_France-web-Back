@@ -7,8 +7,8 @@
 import type { Metadata } from "next";
 // Service : src/lib/services_M/events.service.ts
 import { listUpcomingAndPastEvents } from "@/lib/services_M/events.service";
-// Service : src/lib/services_M/permissions.service.ts
-import { requirePermission } from "@/lib/services_M/permissions.service";
+// Composant : src/components_V/PageAccessGate.tsx
+import PageAccessGate from "@/components_V/PageAccessGate";
 // Style : src/app/(V)/evenement/evenement.module.css
 import styles from "./evenement.module.css";
 // Composant : src/components_V/evenement/EventsClient.tsx
@@ -33,8 +33,6 @@ const REGION_LABELS: Record<string, string> = {
 };
 
 export default async function EvenementPage() {
-  await requirePermission("ACCES_EVENEMENTS");
-
   const { upcoming, past } = await listUpcomingAndPastEvents();
 
   const upcomingSerialized = upcoming.map((e) => ({
@@ -47,6 +45,7 @@ export default async function EvenementPage() {
   }));
 
   return (
+    <PageAccessGate permission="ACCES_EVENEMENTS" sectionTitle="Événements">
     <main className={styles.page}>
       <section className={styles.hero}>
         <div className={styles.heroInner}>
@@ -102,5 +101,6 @@ export default async function EvenementPage() {
         )}
       </div>
     </main>
+    </PageAccessGate>
   );
 }

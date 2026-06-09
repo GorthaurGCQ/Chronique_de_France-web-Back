@@ -6,9 +6,9 @@
 "use client";
 
 // Module : node_modules/react
-import { useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 // Module : node_modules/next/navigation
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 // Module : node_modules/next/link
 import Link from "next/link";
 // Module : node_modules/next/image
@@ -20,9 +20,12 @@ import styles from "./connexion.module.css";
 
 type Tab = "connexion" | "inscription";
 
-export default function ConnexionPage() {
+function ConnexionContent() {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>("connexion");
+  const searchParams = useSearchParams();
+  const initialTab: Tab =
+    searchParams.get("mode") === "register" ? "inscription" : "connexion";
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [showPassword, setShowPassword] = useState(false);
 
   // ── États formulaire connexion ──────────────────────────
@@ -39,6 +42,12 @@ export default function ConnexionPage() {
   const [registerConfirm, setRegisterConfirm] = useState("");
   const [registerError, setRegisterError] = useState("");
   const [registerLoading, setRegisterLoading] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("mode") === "register") {
+      setTab("inscription");
+    }
+  }, [searchParams]);
 
   // ── Faiblesse du mot de passe (connexion) ───────────────
   const loginPwdWeak = loginPassword.length > 0 && !(
@@ -436,5 +445,13 @@ export default function ConnexionPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function ConnexionPage() {
+  return (
+    <Suspense fallback={null}>
+      <ConnexionContent />
+    </Suspense>
   );
 }

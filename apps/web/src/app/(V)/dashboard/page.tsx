@@ -15,6 +15,8 @@ import Link from "next/link";
 import Image from "next/image";
 // Auth : src/lib/auth/auth-client.ts
 import { useSession, signOut, authClient } from "@/lib/auth/auth-client";
+// Composant : src/components_V/LoginRequiredScreen.tsx
+import LoginRequiredScreen from "@/components_V/LoginRequiredScreen";
 // Module : src/lib/permissions.shared.ts
 import { hasAdminPanelAccess } from "@/lib/permissions.shared";
 // Style : src/app/(V)/dashboard/dashboard.module.css
@@ -243,11 +245,7 @@ export default function DashboardPage() {
   const [noteValues, setNoteValues]     = useState<Record<string, string>>({});
   const [noteSaving, setNoteSaving]     = useState<string | null>(null);
 
-  // ── Redirections ─────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!isPending && !session) router.replace("/connexion");
-  }, [isPending, session, router]);
-
+  // ── Accès panneau admin ───────────────────────────────────────────────────
   useEffect(() => {
     if (!session?.user) return;
     const role = (session.user as { role?: string }).role;
@@ -400,8 +398,12 @@ export default function DashboardPage() {
   }
 
   // ── Chargement ───────────────────────────────────────────────────────────
-  if (isPending || !session) {
+  if (isPending) {
     return <div className={styles.loading}><span className={styles.loadingDot} /></div>;
+  }
+
+  if (!session) {
+    return <LoginRequiredScreen sectionTitle="Espace membre" />;
   }
 
   const user = session.user;

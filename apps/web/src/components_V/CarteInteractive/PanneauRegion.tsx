@@ -6,6 +6,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 // Module : node_modules/next/link
 import Link from "next/link";
+// Auth : src/lib/auth/auth-client.ts
+import { useSession } from "@/lib/auth/auth-client";
+// Module : src/lib/permissions.shared.ts
+import type { Permission } from "@/lib/permissions.shared";
+import { canAccessPage, isPrivilegedRole } from "@/lib/permissions.shared";
 // Modèle : src/models_M/data/regions.ts
 import type { Region } from "@/models_M/data/regions";
 // Style : src/components_V/CarteInteractive/PanneauRegion.module.css
@@ -56,7 +61,38 @@ function RegionEmblem({ region }: { region: Region }) {
 }
 
 export default function PanneauRegion({ region, onClose }: Props) {
+  const { data: session } = useSession();
+  const [canExploreRegions, setCanExploreRegions] = useState<boolean | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (!session?.user) {
+      setCanExploreRegions(false);
+      return;
+    }
+    if (isPrivilegedRole(session.user.role)) {
+      setCanExploreRegions(true);
+      return;
+    }
+
+    let cancelled = false;
+    fetch("/api/profile/access")
+      .then((r) => r.json())
+      .then((d) => {
+        if (cancelled) return;
+        const perms: Permission[] = d.success ? (d.data.permissions ?? []) : [];
+        setCanExploreRegions(
+          canAccessPage(true, session.user.role, perms, "ACCES_REGIONS"),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setCanExploreRegions(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user?.id, session?.user?.role]);
 
   // Animation d'entrée/sortie — setState dans setTimeout (évite le warning ESLint)
   useEffect(() => {
@@ -149,14 +185,29 @@ export default function PanneauRegion({ region, onClose }: Props) {
               <p className={styles.description}>{region.description}</p>
 
               {/* CTA */}
-              <Link
-                href={`/regions/${region.id}`}
-                className={styles.btnExplore}
-                style={{ background: "var(--color-gold, #b8933a)" }}
-                onClick={onClose}
-              >
-                Explorer cette région →
-              </Link>
+              {!session?.user ? (
+                <Link
+                  href="/connexion"
+                  className={styles.btnExplore}
+                  style={{ background: "var(--color-gold, #b8933a)" }}
+                  onClick={onClose}
+                >
+                  Se connecter pour explorer →
+                </Link>
+              ) : canExploreRegions === false ? (
+                <p className={styles.accessHint}>
+                  Accès aux régions non autorisé — contactez un administrateur.
+                </p>
+              ) : (
+                <Link
+                  href={`/regions/${region.id}`}
+                  className={styles.btnExplore}
+                  style={{ background: "var(--color-gold, #b8933a)" }}
+                  onClick={onClose}
+                >
+                  Explorer cette région →
+                </Link>
+              )}
             </div>
           </>
         )}

@@ -21,6 +21,7 @@ import {
   type Permission,
   parsePermissions,
   isPrivilegedRole,
+  canAccessPage,
 } from "@/lib/permissions.shared";
 
 export type { Permission } from "@/lib/permissions.shared";
@@ -37,8 +38,14 @@ export {
   canDeleteResource,
   canImportMedia,
   canAccessAdminRoute,
+  canAccessPage,
   DEFAULT_MEMBER_PAGE_PERMISSIONS,
 } from "@/lib/permissions.shared";
+
+export type PageAccessResult =
+  | { kind: "guest" }
+  | { kind: "denied" }
+  | { kind: "ok" };
 
 export async function getUserAccess(userId: string) {
   const [user] = await db
@@ -65,7 +72,7 @@ type SessionLike = { user: { id: string; role?: string | null } } | null;
 
 /**
  * Vérifie si l'utilisateur possède un droit.
- * - Visiteur non connecté : accès public autorisé
+ * - Visiteur non connecté : refus
  * - admin / founder : tous les droits
  * - membre : droits stockés en BDD (customPermissions)
  */
@@ -73,18 +80,37 @@ export async function userHasPermission(
   session: SessionLike,
   permission: Permission,
 ): Promise<boolean> {
-  if (!session) return true;
+  if (!session) return false;
   if (isPrivilegedRole(session.user.role)) return true;
 
   const { permissions } = await getUserAccess(session.user.id);
-  return permissions.includes(permission);
+  return canAccessPage(true, session.user.role, permissions, permission);
 }
 
-/** Redirige vers le profil si le membre connecté n'a pas le droit requis */
-export async function requirePermission(permission: Permission): Promise<void> {
+/** Contrôle d'accès RSC — guest (login requis) | denied (droit manquant) | ok */
+export async function checkPageAccess(
+  permission: Permission,
+): Promise<PageAccessResult> {
   const session = await auth.api.getSession({ headers: await headers() });
-  const allowed = await userHasPermission(session, permission);
-  if (!allowed) {
-    redirect("/profil?erreur=acces");
+  if (!session) return { kind: "guest" };
+  if (isPrivilegedRole(session.user.role)) return { kind: "ok" };
+
+  const { permissions } = await getUserAccess(session.user.id);
+  if (!canAccessPage(true, session.user.role, permissions, permission)) {
+    return { kind: "denied" };
   }
+  return { kind: "ok" };
+}
+
+/** Espace membre — connexion obligatoire, pas de droit granulaire */
+export async function checkMemberAccess(): Promise<"guest" | "ok"> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  return session ? "ok" : "guest";
+}
+
+/** @deprecated Préférer checkPageAccess() + LoginRequiredScreen / AccessDeniedScreen */
+export async function requirePermission(permission: Permission): Promise<void> {
+  const access = await checkPageAccess(permission);
+  if (access.kind === "guest") redirect("/connexion");
+  if (access.kind === "denied") redirect("/profil?erreur=acces");
 }
