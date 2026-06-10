@@ -19,7 +19,7 @@ import {
 // Service : src/lib/services_M/audit.ts
 import { logAudit } from "@/lib/services_M/audit";
 // Service : src/lib/services_M/events.service.ts
-import { promoteNextFromWaitlist } from "@/lib/services_M/events.service";
+import { cancelEventRegistration } from "@/lib/services_M/events.service";
 
 export async function listAdminEvents() {
   // SELECT — events + authUser : liste tous les événements pour le panel admin, triés par date décroissante
@@ -164,23 +164,5 @@ export async function listEventRegistrations(eventId: string) {
 }
 
 export async function deleteEventRegistration(registrationId: string) {
-  const [reg] = await db
-    .select({
-      id: eventRegistrations.id,
-      eventId: eventRegistrations.eventId,
-      statut: eventRegistrations.statut,
-    })
-    .from(eventRegistrations)
-    .where(eq(eventRegistrations.id, registrationId))
-    .limit(1);
-
-  if (!reg) return;
-
-  await db
-    .delete(eventRegistrations)
-    .where(eq(eventRegistrations.id, registrationId));
-
-  if (reg.statut === "CONFIRME") {
-    await promoteNextFromWaitlist(reg.eventId);
-  }
+  await cancelEventRegistration(registrationId);
 }

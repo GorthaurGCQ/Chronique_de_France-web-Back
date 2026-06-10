@@ -73,6 +73,28 @@ export async function listResources(params: ListResourcesParams) {
   };
 }
 
+export async function listRecentResources(limit = 3) {
+  // SELECT — resources + authUser : dernières ressources publiées (toutes régions)
+  return db
+    .select({
+      id: resources.id,
+      titre: resources.titre,
+      description: resources.description,
+      contenu: resources.contenu,
+      type: resources.type,
+      region: resources.region,
+      timeline: resources.timeline,
+      domaine: resources.domaine,
+      thumbnailUrl: resources.thumbnailUrl,
+      publishedAt: resources.publishedAt,
+      authorName: authUser.name,
+    })
+    .from(resources)
+    .leftJoin(authUser, eq(resources.authorId, authUser.id))
+    .orderBy(desc(resources.publishedAt))
+    .limit(limit);
+}
+
 export async function listNationalResources() {
   // SELECT — resources + authUser : ressources de la région NATIONAL, triées par date de publication décroissante
   return db

@@ -25,7 +25,6 @@ const navLinks = [
   { href: "/bibliotheque", label: "Bibliothèque" },
   { href: "/evenement", label: "Événements" },
   { href: "/dashboard", label: "Espace membre" },
-  { href: "/Test", label: "page Test" },
   { href: "/a-propos", label: "À propos" },
 ];
 

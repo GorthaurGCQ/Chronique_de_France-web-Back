@@ -1,6 +1,6 @@
 // =============================================================================
-// VUE — Espace personnel (favoris, historique, profil, avatar)
-// Appels API : /api/favorites, /api/profile, /api/profile/history
+// VUE — Espace personnel (favoris, historique, profil, événements, avatar)
+// Appels API : /api/favorites, /api/profile, /api/profile/history, /api/profile/events
 // =============================================================================
 
 "use client";
@@ -148,6 +148,23 @@ type HistoryItem = {
   viewedAt: string;
 };
 
+type EventRegistration = {
+  id: string;
+  statut: "CONFIRME" | "LISTE_ATTENTE";
+  createdAt: string;
+  eventId: string;
+  titre: string;
+  description: string;
+  lieu: string | null;
+  date: string;
+  thumbnailUrl: string | null;
+  capaciteMax: number | null;
+  inscriptionsConfirmees: number;
+  listeAttenteCount: number;
+  placesRestantes: number | null;
+  complet: boolean;
+};
+
 type UserPrefs = {
   emailNotifications: boolean;
   defaultRegion: string;
@@ -198,7 +215,7 @@ export default function DashboardPage() {
   const { data: session, isPending } = useSession();
 
   // Onglet actif
-  const [activeTab, setActiveTab] = useState<"profil" | "securite" | "stats" | "favoris" | "historique" | "preferences">("profil");
+  const [activeTab, setActiveTab] = useState<"profil" | "securite" | "stats" | "favoris" | "evenements" | "historique" | "preferences">("profil");
 
   // ── Favoris ───────────────────────────────────────────────────────────────
   const [favorites, setFavorites]     = useState<Favorite[]>([]);
@@ -207,6 +224,12 @@ export default function DashboardPage() {
   // ── Historique ────────────────────────────────────────────────────────────
   const [history, setHistory]           = useState<HistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
+
+  // ── Événements ────────────────────────────────────────────────────────────
+  const [eventRegs, setEventRegs]             = useState<EventRegistration[]>([]);
+  const [eventsLoading, setEventsLoading]     = useState(true);
+  const [unregistering, setUnregistering]     = useState<string | null>(null);
+  const [eventsMsg, setEventsMsg]             = useState<string | null>(null);
 
   // ── Préférences ───────────────────────────────────────────────────────────
   const [prefs, setPrefs]         = useState<UserPrefs>(DEFAULT_PREFS);
@@ -286,6 +309,11 @@ export default function DashboardPage() {
       .then((r) => r.json())
       .then((d) => { if (d.success) setHistory(d.data); })
       .finally(() => setHistoryLoading(false));
+
+    fetch("/api/profile/events")
+      .then((r) => r.json())
+      .then((d) => { if (d.success) setEventRegs(d.data); })
+      .finally(() => setEventsLoading(false));
 
     fetch("/api/profile")
       .then((r) => r.json())
@@ -382,6 +410,41 @@ export default function DashboardPage() {
     setFavorites((p) => p.filter((f) => f.resourceId !== resourceId));
   }
 
+  async function unregisterFromEvent(reg: EventRegistration) {
+    if (!confirm(`Se désinscrire de « ${reg.titre} » ?`)) return;
+    setUnregistering(reg.id);
+    setEventsMsg(null);
+    const res = await fetch("/api/profile/events", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ registrationId: reg.id }),
+    });
+    const d = await res.json();
+    if (d.success) {
+      setEventRegs((p) => p.filter((r) => r.id !== reg.id));
+      setEventsMsg(`Désinscription confirmée pour « ${reg.titre} ».`);
+    } else {
+      setEventsMsg(d.message ?? "Erreur lors de la désinscription.");
+    }
+    setUnregistering(null);
+  }
+
+  function formatEventDate(iso: string) {
+    return new Date(iso).toLocaleDateString("fr-FR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  function formatCapacity(reg: EventRegistration) {
+    if (reg.capaciteMax == null) return null;
+    return `${reg.inscriptionsConfirmees} / ${reg.capaciteMax} place${reg.capaciteMax > 1 ? "s" : ""}`;
+  }
+
   function startEditNote(fav: Favorite) {
     setEditingNote(fav.resourceId);
     setNoteValues((p) => ({ ...p, [fav.resourceId]: fav.note ?? "" }));
@@ -436,6 +499,7 @@ export default function DashboardPage() {
     { id: "securite",    icon: "key",      label: "Sécurité" },
     { id: "stats",       icon: "chart",    label: "Statistiques" },
     { id: "favoris",     icon: "bookmark", label: `Favoris (${favorites.length})` },
+    { id: "evenements",  icon: "calendar", label: `Mes événements (${eventRegs.length})` },
     { id: "historique",  icon: "clock",    label: "Historique" },
     { id: "preferences", icon: "settings", label: "Préférences" },
   ];
@@ -795,6 +859,99 @@ export default function DashboardPage() {
                             <button className={styles.favRemove} onClick={() => removeFavorite(fav.resourceId)} aria-label="Retirer des favoris">
                               <AppIcon name="close" size={14} tone="inherit" />
                             </button>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+          )}
+
+          {/* ══════════════ ONGLET MES ÉVÉNEMENTS ══════════════ */}
+          {activeTab === "evenements" && (
+            <section className={styles.card}>
+              <CardTitle icon="calendar">Mes événements</CardTitle>
+              {eventsMsg && <p className={styles.eventsMsg}>{eventsMsg}</p>}
+              {eventsLoading ? (
+                <p className={styles.emptyMsg}>Chargement…</p>
+              ) : eventRegs.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <p className={styles.emptyMsg}>Aucune inscription pour l&apos;instant.</p>
+                  <p className={styles.emptyHint}>
+                    Inscrivez-vous aux événements depuis la page Événements avec l&apos;e-mail de votre compte.
+                  </p>
+                  <Link href="/evenement" className={styles.btnBrowse}>
+                    Voir les événements
+                    <AppIcon name="arrowRight" size={14} tone="inherit" className={styles.btnBrowseIcon} />
+                  </Link>
+                </div>
+              ) : (
+                <ul className={styles.eventList}>
+                  {eventRegs.map((reg) => {
+                    const isPast = new Date(reg.date) < new Date();
+                    const capacityLabel = formatCapacity(reg);
+                    return (
+                      <li key={reg.id} className={styles.eventItem}>
+                        <div
+                          className={styles.eventThumb}
+                          style={
+                            reg.thumbnailUrl
+                              ? {
+                                  backgroundImage: `url(${reg.thumbnailUrl})`,
+                                  backgroundSize: "cover",
+                                  backgroundPosition: "center",
+                                }
+                              : { background: "#1a2744" }
+                          }
+                        >
+                          {isPast && <span className={styles.eventPastBadge}>Passé</span>}
+                        </div>
+                        <div className={styles.eventBody}>
+                          <div className={styles.eventMeta}>
+                            <span
+                              className={`${styles.eventStatut} ${
+                                reg.statut === "CONFIRME"
+                                  ? styles.eventStatutConfirme
+                                  : styles.eventStatutAttente
+                              }`}
+                            >
+                              {reg.statut === "CONFIRME" ? "Inscription confirmée" : "Liste d'attente"}
+                            </span>
+                            {capacityLabel && (
+                              <span className={styles.eventCapacity}>{capacityLabel}</span>
+                            )}
+                          </div>
+                          <p className={styles.eventTitle}>{reg.titre}</p>
+                          <p className={styles.eventDesc}>{reg.description}</p>
+                          <div className={styles.eventDetails}>
+                            <span className={styles.eventDetail}>
+                              <AppIcon name="calendar" size={14} className={styles.eventDetailIcon} />
+                              {formatEventDate(reg.date)}
+                            </span>
+                            {reg.lieu && (
+                              <span className={styles.eventDetail}>
+                                <AppIcon name="pin" size={14} className={styles.eventDetailIcon} />
+                                {reg.lieu}
+                              </span>
+                            )}
+                          </div>
+                          <div className={styles.eventFooter}>
+                            <span className={styles.eventDate}>
+                              Inscrit le {new Date(reg.createdAt).toLocaleDateString("fr-FR")}
+                            </span>
+                            {!isPast && (
+                              <button
+                                type="button"
+                                className={styles.eventUnregister}
+                                onClick={() => unregisterFromEvent(reg)}
+                                disabled={unregistering === reg.id}
+                              >
+                                <AppIcon name="logout" size={14} tone="inherit" className={styles.eventUnregisterIcon} />
+                                {unregistering === reg.id ? "Désinscription…" : "Se désinscrire"}
+                              </button>
+                            )}
                           </div>
                         </div>
                       </li>

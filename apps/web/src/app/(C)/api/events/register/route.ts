@@ -88,7 +88,15 @@ export async function POST(req: Request) {
       { status: 201 },
     );
   } catch (err: unknown) {
-    if (String(err).includes("unique") || String(err).includes("duplicate")) {
+    const pgCode =
+      err && typeof err === "object" && "cause" in err
+        ? (err.cause as { code?: string })?.code
+        : undefined;
+    if (
+      pgCode === "23505" ||
+      String(err).includes("unique") ||
+      String(err).includes("duplicate")
+    ) {
       return Response.json(
         { success: false, message: "Cette adresse e-mail est déjà inscrite à cet événement." },
         { status: 409 },

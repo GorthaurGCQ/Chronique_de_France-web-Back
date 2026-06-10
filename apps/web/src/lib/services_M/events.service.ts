@@ -403,3 +403,100 @@ export async function promoteNextFromWaitlist(eventId: string): Promise<boolean>
 
   return true;
 }
+
+export type UserEventRegistration = {
+  id: string;
+  statut: RegistrationStatus;
+  createdAt: Date;
+  eventId: string;
+  titre: string;
+  description: string;
+  lieu: string | null;
+  date: Date;
+  thumbnailUrl: string | null;
+  capaciteMax: number | null;
+  inscriptionsConfirmees: number;
+  listeAttenteCount: number;
+  placesRestantes: number | null;
+  complet: boolean;
+};
+
+/** Inscriptions d'un utilisateur (par e-mail de compte). */
+export async function listUserEventRegistrations(
+  email: string,
+): Promise<UserEventRegistration[]> {
+  const rows = await db
+    .select({
+      id: eventRegistrations.id,
+      statut: eventRegistrations.statut,
+      createdAt: eventRegistrations.createdAt,
+      eventId: events.id,
+      titre: events.titre,
+      description: events.description,
+      lieu: events.lieu,
+      date: events.date,
+      thumbnailUrl: events.thumbnailUrl,
+      capaciteMax: events.capaciteMax,
+    })
+    .from(eventRegistrations)
+    .innerJoin(events, eq(eventRegistrations.eventId, events.id))
+    .where(eq(eventRegistrations.email, email.trim().toLowerCase()))
+    .orderBy(asc(events.date));
+
+  const counts = await getRegistrationCountsByEvent(rows.map((r) => r.eventId));
+
+  return rows.map((row) => {
+    const c = counts.get(row.eventId) ?? { confirme: 0, listeAttente: 0 };
+    return {
+      ...row,
+      ...computeCapacityInfo(row.capaciteMax, c.confirme, c.listeAttente),
+    };
+  });
+}
+
+/** Désinscription — supprime l'inscription et promeut la liste d'attente si besoin. */
+export async function cancelEventRegistration(
+  registrationId: string,
+  options?: { ownerEmail?: string },
+): Promise<{ eventId: string; capacity: EventCapacityInfo } | null> {
+  const [reg] = await db
+    .select({
+      id: eventRegistrations.id,
+      eventId: eventRegistrations.eventId,
+      email: eventRegistrations.email,
+      statut: eventRegistrations.statut,
+    })
+    .from(eventRegistrations)
+    .where(eq(eventRegistrations.id, registrationId))
+    .limit(1);
+
+  if (!reg) return null;
+
+  if (
+    options?.ownerEmail &&
+    reg.email !== options.ownerEmail.trim().toLowerCase()
+  ) {
+    throw new Error("FORBIDDEN");
+  }
+
+  await db
+    .delete(eventRegistrations)
+    .where(eq(eventRegistrations.id, registrationId));
+
+  if (reg.statut === "CONFIRME") {
+    await promoteNextFromWaitlist(reg.eventId);
+  }
+
+  const event = await getEventForRegistration(reg.eventId);
+  const confirmedCount = await countConfirmedRegistrations(reg.eventId);
+  const waitlistCount = await countWaitlistRegistrations(reg.eventId);
+
+  return {
+    eventId: reg.eventId,
+    capacity: computeCapacityInfo(
+      event?.capaciteMax ?? null,
+      confirmedCount,
+      waitlistCount,
+    ),
+  };
+}
