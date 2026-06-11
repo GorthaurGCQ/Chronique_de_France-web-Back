@@ -15,6 +15,13 @@
       "when": 1749456000000,
       "tag": "0002_event_capacity_waitlist",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1749542400000,
+      "tag": "0003_event_staff",
+      "breakpoints": true
     }
   ]
 }

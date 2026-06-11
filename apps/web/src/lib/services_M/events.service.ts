@@ -14,6 +14,10 @@ import {
   eventRegistrations,
   type RegistrationStatus,
 } from "@/models_M/schema";
+import {
+  getEventStaffByEventIds,
+  replaceEventStaff,
+} from "@/lib/services_M/event-staff.service";
 // Service : src/lib/services_M/mail.service.ts
 import { sendEventRegistrationConfirmation } from "@/lib/services_M/mail.service";
 
@@ -137,9 +141,13 @@ export async function listEvents(params: ListEventsParams) {
   ]);
 
   const data = await enrichWithCapacity(rows);
+  const staffMap = await getEventStaffByEventIds(data.map((e) => e.id));
 
   return {
-    data,
+    data: data.map((event) => ({
+      ...event,
+      staff: staffMap.get(event.id) ?? [],
+    })),
     meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
   };
 }
@@ -181,7 +189,15 @@ export async function listUpcomingAndPastEvents() {
     enrichWithCapacity(pastRows),
   ]);
 
-  return { upcoming, past };
+  const staffMap = await getEventStaffByEventIds([
+    ...upcoming.map((e) => e.id),
+    ...past.map((e) => e.id),
+  ]);
+
+  return {
+    upcoming: upcoming.map((e) => ({ ...e, staff: staffMap.get(e.id) ?? [] })),
+    past: past.map((e) => ({ ...e, staff: staffMap.get(e.id) ?? [] })),
+  };
 }
 
 export async function getEventById(id: string) {
@@ -209,7 +225,8 @@ export async function getEventById(id: string) {
 
   if (!event) return null;
   const [enriched] = await enrichWithCapacity([event]);
-  return enriched;
+  const staffMap = await getEventStaffByEventIds([event.id]);
+  return { ...enriched, staff: staffMap.get(event.id) ?? [] };
 }
 
 export async function eventExists(id: string) {
@@ -272,13 +289,16 @@ export async function createEvent(
     .values({ ...data, organisateurId })
     .returning();
 
+  await replaceEventStaff(event.id, [{ userId: organisateurId, role: "ORGANISATEUR" }]);
+
   const [organisateur] = await db
     .select({ id: authUser.id, nom: authUser.name, email: authUser.email })
     .from(authUser)
     .where(eq(authUser.id, organisateurId))
     .limit(1);
 
-  return { ...event, organisateur };
+  const staff = await getEventStaffByEventIds([event.id]);
+  return { ...event, organisateur, staff: staff.get(event.id) ?? [] };
 }
 
 export async function updateEvent(

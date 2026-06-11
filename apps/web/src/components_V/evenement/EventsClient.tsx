@@ -9,6 +9,7 @@
 import { useState } from "react";
 // Composant : src/components_V/icons/AppIcon.tsx
 import AppIcon from "@/components_V/icons/AppIcon";
+import EventStaffList from "@/components_V/EventStaffList";
 // Style : src/app/(V)/evenement/evenement.module.css
 import styles from "@/app/(V)/evenement/evenement.module.css";
 
@@ -22,6 +23,12 @@ type EventItem = {
   region: string | null;
   domaine: string | null;
   authorName: string | null;
+  staff?: {
+    userId: string;
+    role: "ANIMATEUR" | "ORGANISATEUR";
+    name: string;
+    email: string;
+  }[];
   capaciteMax?: number | null;
   inscriptionsConfirmees?: number;
   placesRestantes?: number | null;
@@ -282,6 +289,12 @@ export function UpcomingGrid({ events: list }: { events: EventItem[] }) {
                         <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
                       </svg>
                       {REGION_LABELS[ev.region] ?? ev.region}
+                    </span>
+                  )}
+                  {(ev.staff?.length ?? 0) > 0 && (
+                    <span className={styles.cardMetaItem}>
+                      <AppIcon name="user" size={13} className={styles.cardMetaIcon} />
+                      <EventStaffList staff={ev.staff} fallbackName={ev.authorName} compact />
                     </span>
                   )}
                   {ev.capaciteMax != null && (

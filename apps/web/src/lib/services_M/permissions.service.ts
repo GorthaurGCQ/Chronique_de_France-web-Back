@@ -31,6 +31,7 @@ export {
   RESSOURCES_SECTION_PERMISSIONS,
   parsePermissions,
   isPrivilegedRole,
+  isOrganisateurRole,
   hasAdminPanelAccess,
   hasResourcesSectionAccess,
   canCreateResource,
@@ -74,7 +75,7 @@ type SessionLike = { user: { id: string; role?: string | null } } | null;
  * Vérifie si l'utilisateur possède un droit.
  * - Visiteur non connecté : refus
  * - admin / founder : tous les droits
- * - membre : droits stockés en BDD (customPermissions)
+ * - membre / organisateur : droits stockés en BDD (customPermissions)
  */
 export async function userHasPermission(
   session: SessionLike,

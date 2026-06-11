@@ -151,3 +151,7 @@
   align-items: center;
   gap: 0.35rem;
 }
+
+.actorRoleBadge {
+  margin-left: 0.4rem;
+}

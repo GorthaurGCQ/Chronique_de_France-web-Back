@@ -76,8 +76,20 @@ export const registrationStatusEnum = pgEnum("registration_status", [
 
 export type RegistrationStatus = (typeof registrationStatusEnum.enumValues)[number];
 
+/** Rôle sur un événement (table event_staff) — distinct du rôle global auth_user.role */
+export const eventStaffRoleEnum = pgEnum("event_staff_role", [
+  "ANIMATEUR",
+  "ORGANISATEUR",
+]);
+
+export type EventStaffRole = (typeof eventStaffRoleEnum.enumValues)[number];
+
+/** Rôles globaux du compte (auth_user.role). organisateur = badge métier, pas admin. */
+export const USER_ROLES = ["user", "organisateur", "admin", "founder"] as const;
+export type UserRole = (typeof USER_ROLES)[number];
+
 // ---------------------------------------------------------------------------
-// Tables Better Auth — utilisateurs, sessions, comptes (login email/mdp)
+// Tables Better Auth — utilisateurs, sessions, comptes (login email/mdp
 // Liées à /api/auth/* et auth.api.getSession() dans les route.ts
 // ---------------------------------------------------------------------------
 
@@ -265,6 +277,36 @@ export const resourceViews = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// Table : event_staff — organisateurs / animateurs assignés à un événement
+// ---------------------------------------------------------------------------
+
+export const eventStaff = pgTable(
+  "event_staff",
+  {
+    id: varchar("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    eventId: varchar("event_id", { length: 36 })
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    userId: varchar("user_id", { length: 36 })
+      .notNull()
+      .references(() => authUser.id, { onDelete: "cascade" }),
+    role: eventStaffRoleEnum().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("event_staff_event_idx").on(table.eventId),
+    index("event_staff_user_idx").on(table.userId),
+    uniqueIndex("event_staff_event_user_role_idx").on(
+      table.eventId,
+      table.userId,
+      table.role,
+    ),
+  ],
+);
+
+// ---------------------------------------------------------------------------
 // Table : event_registrations
 // ---------------------------------------------------------------------------
 
@@ -295,7 +337,8 @@ export const eventRegistrations = pgTable(
 
 export const authUserRelations = relations(authUser, ({ many }) => ({
   resources: many(resources),
-  events: many(events),
+  organizedEvents: many(events, { relationName: "organizedEvents" }),
+  eventStaffAssignments: many(eventStaff),
 }));
 
 export const resourcesRelations = relations(resources, ({ one }) => ({
@@ -305,9 +348,23 @@ export const resourcesRelations = relations(resources, ({ one }) => ({
   }),
 }));
 
-export const eventsRelations = relations(events, ({ one }) => ({
+
+export const eventsRelations = relations(events, ({ one, many }) => ({
   organisateur: one(authUser, {
     fields: [events.organisateurId],
+    references: [authUser.id],
+    relationName: "organizedEvents",
+  }),
+  staff: many(eventStaff),
+}));
+
+export const eventStaffRelations = relations(eventStaff, ({ one }) => ({
+  event: one(events, {
+    fields: [eventStaff.eventId],
+    references: [events.id],
+  }),
+  user: one(authUser, {
+    fields: [eventStaff.userId],
     references: [authUser.id],
   }),
 }));
@@ -320,3 +377,5 @@ export type Resource = typeof resources.$inferSelect;
 export type NewResource = typeof resources.$inferInsert;
 export type Event = typeof events.$inferSelect;
 export type NewEvent = typeof events.$inferInsert;
+export type EventStaff = typeof eventStaff.$inferSelect;
+export type NewEventStaff = typeof eventStaff.$inferInsert;

@@ -3,11 +3,8 @@
 // Consommé par : /api/admin/events/*, page /admin/evenements
 // =============================================================================
 
-// Module : node_modules/drizzle-orm
 import { eq, desc } from "drizzle-orm";
-// Modèle : src/models_M/db.ts
 import { db } from "@/models_M/db";
-// Modèle : src/models_M/schema.ts
 import {
   events,
   authUser,
@@ -16,14 +13,17 @@ import {
   type Region,
   type Timeline,
 } from "@/models_M/schema";
-// Service : src/lib/services_M/audit.ts
 import { logAudit } from "@/lib/services_M/audit";
-// Service : src/lib/services_M/events.service.ts
 import { cancelEventRegistration } from "@/lib/services_M/events.service";
+import {
+  type EventStaffInput,
+  getEventStaffByEventIds,
+  replaceEventStaff,
+  resolvePrimaryOrganisateurId,
+} from "@/lib/services_M/event-staff.service";
 
 export async function listAdminEvents() {
-  // SELECT — events + authUser : liste tous les événements pour le panel admin, triés par date décroissante
-  return db
+  const rows = await db
     .select({
       id: events.id,
       titre: events.titre,
@@ -42,6 +42,12 @@ export async function listAdminEvents() {
     .from(events)
     .leftJoin(authUser, eq(events.organisateurId, authUser.id))
     .orderBy(desc(events.date));
+
+  const staffMap = await getEventStaffByEventIds(rows.map((r) => r.id));
+  return rows.map((row) => ({
+    ...row,
+    staff: staffMap.get(row.id) ?? [],
+  }));
 }
 
 export type AdminEventInput = {
@@ -59,10 +65,18 @@ export type AdminEventInput = {
 
 export async function createAdminEvent(
   data: AdminEventInput,
-  organisateurId: string,
+  fallbackOrganisateurId: string,
+  staff: EventStaffInput[],
   audit: { actorId: string; actorName: string; actorRole?: string },
 ) {
-  // INSERT — events : crée un événement depuis le panel admin
+  const resolvedStaff =
+    staff.length > 0
+      ? staff
+      : [{ userId: fallbackOrganisateurId, role: "ORGANISATEUR" as const }];
+
+  const organisateurId = resolvePrimaryOrganisateurId(resolvedStaff);
+  if (!organisateurId) throw new Error("STAFF_ORGANISATEUR_REQUIRED");
+
   const [event] = await db
     .insert(events)
     .values({
@@ -80,6 +94,8 @@ export async function createAdminEvent(
     })
     .returning({ id: events.id, titre: events.titre });
 
+  await replaceEventStaff(event.id, resolvedStaff);
+
   await logAudit({
     actorId: audit.actorId,
     actorName: audit.actorName,
@@ -96,24 +112,34 @@ export async function createAdminEvent(
 export async function updateAdminEvent(
   eventId: string,
   data: AdminEventInput,
+  staff: EventStaffInput[] | undefined,
   audit: { actorId: string; actorName: string; actorRole?: string },
 ) {
-  // UPDATE — events : met à jour un événement admin, WHERE id = eventId
+  const patch: Partial<typeof events.$inferInsert> = {
+    titre: data.titre,
+    description: data.description,
+    contenu: data.contenu || "",
+    lieu: data.lieu,
+    date: new Date(data.date),
+    thumbnailUrl: data.thumbnailUrl || null,
+    region: data.region as Region,
+    timeline: data.timeline as Timeline,
+    domaine: data.domaine as Domaine,
+    capaciteMax: data.capaciteMax ?? null,
+    updatedAt: new Date(),
+  };
+
+  if (staff !== undefined) {
+    if (staff.length === 0) throw new Error("STAFF_ORGANISATEUR_REQUIRED");
+    const organisateurId = resolvePrimaryOrganisateurId(staff);
+    if (!organisateurId) throw new Error("STAFF_ORGANISATEUR_REQUIRED");
+    patch.organisateurId = organisateurId;
+    await replaceEventStaff(eventId, staff);
+  }
+
   const [updated] = await db
     .update(events)
-    .set({
-      titre: data.titre,
-      description: data.description,
-      contenu: data.contenu || "",
-      lieu: data.lieu,
-      date: new Date(data.date),
-      thumbnailUrl: data.thumbnailUrl || null,
-      region: data.region as Region,
-      timeline: data.timeline as Timeline,
-      domaine: data.domaine as Domaine,
-      capaciteMax: data.capaciteMax ?? null,
-      updatedAt: new Date(),
-    })
+    .set(patch)
     .where(eq(events.id, eventId))
     .returning({ id: events.id, titre: events.titre });
 
@@ -134,7 +160,6 @@ export async function deleteAdminEvent(
   eventId: string,
   audit: { actorId: string; actorName: string; actorRole?: string },
 ) {
-  // DELETE — events : supprime un événement par son ID
   await db.delete(events).where(eq(events.id, eventId));
   await logAudit({
     actorId: audit.actorId,
@@ -148,7 +173,6 @@ export async function deleteAdminEvent(
 }
 
 export async function listEventRegistrations(eventId: string) {
-  // SELECT — eventRegistrations : liste les inscriptions d'un événement, triées par date
   return db
     .select({
       id: eventRegistrations.id,

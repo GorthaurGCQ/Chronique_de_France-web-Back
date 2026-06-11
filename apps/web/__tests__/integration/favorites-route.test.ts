@@ -1,13 +1,26 @@
+/**
+ * Tests d'intégration — route /api/favorites
+ *
+ * Auth (Better Auth) et BDD (Drizzle) sont mockées pour isoler
+ * le comportement HTTP de la route sans dépendre de Supabase.
+ * Couvre GET (liste), POST (ajout) et DELETE (suppression).
+ */
+
 // Module : node_modules/vitest
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-/**
- * Tests d'intégration — route /api/favorites
- * Auth et BDD mockées ; vérifie le comportement HTTP de la route.
- */
+// ---------------------------------------------------------------------------
+// Mocks — session utilisateur
+// ---------------------------------------------------------------------------
 
+/** Simule auth.api.getSession() — retourne null ou un objet user */
 const mockGetSession = vi.fn();
 
+// ---------------------------------------------------------------------------
+// Helpers — chaînage Drizzle (select / insert)
+// ---------------------------------------------------------------------------
+
+/** Reproduit le chaînage .from().where().orderBy() d'un select Drizzle */
 function createSelectChain<T>(resolved: T) {
   const chain = {
     from: vi.fn().mockReturnThis(),
@@ -19,6 +32,7 @@ function createSelectChain<T>(resolved: T) {
   return chain;
 }
 
+/** Reproduit .values().onConflictDoNothing().returning() d'un insert Drizzle */
 function createInsertChain(resolved: { id: string } | null) {
   return {
     values: vi.fn().mockReturnValue({
@@ -29,11 +43,16 @@ function createInsertChain(resolved: { id: string } | null) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Mocks — opérations BDD
+// ---------------------------------------------------------------------------
+
 const mockSelect = vi.fn();
 const mockInsert = vi.fn();
 const mockUpdate = vi.fn();
 const mockDelete = vi.fn();
 
+// Mock Better Auth — remplace getSession par notre spy
 vi.mock("@/lib/auth/auth", () => ({
   auth: {
     api: {
@@ -42,10 +61,12 @@ vi.mock("@/lib/auth/auth", () => ({
   },
 }));
 
+// Mock Next.js headers() — requis par la route pour lire les cookies
 vi.mock("next/headers", () => ({
   headers: vi.fn().mockResolvedValue(new Headers()),
 }));
 
+// Mock Drizzle db — délègue aux spies mockSelect / mockInsert / etc.
 vi.mock("@/models_M/db", () => ({
   db: {
     select: (...args: unknown[]) => mockSelect(...args),
@@ -55,11 +76,16 @@ vi.mock("@/models_M/db", () => ({
   },
 }));
 
+// ---------------------------------------------------------------------------
+// GET /api/favorites — récupérer la liste des favoris
+// ---------------------------------------------------------------------------
+
 describe("GET /api/favorites", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
+  // Sans session → 401 Unauthorized
   it("retourne 401 si l'utilisateur n'est pas connecté", async () => {
     mockGetSession.mockResolvedValue(null);
     const { GET } = await import("@/app/(C)/api/favorites/route");
@@ -72,6 +98,7 @@ describe("GET /api/favorites", () => {
     expect(body.message).toMatch(/authentifié/i);
   });
 
+  // Session valide + select mocké → 200 avec tableau data
   it("retourne 200 et la liste des favoris si connecté", async () => {
     mockGetSession.mockResolvedValue({
       user: { id: "user-1", email: "test@example.com" },
@@ -105,11 +132,16 @@ describe("GET /api/favorites", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// POST /api/favorites — ajouter un favori
+// ---------------------------------------------------------------------------
+
 describe("POST /api/favorites", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
+  // Body sans resourceId → 400 Bad Request
   it("retourne 400 si resourceId est absent", async () => {
     mockGetSession.mockResolvedValue({
       user: { id: "user-1" },
@@ -128,6 +160,7 @@ describe("POST /api/favorites", () => {
     expect(body.success).toBe(false);
   });
 
+  // Insert réussi → 201 Created avec l'id du favori
   it("retourne 201 après ajout d'un favori", async () => {
     mockGetSession.mockResolvedValue({
       user: { id: "user-1" },
@@ -150,11 +183,16 @@ describe("POST /api/favorites", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// DELETE /api/favorites — retirer un favori
+// ---------------------------------------------------------------------------
+
 describe("DELETE /api/favorites", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
+  // Suppression réussie → 200 OK
   it("retourne 200 après suppression", async () => {
     mockGetSession.mockResolvedValue({
       user: { id: "user-1" },

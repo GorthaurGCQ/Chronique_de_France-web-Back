@@ -13,6 +13,7 @@ import styles from "../admin.module.css";
 import journalStyles from "./journal.module.css";
 // Composant : src/components_V/icons/AppIcon.tsx
 import AppIcon from "@/components_V/icons/AppIcon";
+import RoleBadge from "@/components_V/RoleBadge";
 import type { IconName } from "@/components_V/icons/types";
 
 type AuditLog = {
@@ -78,18 +79,6 @@ function formatDateTime(iso: string) {
   return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })
     + " · "
     + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-}
-
-function RoleBadge({ role }: { role: string | null }) {
-  if (!role) return null;
-  const color = role === "founder" ? "#b8933a" : role === "admin" ? "#1d4ed8" : "#6b7280";
-  const bg    = role === "founder" ? "#fef3c7" : role === "admin" ? "#eff6ff" : "#f3f4f6";
-  return (
-    <span style={{ fontSize: "0.68rem", fontWeight: 600, padding: "0.1rem 0.5rem", borderRadius: "20px", background: bg, color, marginLeft: "0.4rem", display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
-      {role === "founder" && <AppIcon name="crown" size={12} tone="gold" />}
-      {role}
-    </span>
-  );
 }
 
 export default function AdminJournal() {
@@ -258,7 +247,7 @@ export default function AdminJournal() {
                       </td>
                       <td>
                         <span style={{ fontWeight: 600, color: "#1a1a2e" }}>{log.actorName ?? "Système"}</span>
-                        <RoleBadge role={log.actorRole} />
+                        <RoleBadge role={log.actorRole} className={journalStyles.actorRoleBadge} />
                       </td>
                       <td style={{ color: "#9ca3af", fontSize: "0.78rem", maxWidth: "260px" }}>
                         {log.details ?? <span style={{ color: "#e5e7eb" }}>—</span>}

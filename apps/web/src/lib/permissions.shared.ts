@@ -67,6 +67,11 @@ export function isPrivilegedRole(role: string | null | undefined): boolean {
   return role === "admin" || role === "founder";
 }
 
+/** Badge métier — pas de droits admin ; mêmes permissions qu'un membre (customPermissions) */
+export function isOrganisateurRole(role: string | null | undefined): boolean {
+  return role === "organisateur";
+}
+
 export function hasAnyPermission(
   permissions: Permission[],
   required: Permission | Permission[],
@@ -155,6 +160,7 @@ export const NAV_LINK_PERMISSIONS: Partial<Record<string, Permission>> = {
 /**
  * Accès à une page membre (Bibliothèque, Événements, Régions…).
  * Visiteur non connecté → refus ; admin/founder → toujours autorisé.
+ * organisateur → comme un membre (customPermissions en BDD).
  */
 export function canAccessPage(
   isAuthenticated: boolean,

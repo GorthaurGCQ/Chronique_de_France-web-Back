@@ -21,6 +21,8 @@ import LoginRequiredScreen from "@/components_V/LoginRequiredScreen";
 import { hasAdminPanelAccess } from "@/lib/permissions.shared";
 // Composant : src/components_V/icons/AppIcon.tsx
 import AppIcon from "@/components_V/icons/AppIcon";
+// Composant : src/components_V/RoleBadge.tsx
+import RoleBadge from "@/components_V/RoleBadge";
 import type { IconName } from "@/components_V/icons/types";
 // Style : src/app/(V)/dashboard/dashboard.module.css
 import styles from "./dashboard.module.css";
@@ -537,16 +539,7 @@ export default function DashboardPage() {
             <p className={styles.heroJoin}>Membre depuis le {joinDate}</p>
           </div>
           <div className={styles.heroRole}>
-            {userRole === "founder" ? (
-              <span className={`${styles.roleBadge} ${styles.roleBadgeFounder}`}>
-                <AppIcon name="crown" size={14} className={styles.roleBadgeIcon} />
-                Fondateur
-              </span>
-            ) : userRole === "admin" ? (
-              <span className={`${styles.roleBadge} ${styles.roleBadgeAdmin}`}>Administrateur</span>
-            ) : (
-              <span className={`${styles.roleBadge} ${styles.roleBadgeUser}`}>Membre</span>
-            )}
+            <RoleBadge role={userRole} />
           </div>
         </div>
 
@@ -624,16 +617,7 @@ export default function DashboardPage() {
                 <div className={styles.fieldRow}>
                   <label className={styles.fieldLabel}>Rôle</label>
                   <div className={styles.fieldValue}>
-                    {userRole === "founder" ? (
-                      <span className={`${styles.roleBadge} ${styles.roleBadgeFounder}`}>
-                <AppIcon name="crown" size={14} className={styles.roleBadgeIcon} />
-                Fondateur
-              </span>
-                    ) : userRole === "admin" ? (
-                      <span className={`${styles.roleBadge} ${styles.roleBadgeAdmin}`}>Administrateur</span>
-                    ) : (
-                      <span className={`${styles.roleBadge} ${styles.roleBadgeUser}`}>Membre</span>
-                    )}
+                    <RoleBadge role={userRole} />
                   </div>
                 </div>
               </section>

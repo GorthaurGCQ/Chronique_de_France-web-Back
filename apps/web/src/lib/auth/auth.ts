@@ -10,6 +10,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 // Module : node_modules/better-auth/plugins
 import { admin } from "better-auth/plugins";
+// Module : node_modules/better-auth/plugins/jwt
 // Module : node_modules/better-auth/plugins/bearer
 import { bearer } from "better-auth/plugins/bearer";
 // Module : node_modules/better-auth/plugins/admin/access
@@ -56,9 +57,10 @@ export const auth = betterAuth({
       defaultRole: "user",
       adminRoles: ["admin", "founder"],
       roles: {
-        user:    userAc,
-        admin:   adminAc,
-        founder: adminAc,
+        user:         userAc,
+        organisateur: userAc, // badge métier — mêmes droits BA qu'un membre
+        admin:        adminAc,
+        founder:      adminAc,
       },
     }),
   ],

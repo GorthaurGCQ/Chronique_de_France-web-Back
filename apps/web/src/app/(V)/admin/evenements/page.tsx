@@ -13,6 +13,7 @@ import styles from "../admin.module.css";
 import RichTextEditor from "@/components_V/RichTextEditor";
 // Composant : src/components_V/icons/AppIcon.tsx
 import AppIcon from "@/components_V/icons/AppIcon";
+import EventStaffList from "@/components_V/EventStaffList";
 
 type Registration = {
   id: string;
@@ -21,6 +22,19 @@ type Registration = {
   email: string;
   statut: "CONFIRME" | "LISTE_ATTENTE";
   createdAt: string;
+};
+
+type StaffMember = {
+  userId: string;
+  role: "ANIMATEUR" | "ORGANISATEUR";
+  name: string;
+  email: string;
+};
+
+type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
 };
 
 type Event = {
@@ -37,7 +51,15 @@ type Event = {
   capaciteMax: number | null;
   publishedAt: string;
   authorName: string | null;
+  staff?: StaffMember[];
 };
+
+function buildStaffPayload(organisateurIds: string[], animateurIds: string[]) {
+  return [
+    ...organisateurIds.map((userId) => ({ userId, role: "ORGANISATEUR" as const })),
+    ...animateurIds.map((userId) => ({ userId, role: "ANIMATEUR" as const })),
+  ];
+}
 
 const EMPTY_FORM = {
   titre:        "",
@@ -131,6 +153,9 @@ export default function AdminEvenements() {
   const thumbInputRef   = useRef<HTMLInputElement>(null);
   const [thumbUploading, setThumbUploading] = useState(false);
   const [thumbError, setThumbError]         = useState<string | null>(null);
+  const [userList, setUserList]             = useState<AdminUser[]>([]);
+  const [staffOrganisateurIds, setStaffOrganisateurIds] = useState<string[]>([]);
+  const [staffAnimateurIds, setStaffAnimateurIds]     = useState<string[]>([]);
 
   async function fetchEvents() {
     const res = await fetch("/api/admin/events");
@@ -139,7 +164,29 @@ export default function AdminEvenements() {
     setLoading(false);
   }
 
-  useEffect(() => { fetchEvents(); }, []);
+  useEffect(() => {
+    fetchEvents();
+    fetch("/api/admin/users")
+      .then((r) => r.json())
+      .then((d) => { if (d.success) setUserList(d.data ?? []); })
+      .catch(() => setUserList([]));
+  }, []);
+
+  function toggleStaffId(
+    userId: string,
+    role: "ORGANISATEUR" | "ANIMATEUR",
+    checked: boolean,
+  ) {
+    if (role === "ORGANISATEUR") {
+      setStaffOrganisateurIds((prev) =>
+        checked ? [...prev, userId] : prev.filter((id) => id !== userId),
+      );
+    } else {
+      setStaffAnimateurIds((prev) =>
+        checked ? [...prev, userId] : prev.filter((id) => id !== userId),
+      );
+    }
+  }
 
   function startEdit(ev: Event) {
     setEditingId(ev.id);
@@ -155,6 +202,12 @@ export default function AdminEvenements() {
       timeline: ev.timeline ?? "CONTEMPORAIN",
       domaine:  ev.domaine  ?? "EVENEMENTS_MARQUANTS",
     });
+    setStaffOrganisateurIds(
+      (ev.staff ?? []).filter((s) => s.role === "ORGANISATEUR").map((s) => s.userId),
+    );
+    setStaffAnimateurIds(
+      (ev.staff ?? []).filter((s) => s.role === "ANIMATEUR").map((s) => s.userId),
+    );
     setMessage(null);
     setTimeout(() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }
@@ -162,6 +215,8 @@ export default function AdminEvenements() {
   function cancelEdit() {
     setEditingId(null);
     setForm(EMPTY_FORM);
+    setStaffOrganisateurIds([]);
+    setStaffAnimateurIds([]);
     setMessage(null);
   }
 
@@ -170,10 +225,20 @@ export default function AdminEvenements() {
     setSubmitLoading(true);
     setMessage(null);
     const isEditing = editingId !== null;
+    const staff = buildStaffPayload(staffOrganisateurIds, staffAnimateurIds);
+    if (staff.length > 0 && !staff.some((s) => s.role === "ORGANISATEUR")) {
+      setMessage({ type: "error", text: "Sélectionnez au moins un organisateur." });
+      setSubmitLoading(false);
+      return;
+    }
     const res = await fetch("/api/admin/events", {
       method: isEditing ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(isEditing ? { eventId: editingId, ...form } : form),
+      body: JSON.stringify(
+        isEditing
+          ? { eventId: editingId, ...form, staff }
+          : { ...form, staff },
+      ),
     });
     const data = await res.json();
     if (data.success) {
@@ -185,6 +250,8 @@ export default function AdminEvenements() {
       });
       setEditingId(null);
       setForm(EMPTY_FORM);
+      setStaffOrganisateurIds([]);
+      setStaffAnimateurIds([]);
       await fetchEvents();
     } else {
       setMessage({ type: "error", text: data.message });
@@ -455,6 +522,41 @@ export default function AdminEvenements() {
                 </div>
               )}
             </div>
+
+            <div className={`${styles.formField} ${styles.formFieldFull}`}>
+              <label className={styles.formLabel}>Équipe sur l&apos;événement</label>
+              <p style={{ fontSize: "0.82rem", color: "#6b7280", margin: "0 0 0.75rem" }}>
+                Organisateurs et animateurs. Laissez vide à la création pour vous assigner par défaut.
+              </p>
+              {userList.length === 0 ? (
+                <p style={{ fontSize: "0.82rem", color: "#9ca3af" }}>Chargement des utilisateurs…</p>
+              ) : (
+                <div style={{ display: "grid", gap: "0.5rem", maxHeight: "220px", overflowY: "auto", border: "1px solid #e8e4dc", borderRadius: "8px", padding: "0.75rem" }}>
+                  {userList.map((u) => (
+                    <div key={u.id} style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.75rem", fontSize: "0.85rem" }}>
+                      <span style={{ minWidth: "180px", fontWeight: 500 }}>{u.name}</span>
+                      <span style={{ color: "#9ca3af", fontSize: "0.78rem" }}>{u.email}</span>
+                      <label style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+                        <input
+                          type="checkbox"
+                          checked={staffOrganisateurIds.includes(u.id)}
+                          onChange={(e) => toggleStaffId(u.id, "ORGANISATEUR", e.target.checked)}
+                        />
+                        Organisateur
+                      </label>
+                      <label style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+                        <input
+                          type="checkbox"
+                          checked={staffAnimateurIds.includes(u.id)}
+                          onChange={(e) => toggleStaffId(u.id, "ANIMATEUR", e.target.checked)}
+                        />
+                        Animateur
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {message && (
@@ -500,7 +602,7 @@ export default function AdminEvenements() {
                   <th>Région</th>
                   <th>Période</th>
                   <th>Domaine</th>
-                  <th>Auteur</th>
+                  <th>Équipe</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -516,7 +618,9 @@ export default function AdminEvenements() {
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{REGION_LABELS[ev.region ?? ""] ?? "—"}</td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{TIMELINE_LABELS[ev.timeline ?? ""] ?? "—"}</td>
                     <td style={{ color: "#6b7280", fontSize: "0.8rem" }}>{DOMAINE_LABELS[ev.domaine ?? ""] ?? "—"}</td>
-                    <td style={{ color: "#6b7280" }}>{ev.authorName ?? "—"}</td>
+                    <td style={{ color: "#6b7280", fontSize: "0.78rem" }}>
+                      <EventStaffList staff={ev.staff} fallbackName={ev.authorName} compact />
+                    </td>
                     <td style={{ display: "flex", gap: "0.5rem" }}>
                       <button
                         className={styles.btnAction}

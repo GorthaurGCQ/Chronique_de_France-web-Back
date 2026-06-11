@@ -20,6 +20,8 @@ import {
 } from "@/lib/permissions.shared";
 // Composant : src/components_V/icons/AppIcon.tsx
 import AppIcon from "@/components_V/icons/AppIcon";
+// Composant : src/components_V/RoleBadge.tsx
+import RoleBadge from "@/components_V/RoleBadge";
 import type { IconName } from "@/components_V/icons/types";
 
 const PERMISSION_GROUPS: {
@@ -210,15 +212,7 @@ export default function AdminUtilisateurs() {
                       </td>
                       <td style={{ color: "#6b7280" }}>{user.email}</td>
                       <td>
-                        {user.role === "founder" ? (
-                          <span className={styles.roleAdmin} style={{ background: "#fef3c7", color: "#92400e", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
-                            <AppIcon name="crown" size={12} className={styles.inlineIcon} /> Fondateur
-                          </span>
-                        ) : user.role === "admin" ? (
-                          <span className={styles.roleAdmin}>Administrateur</span>
-                        ) : (
-                          <span className={styles.roleUser}>Membre</span>
-                        )}
+                        <RoleBadge role={user.role} />
                       </td>
                       <td>
                         {perms.length > 0 ? (
@@ -330,6 +324,20 @@ export default function AdminUtilisateurs() {
                   <div>
                     <span className={permStyles.roleLabel}>Membre</span>
                     <span className={permStyles.roleDesc}>Accès standard au site</span>
+                  </div>
+                </label>
+                <label className={`${permStyles.roleOption} ${editRole === "organisateur" ? permStyles.roleOptionActive : ""}`}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="organisateur"
+                    checked={editRole === "organisateur"}
+                    onChange={() => setEditRole("organisateur")}
+                    className={permStyles.radioInput}
+                  />
+                  <div>
+                    <span className={permStyles.roleLabel}>Organisateur</span>
+                    <span className={permStyles.roleDesc}>Badge événements — mêmes droits qu&apos;un membre</span>
                   </div>
                 </label>
                 <label className={`${permStyles.roleOption} ${editRole === "admin" ? permStyles.roleOptionActive : ""}`}>
